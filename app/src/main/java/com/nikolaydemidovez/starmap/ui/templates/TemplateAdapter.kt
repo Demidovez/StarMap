@@ -1,0 +1,42 @@
+package com.nikolaydemidovez.starmap.ui.templates
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.nikolaydemidovez.starmap.R
+import com.nikolaydemidovez.starmap.databinding.TemplateItemBinding
+import com.squareup.picasso.Picasso
+
+class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {
+    private var templateList = listOf<Template>()
+
+    class TemplateHolder(item: View): RecyclerView.ViewHolder(item) {
+        private val binding = TemplateItemBinding.bind(item)
+
+        fun bind(template: Template) = with(binding) {
+            labelTemplate.text = template.title
+
+            Picasso.get().load(template.image).into(imageTemplate)
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TemplateHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.template_item, parent, false)
+        return TemplateHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: TemplateHolder, position: Int) {
+        holder.bind(templateList[position])
+    }
+
+    override fun getItemCount(): Int {
+        return templateList.size
+    }
+
+    fun addAllTemplateList(list: List<Template>) {
+        templateList = list
+        notifyDataSetChanged()
+    }
+
+}
