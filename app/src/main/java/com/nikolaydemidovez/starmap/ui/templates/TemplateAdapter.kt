@@ -3,6 +3,8 @@ package com.nikolaydemidovez.starmap.ui.templates
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.TemplateItemBinding
@@ -16,6 +18,15 @@ class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {
 
         fun bind(template: Template) = with(binding) {
             labelTemplate.text = template.title
+
+            cardView.setOnClickListener { view ->
+                val bundle = bundleOf(
+                    "templateName" to template.name,
+                    "templateTitle" to template.title
+                )
+
+                view.findNavController().navigate(R.id.action_navigation_templates_to_templateFragment, bundle)
+            }
 
             Picasso.get().load(template.image).into(imageTemplate)
         }

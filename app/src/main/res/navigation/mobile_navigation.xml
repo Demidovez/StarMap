@@ -9,7 +9,11 @@
         android:id="@+id/navigation_templates"
         android:name="com.nikolaydemidovez.starmap.ui.templates.TemplatesFragment"
         android:label="@string/title_templates"
-        tools:layout="@layout/fragment_templates" />
+        tools:layout="@layout/fragment_templates" >
+        <action
+            android:id="@+id/action_navigation_templates_to_templateFragment"
+            app:destination="@id/templateFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_projects"
@@ -22,4 +26,10 @@
         android:name="com.nikolaydemidovez.starmap.ui.settings.SettingsFragment"
         android:label="@string/title_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/templateFragment"
+        android:name="com.nikolaydemidovez.starmap.ui.template.TemplateFragment"
+        android:label="@string/title_template"
+        tools:layout="@layout/fragment_template" />
 </navigation>

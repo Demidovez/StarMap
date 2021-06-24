@@ -11,8 +11,10 @@
         <entry key="app/src/main/res/drawable/settings_nav_selector.xml" value="0.23541666666666666" />
         <entry key="app/src/main/res/drawable/templates_nav_selector.xml" value="0.23541666666666666" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.38697916666666665" />
+        <entry key="app/src/main/res/layout/controller_item.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/fragment_projects.xml" value="0.38697916666666665" />
         <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.38697916666666665" />
+        <entry key="app/src/main/res/layout/fragment_template.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_templates.xml" value="0.38697916666666665" />
         <entry key="app/src/main/res/layout/movie_item.xml" value="0.38697916666666665" />
         <entry key="app/src/main/res/layout/project_item.xml" value="0.38697916666666665" />
