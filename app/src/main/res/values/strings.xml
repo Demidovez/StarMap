@@ -4,4 +4,9 @@
     <string name="title_projects">Проекты</string>
     <string name="title_settings">Настройки</string>
     <string name="title_template">Шаблон</string>
+    <string name="label_date">Дата</string>
+    <string name="label_time">Время</string>
+    <string name="label_location">Место</string>
+    <string name="label_latitude">Широта</string>
+    <string name="label_longitude">Долгота</string>
 </resources>

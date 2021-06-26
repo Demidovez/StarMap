@@ -11,6 +11,11 @@ import androidx.lifecycle.Observer
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.FragmentEventV1ControllerBinding
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
+import java.sql.Time
+import java.text.DateFormat
+import java.text.DateFormat.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EventV1ControllerFragment : Fragment() {
     private lateinit var viewModel: EventV1ControllerViewModel
@@ -22,11 +27,17 @@ class EventV1ControllerFragment : Fragment() {
 
         val root: View = binding.root
 
-        val textView: TextView = binding.textView
+        binding.editDate.setText(getDateInstance(SHORT).format(Calendar.getInstance().time))
+        binding.editTime.setText(getTimeInstance(SHORT).format(Calendar.getInstance().time))
+        binding.editLocation.setText("Москва")
+        binding.editLatitude.setText("55.7522200")
+        binding.editLongitude.setText("37.6155600")
 
-        viewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+//        val textView: TextView = binding.textView
+//
+//        viewModel.text.observe(viewLifecycleOwner, Observer {
+//            textView.text = it
+//        })
 
         return root
     }
