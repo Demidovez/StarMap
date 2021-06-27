@@ -1,7 +1,7 @@
 package com.nikolaydemidovez.starmap.retrofit.interfaces
 
-import com.nikolaydemidovez.starmap.ui.template.Controller
-import com.nikolaydemidovez.starmap.ui.templates.Template
+import com.nikolaydemidovez.starmap.pages.template.Controller
+import com.nikolaydemidovez.starmap.pages.templates.Template
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.template.controllers.event.EventV1ControllerFragment">
+    tools:context=".controllers.event_v1.EventV1ControllerFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/frameLayout"

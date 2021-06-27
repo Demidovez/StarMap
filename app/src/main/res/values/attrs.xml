@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TemplateView">
+        <attr name="background_canvas" format="color"/>
+        <attr name="width_result" format="dimension"/>
+        <attr name="height_result" format="dimension" />
+        <attr name="is_border" format="boolean" />
+        <attr name="color_border" format="color" />
+    </declare-styleable>
+</resources>

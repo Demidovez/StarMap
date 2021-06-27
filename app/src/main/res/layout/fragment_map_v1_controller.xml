@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".controllers.canvas_v1.CanvasV1ControllerFragment">
+    tools:context=".controllers.map_v1.MapV1ControllerFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/frameLayout2"
@@ -17,10 +17,10 @@
         android:layout_marginBottom="8dp" >
 
         <TextView
-            android:id="@+id/label_size"
+            android:id="@+id/label_size_map"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_size"
+            android:text="@string/label_size_map"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -33,48 +33,48 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label_size">
+            app:layout_constraintTop_toBottomOf="@id/label_size_map">
 
             <RadioButton
-                android:id="@+id/radio_size_a4"
+                android:id="@+id/radio_size_1x"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_weight="1"
                 android:checked="true"
-                android:text="A4" />
+                android:text="1X" />
 
             <RadioButton
-                android:id="@+id/radio_size_a3"
+                android:id="@+id/radio_size_2x"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_weight="1"
-                android:text="A3" />
+                android:text="2X" />
 
             <RadioButton
-                android:id="@+id/radio_size_a2"
+                android:id="@+id/radio_size_3x"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_weight="1"
-                android:text="A2" />
+                android:text="3X" />
 
             <RadioButton
-                android:id="@+id/radio_size_a1"
+                android:id="@+id/radio_size_4x"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_weight="1"
-                android:text="A1" />
+                android:text="4X" />
 
         </RadioGroup>
 
         <TextView
-            android:id="@+id/label_background"
+            android:id="@+id/label_background_map"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_background"
+            android:text="@string/label_background_map"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/radio_group_size" />
@@ -86,16 +86,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label_background">
-
-            <RadioButton
-                android:id="@+id/radio_background_white"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="Белый" />
+            app:layout_constraintTop_toBottomOf="@id/label_background_map">
 
             <RadioButton
                 android:id="@+id/radio_background_black"
@@ -103,7 +94,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_weight="1"
+                android:checked="true"
                 android:text="Черный" />
+
+            <RadioButton
+                android:id="@+id/radio_background_white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="Белый" />
 
             <RadioButton
                 android:id="@+id/radio_background_green"
@@ -124,10 +124,10 @@
         </RadioGroup>
 
         <TextView
-            android:id="@+id/label_enable_border"
+            android:id="@+id/label_enable_border_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_enable_border"
+            android:text="@string/label_enable_border_map"
             app:layout_constraintBottom_toBottomOf="@+id/checkbox_enable_border"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -139,15 +139,14 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginStart="16dp"
-            android:checked="true"
-            app:layout_constraintStart_toEndOf="@+id/label_enable_border"
+            app:layout_constraintStart_toEndOf="@+id/label_enable_border_map"
             app:layout_constraintTop_toBottomOf="@id/radio_group_background" />
 
         <TextView
-            android:id="@+id/label_color_border"
+            android:id="@+id/label_color_border_map"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_color_border"
+            android:text="@string/label_color_border_map"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/checkbox_enable_border" />
@@ -159,7 +158,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label_color_border" >
+            app:layout_constraintTop_toBottomOf="@id/label_color_border_map" >
 
             <RadioButton
                 android:id="@+id/radio_color_border_black"
