@@ -2,27 +2,21 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:template="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
     tools:context=".pages.template.TemplateFragment">
     
-    <com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateView
-        android:id="@+id/canvas_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        template:background_canvas = "@color/gray"
-        template:width_result = "2480px"
-        template:height_result = "3508px"
-        template:is_border = "true"
-        template:color_border = "@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/recycler_controllers"
-        tools:ignore="PxUsage" />
+<!--    <com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateView-->
+<!--        android:id="@+id/canvas_view"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/recycler_controllers" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_controllers"

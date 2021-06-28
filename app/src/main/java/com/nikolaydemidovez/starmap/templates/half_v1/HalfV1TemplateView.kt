@@ -1,4 +1,4 @@
-package com.nikolaydemidovez.starmap.templates.classic_v1
+package com.nikolaydemidovez.starmap.templates.half_v1
 
 import android.content.Context
 import android.graphics.*
@@ -7,7 +7,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateView
 
-class ClassicV1TemplateView(context: Context?, attrs: AttributeSet?) : TemplateView(context, attrs) {
+class HalfV1TemplateView(context: Context?, attrs: AttributeSet?) : TemplateView(context, attrs) {
     private val STROKE_WIDTH = 12f
 
     init {
@@ -28,6 +28,6 @@ class ClassicV1TemplateView(context: Context?, attrs: AttributeSet?) : TemplateV
         super.onDraw(canvas)
 
         canvas.drawColor(backgroundColorCanvas)
-        canvas.drawRect(40F, 40F, 260F, 260F, paint)
+        canvas.drawRect(80F, 80F, 220F, 220F, paint)
     }
 }

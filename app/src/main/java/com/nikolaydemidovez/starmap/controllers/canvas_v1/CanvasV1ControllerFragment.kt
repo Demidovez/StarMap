@@ -22,10 +22,7 @@ class CanvasV1ControllerFragment(private val templateView: TemplateView) : Fragm
         val root: View = binding.root
 
         binding.frameLayout2.setOnClickListener {
-
-            templateView.setBackgroundCanvasColor(R.color.black)
-
-            Toast.makeText(it.context, "Click CNTRL", Toast.LENGTH_SHORT).show()
+            templateView.updateBackgroundColorCanvas(R.color.black)
         }
 
 
