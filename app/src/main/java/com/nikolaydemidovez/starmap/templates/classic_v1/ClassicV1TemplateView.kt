@@ -14,7 +14,6 @@ class ClassicV1TemplateView(context: Context?, attrs: AttributeSet?) : TemplateV
     init {
         backgroundColorCanvas = ResourcesCompat.getColor(resources, R.color.white, null)
         canvasBorderColor = ResourcesCompat.getColor(resources, R.color.black, null)
-
     }
 
     private val holst = Paint().apply {
@@ -37,7 +36,6 @@ class ClassicV1TemplateView(context: Context?, attrs: AttributeSet?) : TemplateV
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        //canvas.drawColor(backgroundColorCanvas)
         holst.color = backgroundColorCanvas
         border.color = canvasBorderColor
 

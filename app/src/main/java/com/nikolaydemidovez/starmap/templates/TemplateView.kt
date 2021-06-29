@@ -1,18 +1,22 @@
 package com.nikolaydemidovez.starmap.templates
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 
-open class TemplateView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
+abstract class TemplateView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     protected var backgroundColorCanvas: Int = 0
     protected var canvasBorderColor: Int = 0
 
     protected var factorIncrease: Float = 1F
 
-    protected var canvasOriginalWidth: Float = 0F
-    protected var canvasOriginalHeight: Float = 0F
+    var canvasOriginalWidth: Float = 0F
+        private set
+    var canvasOriginalHeight: Float = 0F
+        private set
+
     protected var canvasWidth: Float = 0F
     protected var canvasHeight: Float = 0F
 

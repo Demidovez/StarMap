@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.applyCanvas
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateView
 
