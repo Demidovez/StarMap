@@ -22,9 +22,10 @@ class CanvasV1ControllerFragment(private val templateView: TemplateView) : Fragm
         val root: View = binding.root
 
         binding.frameLayout2.setOnClickListener {
+            templateView.updateCanvasOriginalSize(2480F, 3508F)
             templateView.updateBackgroundColorCanvas(R.color.black)
+            templateView.updateCanvasBorderColor(R.color.white)
         }
-
 
         return root
     }

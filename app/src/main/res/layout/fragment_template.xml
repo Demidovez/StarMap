@@ -8,15 +8,16 @@
     android:background="@color/gray"
     tools:context=".pages.template.TemplateFragment">
     
-<!--    <com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateView-->
-<!--        android:id="@+id/canvas_view"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintBottom_toTopOf="@id/recycler_controllers" />-->
+    <ImageView
+        android:id="@+id/full_screen"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_fullscreen"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/full_screen" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_controllers"

@@ -17,5 +17,6 @@
     <string name="label_background_map">Выберите цвет фона карты</string>
     <string name="label_enable_border_map">Добавить рамку</string>
     <string name="label_color_border_map">Выберите цвет рамки</string>
+    <string name="full_screen">Full Screen</string>
 
 </resources>

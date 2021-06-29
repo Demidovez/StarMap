@@ -1,18 +1,21 @@
 package com.nikolaydemidovez.starmap.pages.template
 
+import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
+import android.view.*
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Slide
+import androidx.transition.TransitionManager
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.controllers.canvas_v1.CanvasV1ControllerFragment
@@ -38,6 +41,10 @@ class TemplateFragment : Fragment() {
         val templateName = arguments?.getString("templateName")
         val templateTitle = arguments?.getString("templateTitle")
 
+        if (activity != null) {
+            (activity as MainActivity).supportActionBar?.title = templateTitle
+        }
+
         templateViewModel = ViewModelProviders
             .of(this, TemplateViewModelFactory(templateName!!))
             .get(TemplateViewModel::class.java)
@@ -50,8 +57,8 @@ class TemplateFragment : Fragment() {
         
         adapter = ControllerAdapter(childFragmentManager, templateView)
 
-        if (activity != null) {
-            (activity as MainActivity).supportActionBar?.title = templateTitle
+        binding.fullScreen.setOnClickListener {
+            showFullScreenCanvasDialog()
         }
 
         recyclerInit()
@@ -70,6 +77,21 @@ class TemplateFragment : Fragment() {
         })
     }
 
+    private fun showFullScreenCanvasDialog() {
+        val dialog = Dialog(requireContext(), R.style.full_screen_dialog)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.setContentView(R.layout.full_screen_layout)
+        dialog.setCancelable(true)
+
+        val root = dialog.findViewById<LinearLayout>(R.id.linear_layout)
+        root.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
     private fun getTemplateView(templateName: String, context: Context?): TemplateView {
         val templateView = when(templateName) {
             "classic" -> ClassicV1TemplateView(context, null)
@@ -79,7 +101,7 @@ class TemplateFragment : Fragment() {
         }
 
         templateView.id = View.generateViewId()
-        val layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 0)
+        val layoutParams = ConstraintLayout.LayoutParams(0, 0)
         binding.rootLayout.addView(templateView, 0, layoutParams)
 
         val set = ConstraintSet()
