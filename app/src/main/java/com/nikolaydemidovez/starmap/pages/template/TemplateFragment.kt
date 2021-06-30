@@ -107,8 +107,8 @@ class TemplateFragment : Fragment() {
     }
 
     private fun getTemplateView(templateName: String, context: Context?): TemplateView = when(templateName) {
-        "classic" -> ClassicV1TemplateView(context, null)
-        "half" -> HalfV1TemplateView(context, null)
+        "classic_v1" -> ClassicV1TemplateView(context, null)
+        "half_v1" -> HalfV1TemplateView(context, null)
 
         else -> ClassicV1TemplateView(context, null)
     }
