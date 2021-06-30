@@ -17,17 +17,17 @@ import com.nikolaydemidovez.starmap.controllers.map_v1.MapV1ControllerFragment
 import com.nikolaydemidovez.starmap.controllers.save_v1.SaveV1ControllerFragment
 import com.nikolaydemidovez.starmap.controllers.separator_v1.SeparatorV1ControllerFragment
 import com.nikolaydemidovez.starmap.controllers.stars_v1.StarsV1ControllerFragment
-import com.nikolaydemidovez.starmap.templates.TemplateView
+import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.squareup.picasso.Picasso
 
-class ControllerAdapter(private val childFragmentManager: FragmentManager, private val templateView: TemplateView): RecyclerView.Adapter<ControllerAdapter.ControllerHolder>() {
+class ControllerAdapter(private val childFragmentManager: FragmentManager, private val templateCanvas: TemplateCanvas): RecyclerView.Adapter<ControllerAdapter.ControllerHolder>() {
     private var controllerList = listOf<Controller>()
     private var screenWidth = 0
 
     class ControllerHolder(item: View): RecyclerView.ViewHolder(item) {
         private val binding = ControllerItemBinding.bind(item)
 
-        fun bind(controller: Controller, childFragmentManager: FragmentManager, screenWidth: Int, templateView: TemplateView) = with(binding) {
+        fun bind(controller: Controller, childFragmentManager: FragmentManager, screenWidth: Int, templateCanvas: TemplateCanvas) = with(binding) {
             labelController.text = controller.title
 
             val itemWidth = (screenWidth / 5.5).toInt()
@@ -40,7 +40,7 @@ class ControllerAdapter(private val childFragmentManager: FragmentManager, priva
             Picasso.get().load(controller.image).into(imageController)
 
             cardView.setOnClickListener {
-                val fragment = getControllerFragment(controller.name!!, templateView)
+                val fragment = getControllerFragment(controller.name!!, templateCanvas)
 
                 val ft = childFragmentManager.beginTransaction()
                 ft.replace(R.id.controller_wrapper, fragment, fragment.javaClass.name)
@@ -48,17 +48,17 @@ class ControllerAdapter(private val childFragmentManager: FragmentManager, priva
             }
         }
 
-        private fun getControllerFragment(name: String, templateView: TemplateView): Fragment = when(name) {
-            "event_v1" -> EventV1ControllerFragment(templateView)
-            "canvas_v1" -> CanvasV1ControllerFragment(templateView)
-            "map_v1" -> MapV1ControllerFragment(templateView)
-            "stars_v1" -> StarsV1ControllerFragment(templateView)
-            "desc_v1" -> DescV1ControllerFragment(templateView)
-            "separator_v1" -> SeparatorV1ControllerFragment(templateView)
-            "location_v1" -> LocationV1ControllerFragment(templateView)
-            "save_v1" -> SaveV1ControllerFragment(templateView)
+        private fun getControllerFragment(name: String, templateCanvas: TemplateCanvas): Fragment = when(name) {
+            "event_v1" -> EventV1ControllerFragment(templateCanvas)
+            "canvas_v1" -> CanvasV1ControllerFragment(templateCanvas)
+            "map_v1" -> MapV1ControllerFragment(templateCanvas)
+            "stars_v1" -> StarsV1ControllerFragment(templateCanvas)
+            "desc_v1" -> DescV1ControllerFragment(templateCanvas)
+            "separator_v1" -> SeparatorV1ControllerFragment(templateCanvas)
+            "location_v1" -> LocationV1ControllerFragment(templateCanvas)
+            "save_v1" -> SaveV1ControllerFragment(templateCanvas)
 
-            else -> EventV1ControllerFragment(templateView)
+            else -> EventV1ControllerFragment(templateCanvas)
         }
     }
 
@@ -71,7 +71,7 @@ class ControllerAdapter(private val childFragmentManager: FragmentManager, priva
     }
 
     override fun onBindViewHolder(holder: ControllerHolder, position: Int) {
-        holder.bind(controllerList[position], childFragmentManager, screenWidth, templateView)
+        holder.bind(controllerList[position], childFragmentManager, screenWidth, templateCanvas)
     }
 
     override fun getItemCount(): Int {

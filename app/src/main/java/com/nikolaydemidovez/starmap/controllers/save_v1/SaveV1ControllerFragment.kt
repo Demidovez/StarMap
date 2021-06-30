@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.nikolaydemidovez.starmap.databinding.FragmentSaveV1ControllerBinding
-import com.nikolaydemidovez.starmap.templates.TemplateView
+import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 
-class SaveV1ControllerFragment(private val templateView: TemplateView) : Fragment() {
+class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
 
     private lateinit var viewModel: SaveV1ControllerViewModel
     private lateinit var binding: FragmentSaveV1ControllerBinding

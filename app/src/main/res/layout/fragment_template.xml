@@ -21,9 +21,9 @@
     
     <ImageView
         android:id="@+id/full_screen"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_margin="16dp"
+        android:layout_width="57dp"
+        android:layout_height="57dp"
+        android:padding="16dp"
         android:src="@drawable/ic_fullscreen"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.nikolaydemidovez.starmap.databinding.FragmentLocationV1ControllerBinding
-import com.nikolaydemidovez.starmap.templates.TemplateView
+import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 
-class LocationV1ControllerFragment(private val templateView: TemplateView) : Fragment() {
+class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
 
     private lateinit var viewModel: LocationV1ControllerViewModel
     private lateinit var binding: FragmentLocationV1ControllerBinding

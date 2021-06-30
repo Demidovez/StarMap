@@ -9,7 +9,8 @@
         <item name="android:navigationBarColor" tools:targetApi="21">@color/white</item>
     </style>
 
-    <style name="full_screen_dialog">
+    <style name="full_screen_dialog" >
+        <item name="android:windowFullscreen">true</item>
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowContentOverlay">@null</item>

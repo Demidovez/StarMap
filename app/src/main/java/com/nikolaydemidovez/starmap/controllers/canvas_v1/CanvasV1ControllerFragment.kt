@@ -6,12 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.FragmentCanvasV1ControllerBinding
-import com.nikolaydemidovez.starmap.templates.TemplateView
+import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 
-class CanvasV1ControllerFragment(private val templateView: TemplateView) : Fragment() {
+class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
     private lateinit var viewModel: CanvasV1ControllerViewModel
     private lateinit var binding: FragmentCanvasV1ControllerBinding
 
@@ -22,9 +21,9 @@ class CanvasV1ControllerFragment(private val templateView: TemplateView) : Fragm
         val root: View = binding.root
 
         binding.frameLayout2.setOnClickListener {
-            templateView.updateCanvasSize(2480F, 3508F)
-            templateView.updateBackgroundColorCanvas(R.color.black)
-            templateView.updateCanvasBorderColor(R.color.white)
+            templateCanvas.updateCanvasSize(2480F, 3508F)
+            templateCanvas.updateBackgroundColorCanvas(R.color.black)
+            templateCanvas.updateCanvasBorderColor(R.color.white)
         }
 
         return root

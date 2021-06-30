@@ -1,14 +1,10 @@
 package com.nikolaydemidovez.starmap.pages.template
 
+import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
-import android.widget.ImageView
-import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,9 +14,13 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
-import com.nikolaydemidovez.starmap.templates.TemplateView
-import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateView
-import com.nikolaydemidovez.starmap.templates.half_v1.HalfV1TemplateView
+import com.nikolaydemidovez.starmap.templates.TemplateCanvas
+import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas
+import com.nikolaydemidovez.starmap.templates.half_v1.HalfV1TemplateCanvas
+import android.os.Build
+
+import android.view.WindowManager
+import androidx.annotation.RequiresApi
 
 
 class TemplateFragment : Fragment() {
@@ -45,16 +45,14 @@ class TemplateFragment : Fragment() {
 
         val root: View = binding.root
 
-        val templateView = getTemplateView(templateName, this.context)
+        val templateView = getTemplateView(templateName)
 
-//        templateView.viewTreeObserver.addOnDrawListener {
-//            ViewTreeObserver.OnDrawListener {
-//                overr
-//            }
-//        }
+        templateView.setOnDrawListener(object: TemplateCanvas.OnDrawListener {
+            override fun onDraw() {
+                binding.canvasImage.setImageBitmap(templateView.bitmap)
+            }
+        })
 
-        binding.canvasImage.setImageBitmap(getBitmapFromView(templateView))
-        
         adapter = ControllerAdapter(childFragmentManager, templateView)
 
         binding.fullScreen.setOnClickListener {
@@ -64,20 +62,6 @@ class TemplateFragment : Fragment() {
         recyclerInit()
 
         return root
-    }
-
-    private fun getBitmapFromView(view: TemplateView): Bitmap? {
-        val returnedBitmap = Bitmap.createBitmap(
-            view.canvasWidth.toInt(),
-            view.canvasHeight.toInt(),
-            Bitmap.Config.ARGB_8888
-        )
-
-        val canvas = Canvas(returnedBitmap)
-
-        view.draw(canvas)
-
-        return returnedBitmap
     }
 
     private fun recyclerInit() {
@@ -91,26 +75,25 @@ class TemplateFragment : Fragment() {
         })
     }
 
-    private fun showFullScreenCanvasDialog(templateView: TemplateView) {
+    private fun showFullScreenCanvasDialog(templateCanvas: TemplateCanvas) {
         val dialog = Dialog(requireContext(), R.style.full_screen_dialog)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.setContentView(R.layout.full_screen_layout)
 
         val imageView = dialog.findViewById<SubsamplingScaleImageView>(R.id.full_canvas)
 
-        imageView.setImage(ImageSource.bitmap(getBitmapFromView(templateView)!!))
+        imageView.setImage(ImageSource.bitmap(templateCanvas.bitmap))
 
         //dialog.dismiss()
 
         dialog.show()
     }
 
-    private fun getTemplateView(templateName: String, context: Context?): TemplateView = when(templateName) {
-        "classic_v1" -> ClassicV1TemplateView(context, null)
-        "half_v1" -> HalfV1TemplateView(context, null)
+    private fun getTemplateView(templateName: String): TemplateCanvas = when(templateName) {
+        "classic_v1" -> ClassicV1TemplateCanvas(requireContext())
+        "half_v1" -> HalfV1TemplateCanvas(requireContext())
 
-        else -> ClassicV1TemplateView(context, null)
+        else -> ClassicV1TemplateCanvas(requireContext())
     }
 
 }
