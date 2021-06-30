@@ -7,4 +7,10 @@
     android:gravity="center_vertical"
     android:orientation="vertical">
 
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/full_canvas"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </LinearLayout >

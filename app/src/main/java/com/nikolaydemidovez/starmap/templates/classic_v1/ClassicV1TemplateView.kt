@@ -14,6 +14,8 @@ class ClassicV1TemplateView(context: Context?, attrs: AttributeSet?) : TemplateV
     init {
         backgroundColorCanvas = ResourcesCompat.getColor(resources, R.color.white, null)
         canvasBorderColor = ResourcesCompat.getColor(resources, R.color.black, null)
+
+        updateCanvasSize(2480F, 3508F)
     }
 
     private val holst = Paint().apply {
@@ -25,14 +27,6 @@ class ClassicV1TemplateView(context: Context?, attrs: AttributeSet?) : TemplateV
         strokeWidth = STROKE_WIDTH
     }
 
-    override fun onSizeChanged(width: Int, height: Int, oldwidth: Int, oldheight: Int) {
-        super.onSizeChanged(width, height, oldwidth, oldheight)
-
-        // Default values
-        updateContainerSize(width.toFloat(), height.toFloat())
-        updateCanvasOriginalSize(2480F, 3508F)
-    }
-
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -40,9 +34,9 @@ class ClassicV1TemplateView(context: Context?, attrs: AttributeSet?) : TemplateV
         border.color = canvasBorderColor
 
         // Рисуем холст
-        canvas.drawRect(startX, startY, startX + canvasWidth, startY + canvasHeight, holst)
+        canvas.drawRect(0F, 0F, canvasWidth, canvasHeight, holst)
 
         // Рисуем рамку
-        canvas.drawRect(startX + 40F, startY + 40F, startX + canvasWidth - 40F, startY + canvasHeight - 40F, border)
+        canvas.drawRect(40F, 40F, canvasWidth - 40F, canvasHeight - 40F, border)
     }
 }
