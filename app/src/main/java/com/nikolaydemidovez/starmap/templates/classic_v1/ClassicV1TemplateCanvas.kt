@@ -2,7 +2,6 @@ package com.nikolaydemidovez.starmap.templates.classic_v1
 
 import android.content.Context
 import android.graphics.*
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
