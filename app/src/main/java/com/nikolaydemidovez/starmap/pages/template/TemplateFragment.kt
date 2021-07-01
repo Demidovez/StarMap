@@ -75,6 +75,7 @@ class TemplateFragment : Fragment() {
 //        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.setContentView(R.layout.full_screen_layout)
 
+//        dialog.window?.statusBarColor = Color.parseColor("#1A000000")
 
 
 //        dialog.window?.addFlags(FLAG_LAYOUT_NO_LIMITS);

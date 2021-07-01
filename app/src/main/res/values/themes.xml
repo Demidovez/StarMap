@@ -9,6 +9,8 @@
         <item name="android:navigationBarColor" tools:targetApi="21">@color/white</item>
 
 
+        <item name="android:windowTranslucentStatus">true</item>
+<!--        <item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
 <!--        <item name="android:statusBarColor" >@color/white</item>-->
 <!--        <item name="android:windowFullscreen">true</item>-->
 <!--        <item name="android:windowTranslucentStatus">true</item>-->
