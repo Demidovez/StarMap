@@ -22,11 +22,6 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         val root: View = binding.root
 
-        val textView: TextView = binding.textView
-
-        viewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
 
         return root
     }

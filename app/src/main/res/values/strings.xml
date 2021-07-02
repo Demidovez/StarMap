@@ -4,6 +4,7 @@
     <string name="title_projects">Проекты</string>
     <string name="title_settings">Настройки</string>
     <string name="title_template">Шаблон</string>
+    <string name="full_screen">Full Screen</string>
     <string name="label_date">Дата</string>
     <string name="label_time">Время</string>
     <string name="label_location">Место</string>
@@ -17,6 +18,14 @@
     <string name="label_background_map">Выберите цвет фона карты</string>
     <string name="label_enable_border_map">Добавить рамку</string>
     <string name="label_color_border_map">Выберите цвет рамки</string>
-    <string name="full_screen">Full Screen</string>
+    <string name="label_indent_border">Выберите отступ для рамки</string>
+    <string name="label_width_border">Выберите толщину рамки</string>
+    <string name="label_enable_web">Добавить сетку</string>
+    <string name="label_bright">Выберите яркость звезд</string>
+    <string name="label_color_stars">Выберите цвет звезд</string>
+    <string name="label_size_stars">Выберите размер звезд</string>
+    <string name="label_shape_stars">Выберите форму звезд</string>
+
+
 
 </resources>

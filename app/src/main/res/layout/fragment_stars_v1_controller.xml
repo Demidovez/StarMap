@@ -1,13 +1,211 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".controllers.stars_v1.StarsV1ControllerFragment">
 
-    <TextView
-        android:id="@+id/text_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frameLayout2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp" >
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/label_enable_web"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_enable_web"
+            app:layout_constraintBottom_toBottomOf="@+id/checkbox_enable_web"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/checkbox_enable_web" />
+
+        <CheckBox
+            android:id="@+id/checkbox_enable_web"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@+id/label_enable_web"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/label_bright"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_bright"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkbox_enable_web" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_bright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/label_bright">
+
+            <RadioButton
+                android:id="@+id/radio_bright_1x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="1X" />
+
+            <RadioButton
+                android:id="@+id/radio_bright_2x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="2X" />
+
+            <RadioButton
+                android:id="@+id/radio_bright_3x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="3X" />
+
+            <RadioButton
+                android:id="@+id/radio_bright_4x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="4X" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/label_color_stars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_color_stars"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radio_group_bright" />
+
+        <RadioGroup
+            android:id="@+id/radio_color_stars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/label_color_stars">
+
+            <RadioButton
+                android:id="@+id/radio_color_stars_white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="Белый" />
+
+            <RadioButton
+                android:id="@+id/radio_color_stars_black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="Черный" />
+
+            <RadioButton
+                android:id="@+id/radio_color_stars_green"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="Зеленый" />
+
+            <RadioButton
+                android:id="@+id/radio_color_stars_blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="Синий" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/label_size_stars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_size_stars"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radio_color_stars" />
+
+        <RadioGroup
+            android:id="@+id/radio_size_stars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/label_size_stars">
+
+            <RadioButton
+                android:id="@+id/radio_size_stars_1x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="1X" />
+
+            <RadioButton
+                android:id="@+id/radio_size_stars_2x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="2X" />
+
+            <RadioButton
+                android:id="@+id/radio_size_stars_3x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="3X" />
+
+            <RadioButton
+                android:id="@+id/radio_size_stars_4x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="4X" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/label_shape_stars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_shape_stars"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radio_size_stars" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
