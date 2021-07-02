@@ -25,6 +25,8 @@
     <string name="label_color_stars">Выберите цвет звезд</string>
     <string name="label_size_stars">Выберите размер звезд</string>
     <string name="label_shape_stars">Выберите форму звезд</string>
+    <string name="label_name_stars">Названия звезд</string>
+    <string name="label_lang_stars">Язык названий звезд</string>
 
 
 
