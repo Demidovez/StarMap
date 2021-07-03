@@ -1,6 +1,8 @@
 package com.nikolaydemidovez.starmap.pages.template
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -17,12 +19,15 @@ import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.half_v1.HalfV1TemplateCanvas
 import android.view.ViewGroup
 import android.view.LayoutInflater
+import android.widget.Toast
+import kotlinx.coroutines.runBlocking
 
 class TemplateFragment : Fragment() {
 
     private lateinit var templateViewModel: TemplateViewModel
     private lateinit var binding: FragmentTemplateBinding
     private lateinit var adapter: ControllerAdapter
+    private lateinit var templateCanvas: TemplateCanvas
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val templateName = arguments?.getString("templateName")
@@ -40,18 +45,18 @@ class TemplateFragment : Fragment() {
 
         val root: View = binding.root
 
-        val templateView = getTemplateView(templateName)
+        templateCanvas = getTemplateCanvas(templateName)
 
-        templateView.setOnDrawListener(object: TemplateCanvas.OnDrawListener {
+        templateCanvas.setOnDrawListener(object: TemplateCanvas.OnDrawListener {
             override fun onDraw() {
-                binding.canvasImage.setImageBitmap(templateView.bitmap)
+                binding.canvasImage.setImageBitmap(templateCanvas.bitmap)
             }
         })
 
-        adapter = ControllerAdapter(childFragmentManager, templateView)
+        adapter = ControllerAdapter(childFragmentManager, templateCanvas)
 
         binding.fullScreen.setOnClickListener {
-            showFullScreenCanvasDialog(templateView)
+            showFullScreenCanvasDialog(templateCanvas)
         }
 
         recyclerInit()
@@ -81,11 +86,10 @@ class TemplateFragment : Fragment() {
         imageView.setImage(ImageSource.bitmap(templateCanvas.bitmap))
     }
 
-    private fun getTemplateView(templateName: String): TemplateCanvas = when(templateName) {
+    private fun getTemplateCanvas(templateName: String): TemplateCanvas = when(templateName) {
         "classic_v1" -> ClassicV1TemplateCanvas(requireContext())
         "half_v1" -> HalfV1TemplateCanvas(requireContext())
 
         else -> ClassicV1TemplateCanvas(requireContext())
     }
-
 }
