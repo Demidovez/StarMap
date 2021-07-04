@@ -1,13 +1,263 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".controllers.location_v1.LocationV1ControllerFragment">
 
-    <TextView
-        android:id="@+id/text_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frameLayout2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/label_font_family_location"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_font_family_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_font_family_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_font_family_location">
+
+            <RadioButton
+                android:id="@+id/radio_font_family_location_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="A4" />
+
+            <RadioButton
+                android:id="@+id/radio_font_family_location_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="A3" />
+
+            <RadioButton
+                android:id="@+id/radio_font_family_location_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="A2" />
+
+            <RadioButton
+                android:id="@+id/radio_font_family_location_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="A1" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/label_color_font_location"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_color_font_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radio_group_font_family_location" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_color_font_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_color_font_location">
+
+            <RadioButton
+                android:id="@+id/radio_font_color_location_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="Черный" />
+
+            <RadioButton
+                android:id="@+id/radio_font_color_location_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="Белый" />
+
+            <RadioButton
+                android:id="@+id/radio_font_color_location_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="Зеленый" />
+
+            <RadioButton
+                android:id="@+id/radio_font_color_location_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="Синий" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/label_size_font_location"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_size_font_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radio_group_color_font_location" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_size_font_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_size_font_location">
+
+            <RadioButton
+                android:id="@+id/radio_font_size_location_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="1X" />
+
+            <RadioButton
+                android:id="@+id/radio_font_size_location_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="2X" />
+
+            <RadioButton
+                android:id="@+id/radio_font_size_location_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="3X" />
+
+            <RadioButton
+                android:id="@+id/radio_font_size_location_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_weight="1"
+                android:text="4X" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/label_enable_date_in_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_enable_date_in_location"
+            app:layout_constraintBottom_toBottomOf="@+id/checkbox_enable_date_in_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/checkbox_enable_date_in_location" />
+
+        <CheckBox
+            android:id="@+id/checkbox_enable_date_in_location"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:checked="true"
+            app:layout_constraintTop_toBottomOf="@+id/radio_group_size_font_location"
+            app:layout_constraintStart_toEndOf="@+id/label_enable_date_in_location" />
+
+        <TextView
+            android:id="@+id/label_enable_time_in_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_enable_time_in_location"
+            app:layout_constraintBottom_toBottomOf="@+id/checkbox_enable_time_in_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/checkbox_enable_time_in_location" />
+
+        <CheckBox
+            android:id="@+id/checkbox_enable_time_in_location"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:checked="true"
+            app:layout_constraintTop_toBottomOf="@+id/checkbox_enable_date_in_location"
+            app:layout_constraintStart_toEndOf="@+id/label_enable_time_in_location" />
+
+        <TextView
+            android:id="@+id/label_enable_city_in_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_enable_city_in_location"
+            app:layout_constraintBottom_toBottomOf="@+id/checkbox_enable_city_in_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/checkbox_enable_city_in_location" />
+
+        <CheckBox
+            android:id="@+id/checkbox_enable_city_in_location"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:checked="true"
+            app:layout_constraintTop_toBottomOf="@+id/checkbox_enable_time_in_location"
+            app:layout_constraintStart_toEndOf="@+id/label_enable_city_in_location" />
+
+        <TextView
+            android:id="@+id/label_enable_coordinates_in_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_enable_coordinates_in_location"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/checkbox_enable_coordinates_in_location" />
+
+        <CheckBox
+            android:id="@+id/checkbox_enable_coordinates_in_location"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:checked="true"
+            app:layout_constraintStart_toEndOf="@+id/label_enable_coordinates_in_location"
+            app:layout_constraintTop_toBottomOf="@+id/checkbox_enable_city_in_location" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

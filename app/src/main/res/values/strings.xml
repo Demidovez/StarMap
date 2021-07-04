@@ -28,6 +28,20 @@
     <string name="label_name_stars">Названия звезд</string>
     <string name="label_lang_stars">Язык названий звезд</string>
     <string name="label_format_extension">Выберите формат файла</string>
+    <string name="label_desc">Введите текст события</string>
+    <string name="label_font_family_desc">Выберите шрифт текста</string>
+    <string name="label_color_font_desc">Выберите цвет текста</string>
+    <string name="label_size_font_desc">Выберите размер текста</string>
+    <string name="label_enable_separator">Добавить разделитель</string>
+    <string name="label_color_separator">Выберите цвет разделителя</string>
+    <string name="label_font_family_location">Выберите шрифт текста</string>
+    <string name="label_color_font_location">Выберите цвет текста</string>
+    <string name="label_size_font_location">Выберите размер текста</string>
+    <string name="label_enable_date_in_location">Добавить дату</string>
+    <string name="label_enable_time_in_location">Добавить время</string>
+    <string name="label_enable_city_in_location">Добавить город</string>
+    <string name="label_enable_coordinates_in_location">Добавить координаты</string>
+
 
 
 

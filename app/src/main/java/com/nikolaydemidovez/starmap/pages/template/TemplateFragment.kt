@@ -1,10 +1,13 @@
 package com.nikolaydemidovez.starmap.pages.template
 
-import android.app.Activity
 import android.app.Dialog
-import android.content.Intent
+import android.graphics.PointF
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.*
+import android.view.View.OnLayoutChangeListener
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,10 +20,7 @@ import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.half_v1.HalfV1TemplateCanvas
-import android.view.ViewGroup
-import android.view.LayoutInflater
-import android.widget.Toast
-import kotlinx.coroutines.runBlocking
+
 
 class TemplateFragment : Fragment() {
 
@@ -47,12 +47,6 @@ class TemplateFragment : Fragment() {
 
         templateCanvas = getTemplateCanvas(templateName)
 
-        templateCanvas.setOnDrawListener(object: TemplateCanvas.OnDrawListener {
-            override fun onDraw() {
-                binding.canvasImage.setImageBitmap(templateCanvas.bitmap)
-            }
-        })
-
         adapter = ControllerAdapter(childFragmentManager, templateCanvas)
 
         binding.fullScreen.setOnClickListener {
@@ -60,6 +54,20 @@ class TemplateFragment : Fragment() {
         }
 
         recyclerInit()
+
+        binding.canvasImage.setImage(ImageSource.bitmap(templateCanvas.bitmap))
+
+        // Перемасштабируем превью если изменились размеры лайоута картинки
+        binding.canvasImage.addOnLayoutChangeListener { _, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            binding.canvasImage.resetScaleAndCenter()
+        }
+
+        templateCanvas.setOnDrawListener(object: TemplateCanvas.OnDrawListener {
+            override fun onDraw() {
+                binding.canvasImage.recycle()
+                binding.canvasImage.setImage(ImageSource.bitmap(templateCanvas.bitmap))
+            }
+        })
 
         return root
     }

@@ -22,11 +22,6 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
 
         val root: View = binding.root
 
-        val textView: TextView = binding.textView
-
-        viewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
 
         return root
     }
