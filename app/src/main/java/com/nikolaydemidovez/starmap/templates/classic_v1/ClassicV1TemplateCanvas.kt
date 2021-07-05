@@ -2,44 +2,75 @@ package com.nikolaydemidovez.starmap.templates.classic_v1
 
 import android.content.Context
 import android.graphics.*
-import android.graphics.Paint.ANTI_ALIAS_FLAG
-import android.widget.Toast
+import android.graphics.Paint.*
+import android.text.TextPaint
+import android.util.DisplayMetrics
 import androidx.core.content.res.ResourcesCompat
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
+import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
 
 class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(context) {
     private var holst: Paint
     private var border: Paint
     private var map: Paint
     private var mapBorder: Paint
-    private var descTextPaint: Paint
-    private var eventLocation: Paint
+    private var descTextPaint: TextPaint
+    private var eventLocation: TextPaint
     private var separator: Paint
 
     init {
         backgroundColorCanvas = ResourcesCompat.getColor(context.resources, R.color.white, null)
         canvasBorderColor = ResourcesCompat.getColor(context.resources, R.color.black, null)
 
-        holst         = Paint().apply { style = Paint.Style.FILL }
-        border        = Paint().apply { style = Paint.Style.STROKE }
-        map           = Paint().apply { style = Paint.Style.FILL }
-        mapBorder     = Paint().apply { style = Paint.Style.FILL }
-        descTextPaint = Paint().apply { textAlign = Paint.Align.CENTER }
-        eventLocation = Paint().apply { textAlign = Paint.Align.CENTER }
-        separator     = Paint().apply { }
+        holst = Paint().apply {
+            style = Style.FILL
+            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+        }
+
+        border = Paint().apply {
+            style = Style.STROKE
+            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+        }
+
+        map = Paint().apply {
+            style = Style.FILL
+            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+        }
+
+        mapBorder = Paint().apply {
+            style = Style.FILL
+            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+        }
+
+        descTextPaint = TextPaint().apply {
+            textAlign = Align.CENTER
+            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+        }
+
+        eventLocation = TextPaint().apply {
+            textAlign = Align.CENTER
+            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+        }
+
+        separator = Paint().apply {
+            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+        }
 
         draw()
     }
 
     override fun draw() {
         bitmap = Bitmap.createBitmap(
+            //DisplayMetrics().apply { densityDpi = 300; density = 300F } ,
             canvasWidth.toInt(),
             canvasHeight.toInt(),
             Bitmap.Config.ARGB_8888
         )
+        //bitmap.density = 300
 
         val canvas = Canvas(bitmap)
+        //canvas.density = 300
 
         holst.color = backgroundColorCanvas
 
@@ -64,7 +95,7 @@ class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(con
 
         // Рисуем текст описание
         descTextPaint.textSize = descTextSize
-        canvas.drawText(descText,  canvasWidth/2, canvasWidth/2 + radiusMap + 200F, descTextPaint)
+        canvas.drawMultilineText(descText, descTextPaint, (canvasWidth/1.2).toInt() , canvasWidth/2, canvasWidth/2 + radiusMap + 200F)
 
         // Рисуем разделитель
         separator.strokeWidth = 50F
@@ -73,7 +104,9 @@ class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(con
 
         // Рисуем текст локации
         eventLocation.textSize = eventLocationSize
-        canvas.drawText(getLocationText(),  canvasWidth/2, canvasWidth/2 + radiusMap + 200F + 100F + 50F + 200F, eventLocation)
+        canvas.drawMultilineText(getLocationText(), eventLocation, (canvasWidth/2).toInt() , canvasWidth/2, canvasWidth/2 + radiusMap + 200F + 100F + 50F + 200F)
+
+        //bitmap.density = 300
 
         listener?.onDraw()
     }

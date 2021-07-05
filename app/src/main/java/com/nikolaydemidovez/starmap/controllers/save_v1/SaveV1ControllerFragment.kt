@@ -16,11 +16,7 @@ import com.nikolaydemidovez.starmap.databinding.FragmentSaveV1ControllerBinding
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import android.content.pm.ResolveInfo
 import android.content.pm.PackageManager
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 
 class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
 
@@ -38,7 +34,7 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
         binding.saveBtn.setOnClickListener {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                 val extensionFile = root.findViewById<RadioButton>(binding.radioGroupFormat.checkedRadioButtonId).text.toString()
-                val typeFile = if(extensionFile == "PNG") "image/png" else "application/pdf"
+                val typeFile = if(extensionFile == "JPG") "image/jpeg" else "application/pdf"
 
                 val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
@@ -47,10 +43,10 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
                 }
 
                 val activityLauncher = when(extensionFile) {
-                    "PNG" -> savePngLauncher
+                    "JPG" -> saveJpgLauncher
                     "PDF" -> savePdfLauncher
 
-                    else -> savePngLauncher
+                    else -> saveJpgLauncher
                 }
 
                 activityLauncher.launch(intent)
@@ -95,9 +91,9 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
         return root
     }
 
-    var savePngLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    var saveJpgLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
-            templateCanvas.saveToPNG(it.data?.data!!)
+            templateCanvas.saveToJPG(it.data?.data!!)
         }
     }
 

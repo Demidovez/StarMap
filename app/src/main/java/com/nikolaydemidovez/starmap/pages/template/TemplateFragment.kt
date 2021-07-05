@@ -58,7 +58,7 @@ class TemplateFragment : Fragment() {
         binding.canvasImage.setImage(ImageSource.bitmap(templateCanvas.bitmap))
 
         // Перемасштабируем превью если изменились размеры лайоута картинки
-        binding.canvasImage.addOnLayoutChangeListener { _, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+        binding.canvasImage.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             binding.canvasImage.resetScaleAndCenter()
         }
 

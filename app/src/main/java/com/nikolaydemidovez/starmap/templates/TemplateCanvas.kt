@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.res.ResourcesCompat
 import android.provider.MediaStore
+import android.util.DisplayMetrics
 import java.io.*
 import java.sql.Time
 import java.util.*
@@ -33,8 +34,8 @@ abstract class TemplateCanvas(private val context: Context) {
     protected var indentBorderCanvas: Float = 10F * PIXELS_IN_ONE_MM
     protected var widthBorderCanvas: Float = 3F * PIXELS_IN_ONE_MM
     protected var radiusMap: Float = 600F
-    protected var descTextSize: Float = 100F
-    protected var eventLocationSize: Float = 100F
+    protected var descTextSize: Float = 130F
+    protected var eventLocationSize: Float = 60F
     var descText: String = "День, когда сошлись все звезды вселенной..."
         private set
     protected var hasEventDateInLocation: Boolean = true
@@ -62,6 +63,7 @@ abstract class TemplateCanvas(private val context: Context) {
 
     init {
         bitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(),Bitmap.Config.ARGB_8888)
+        bitmap.density = DisplayMetrics.DENSITY_XXXHIGH
         radiusMap = canvasWidth / 2.5F
     }
 
@@ -161,9 +163,9 @@ abstract class TemplateCanvas(private val context: Context) {
         return file
     }
 
-    fun saveToPNG(uri: Uri) {
+    fun saveToJPG(uri: Uri) {
         context.contentResolver.openOutputStream(uri, "w").use {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
 
             Toast.makeText(context, "Сохранено", Toast.LENGTH_SHORT).show()
         }
@@ -197,3 +199,4 @@ abstract class TemplateCanvas(private val context: Context) {
         }
     }
 }
+
