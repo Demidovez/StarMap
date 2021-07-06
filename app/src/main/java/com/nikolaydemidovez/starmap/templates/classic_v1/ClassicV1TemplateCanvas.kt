@@ -23,38 +23,60 @@ class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(con
         backgroundColorCanvas = ResourcesCompat.getColor(context.resources, R.color.white, null)
         canvasBorderColor = ResourcesCompat.getColor(context.resources, R.color.black, null)
 
-        holst = Paint().apply {
+        holst = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            isDither = true
+            isAntiAlias = true
+            //isFilterBitmap = true
         }
 
-        border = Paint().apply {
+        border = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.STROKE
-            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            isDither = true
+            isAntiAlias = true
+            //isFilterBitmap = true
         }
 
-        map = Paint().apply {
+        map = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            isDither = true
+            isAntiAlias = true
+            //isFilterBitmap = true
         }
 
-        mapBorder = Paint().apply {
+        mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            isDither = true
+            isAntiAlias = true
+            //isFilterBitmap = true
         }
 
-        descTextPaint = TextPaint().apply {
+        descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
-            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            isDither = true
+            isAntiAlias = true
+            //isFilterBitmap = true
         }
 
-        eventLocation = TextPaint().apply {
+        eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
-            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            isDither = true
+            isAntiAlias = true
+            //isFilterBitmap = true
+
         }
 
-        separator = Paint().apply {
-            flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+        separator = Paint(ANTI_ALIAS_FLAG).apply {
+            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
+            isDither = true
+            isAntiAlias = true
+            //isFilterBitmap = true
         }
 
         draw()
@@ -67,6 +89,7 @@ class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(con
             canvasHeight.toInt(),
             Bitmap.Config.ARGB_8888
         )
+
         //bitmap.density = 300
 
         val canvas = Canvas(bitmap)
