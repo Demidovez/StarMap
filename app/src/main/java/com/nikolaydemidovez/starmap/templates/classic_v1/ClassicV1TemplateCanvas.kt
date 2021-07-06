@@ -20,63 +20,45 @@ class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(con
     private var separator: Paint
 
     init {
-        backgroundColorCanvas = ResourcesCompat.getColor(context.resources, R.color.white, null)
-        canvasBorderColor = ResourcesCompat.getColor(context.resources, R.color.black, null)
-
         holst = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
             isDither = true
             isAntiAlias = true
-            //isFilterBitmap = true
         }
 
         border = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.STROKE
-            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
             isDither = true
             isAntiAlias = true
-            //isFilterBitmap = true
         }
 
         map = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
             isDither = true
             isAntiAlias = true
-            //isFilterBitmap = true
         }
 
         mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
             isDither = true
             isAntiAlias = true
-            //isFilterBitmap = true
         }
 
         descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
-            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
             isDither = true
             isAntiAlias = true
-            //isFilterBitmap = true
         }
 
         eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
-            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
             isDither = true
             isAntiAlias = true
-            //isFilterBitmap = true
-
         }
 
         separator = Paint(ANTI_ALIAS_FLAG).apply {
-            //flags = ANTI_ALIAS_FLAG and FILTER_BITMAP_FLAG and DITHER_FLAG
             isDither = true
             isAntiAlias = true
-            //isFilterBitmap = true
         }
 
         draw()
@@ -84,16 +66,12 @@ class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(con
 
     override fun draw() {
         bitmap = Bitmap.createBitmap(
-            //DisplayMetrics().apply { densityDpi = 300; density = 300F } ,
             canvasWidth.toInt(),
             canvasHeight.toInt(),
             Bitmap.Config.ARGB_8888
         )
 
-        //bitmap.density = 300
-
         val canvas = Canvas(bitmap)
-        //canvas.density = 300
 
         holst.color = backgroundColorCanvas
 
@@ -103,31 +81,42 @@ class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(con
         // Рисуем рамку
         if(hasBorderCanvas) {
             border.color = canvasBorderColor
-            border.strokeWidth = widthBorderCanvas
+            border.strokeWidth = widthBorderCanvas // TODO: Ширина границы не изменяет общую длину отступа от края?
 
             canvas.drawRect(indentBorderCanvas, indentBorderCanvas, canvasWidth - indentBorderCanvas, canvasHeight - indentBorderCanvas, border)
         }
 
         // Рисуем рамку карты
-        mapBorder.color = Color.parseColor("#FF0000")
-        canvas.drawCircle(canvasWidth/2, canvasWidth/2, radiusMap + 100F, mapBorder)
+        if(hasBorderMap) {
+            mapBorder.color = mapBorderColor
+            canvas.drawCircle(canvasWidth/2, canvasWidth/2, radiusMap + widthBorderMap, mapBorder)
+        }
 
         // Рисуем карту
-        map.color = Color.parseColor("#000000")
+        map.color = backgroundColorMap
         canvas.drawCircle(canvasWidth/2, canvasWidth/2, radiusMap, map)
 
         // Рисуем текст описание
         descTextPaint.textSize = descTextSize
-        canvas.drawMultilineText(descText, descTextPaint, (canvasWidth/1.2).toInt() , canvasWidth/2, canvasWidth/2 + radiusMap + 200F)
+        descTextPaint.typeface = ResourcesCompat.getFont(context, R.font.caveat_regular)
+        canvas.drawMultilineText(descText, descTextPaint, (canvasWidth/1.5).toInt() , canvasWidth/2, canvasWidth/2 + radiusMap + widthBorderMap + 100F)
 
         // Рисуем разделитель
-        separator.strokeWidth = 50F
-        separator.color = Color.parseColor("#DD0000")
-        canvas.drawLine(100F, canvasWidth/2 + radiusMap + 200F + 100F, canvasWidth - 2 * 100F, canvasWidth/2 + radiusMap + 200F + 100F, separator)
+        if(hasSeparator) {
+            separator.strokeWidth = separatorHeight
+            separator.color = separatorColor
+            canvas.drawLine(
+                (canvasWidth - separatorWidth) / 2,
+                canvasHeight - 350F - 200F,
+                canvasWidth - (canvasWidth - separatorWidth) / 2,
+                canvasHeight - 350F - 200F,
+                separator
+            )
+        }
 
         // Рисуем текст локации
         eventLocation.textSize = eventLocationSize
-        canvas.drawMultilineText(getLocationText(), eventLocation, (canvasWidth/2).toInt() , canvasWidth/2, canvasWidth/2 + radiusMap + 200F + 100F + 50F + 200F)
+        canvas.drawMultilineText(getLocationText(), eventLocation, (canvasWidth/2).toInt() , canvasWidth/2,  canvasHeight - 350F)
 
         //bitmap.density = 300
 

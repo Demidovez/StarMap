@@ -65,6 +65,7 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
         }
 
         // Добавлеям/убираем рамку холста
+        binding.checkboxEnableBorder.isChecked = templateCanvas.hasBorderCanvas
         binding.checkboxEnableBorder.setOnCheckedChangeListener { _, isChecked ->
             templateCanvas.updateHasBorderCanvas(isChecked)
 

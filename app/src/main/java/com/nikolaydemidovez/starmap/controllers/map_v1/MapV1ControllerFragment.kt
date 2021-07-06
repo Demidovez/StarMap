@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import com.nikolaydemidovez.starmap.databinding.FragmentMapV1ControllerBinding
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 
@@ -19,6 +20,25 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
         binding = FragmentMapV1ControllerBinding.inflate(inflater, container, false)
 
         val root: View = binding.root
+
+        val radioGroupColorBorder = binding.radioGroupColorBorder
+        val radioGroupWidthBorder = binding.radioGroupWidthBorder
+
+        // Добавлеям/убираем рамку карты
+        binding.checkboxEnableBorder.isChecked = templateCanvas.hasBorderMap
+        binding.checkboxEnableBorder.setOnCheckedChangeListener { _, isChecked ->
+            templateCanvas.updateHasBorderMap(isChecked)
+
+            binding.labelWidthBorder.alpha = if (isChecked) 1F else 0.6F
+            for (i in 0 until radioGroupColorBorder.childCount) {
+                (radioGroupColorBorder.getChildAt(i) as RadioButton).isEnabled = isChecked
+            }
+
+            binding.labelColorBorderMap.alpha = if (isChecked) 1F else 0.6F
+            for (i in 0 until radioGroupWidthBorder.childCount) {
+                (radioGroupWidthBorder.getChildAt(i) as RadioButton).isEnabled = isChecked
+            }
+        }
 
 
         return root

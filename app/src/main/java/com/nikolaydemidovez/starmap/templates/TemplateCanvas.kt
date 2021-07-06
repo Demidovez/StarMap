@@ -26,33 +26,49 @@ abstract class TemplateCanvas(private val context: Context) {
     private val PIXELS_IN_ONE_MM = 3.779527559055F
 
     // Начало списка основных свойства холста
-    protected var canvasWidth: Float = 2480F
-    protected var canvasHeight: Float = 3508F
-    protected var backgroundColorCanvas: Int = 0
-    protected var canvasBorderColor: Int = 0
-    protected var hasBorderCanvas: Boolean = true
-    protected var indentBorderCanvas: Float = 10F * PIXELS_IN_ONE_MM
-    protected var widthBorderCanvas: Float = 3F * PIXELS_IN_ONE_MM
-    protected var radiusMap: Float = 600F
-    protected var descTextSize: Float = 130F
-    protected var eventLocationSize: Float = 60F
-    var descText: String = "День, когда сошлись все звезды вселенной..."
+    protected var canvasWidth: Float = 2480F                                         // Ширина холста
+    protected var canvasHeight: Float = 3508F                                        // Высота холста
+    protected var backgroundColorCanvas: Int = Color.parseColor("#FFFFFF") // Цвет фона холста
+    protected var canvasBorderColor: Int = Color.parseColor("#000000")     // Цвет рамки холста
+    var hasBorderCanvas: Boolean = true                                              // Добавлена ли рамка холста
         private set
-    protected var hasEventDateInLocation: Boolean = true
+    protected var indentBorderCanvas: Float = 30F * PIXELS_IN_ONE_MM                 // Отступ рамки от края холста
+    protected var widthBorderCanvas: Float = 3F * PIXELS_IN_ONE_MM                   // Ширина рамки холста
+    protected var backgroundColorMap: Int = Color.parseColor("#000000")    // Цвет фона карты
+    protected var radiusMap: Float = 1000F                                            // Радиус карты
+    var hasBorderMap: Boolean = false                                                // Добавлена ли рамка карты
+        private set
+    protected var widthBorderMap: Float = 5F * PIXELS_IN_ONE_MM                      // Ширина рамки карты
+    protected var mapBorderColor: Int = Color.parseColor("#FFFFFF")        // Цвет рамки карты
+    protected var descTextSize: Float = 160F                                         // Размер основного текста
+    protected var eventLocationSize: Float = 60F                                     // Размер текста локации
+    var descText: String = "День, когда сошлись все звезды вселенной..."             // Основной текст
+        private set
+    var hasEventDateInLocation: Boolean = true
+        private set
     var eventDate: Date = Date()
         private set
-    protected var hasEventTimeInLocation: Boolean = true
+    var hasEventTimeInLocation: Boolean = true
+        private set
     var eventTime: Long = Date().time
         private set
-    protected var hasEventCityInLocation: Boolean = true
+    var hasEventCityInLocation: Boolean = true
+        private set
     var eventCity: String = "Москва"
         private set
-    protected var hasEventLatitudeInLocation: Boolean = true
+    var hasEventLatitudeInLocation: Boolean = true
+        private set
     var eventLatitude: Float = 55.7522200F
         private set
-    protected var hasEventLongitudeInLocation: Boolean = true
+    var hasEventLongitudeInLocation: Boolean = true
+        private set
     var eventLongitude: Float = 37.6155600F
         private set
+    var hasSeparator: Boolean = true
+        private set
+    protected var separatorColor: Int = Color.parseColor("#000000")
+    protected var separatorWidth: Float = 1200F
+    protected var separatorHeight: Float = 7F
 
     // Конец списка свойств
 
@@ -63,8 +79,6 @@ abstract class TemplateCanvas(private val context: Context) {
 
     init {
         bitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(),Bitmap.Config.ARGB_8888)
-        bitmap.density = DisplayMetrics.DENSITY_XXXHIGH
-        radiusMap = canvasWidth / 2.5F
     }
 
     interface OnDrawListener {
@@ -75,6 +89,36 @@ abstract class TemplateCanvas(private val context: Context) {
 
     fun updateBackgroundColorCanvas(color: String) {
         backgroundColorCanvas = Color.parseColor(color)
+
+        draw()
+    }
+
+    fun updateBackgroundColorMap(color: String) {
+        backgroundColorMap = Color.parseColor(color)
+
+        draw()
+    }
+
+    fun updateRadiusMap(radius: Float) {
+        radiusMap = radius
+
+        draw()
+    }
+
+    fun updateHasBorderMap(has: Boolean) {
+        hasBorderMap = has
+
+        draw()
+    }
+
+    fun updateWidthBorderMap(width: Float) {
+        widthBorderMap = width * PIXELS_IN_ONE_MM
+
+        draw()
+    }
+
+    fun updateMapBorderColor(color: String) {
+        mapBorderColor = Color.parseColor(color)
 
         draw()
     }
@@ -92,8 +136,8 @@ abstract class TemplateCanvas(private val context: Context) {
         draw()
     }
 
-    fun updateHasBorderCanvas(hasBorder: Boolean) {
-        hasBorderCanvas = hasBorder
+    fun updateHasBorderCanvas(has: Boolean) {
+        hasBorderCanvas = has
 
         draw()
     }
@@ -112,6 +156,54 @@ abstract class TemplateCanvas(private val context: Context) {
 
     fun updateDescText(text: String) {
         descText = text
+
+        draw()
+    }
+
+    fun updateDescTextSize(size: Float) {
+        descTextSize = size
+
+        draw()
+    }
+
+    fun updateEventLocationSize(size: Float) {
+        eventLocationSize = size
+
+        draw()
+    }
+
+    fun updateHasEventDateInLocation(has: Boolean) {
+        hasEventDateInLocation = has
+
+        draw()
+    }
+
+    fun updateHasEventTimeInLocation(has: Boolean) {
+        hasEventTimeInLocation = has
+
+        draw()
+    }
+
+    fun updateHasEventCityInLocation(has: Boolean) {
+        hasEventCityInLocation = has
+
+        draw()
+    }
+
+    fun updateHasEventLatitudeInLocation(has: Boolean) {
+        hasEventLatitudeInLocation = has
+
+        draw()
+    }
+
+    fun updateHasEventLongitudeInLocation(has: Boolean) {
+        hasEventLongitudeInLocation = has
+
+        draw()
+    }
+
+    fun updateHasSeparator(has: Boolean) {
+        hasSeparator = has
 
         draw()
     }

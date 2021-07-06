@@ -69,8 +69,7 @@ fun Canvas.drawMultilineText(
     breakStrategy: Int = Layout.BREAK_STRATEGY_SIMPLE,
     hyphenationFrequency: Int = Layout.HYPHENATION_FREQUENCY_NONE) {
 
-    val cacheKey = "$text-$start-$end-$textPaint-$width-$alignment-$textDir-" +
-            "$spacingMult-$spacingAdd-$includePad-$ellipsizedWidth-$ellipsize-" +
+    val cacheKey = "$text-$start-$end-$textPaint-$width-$alignment-$textDir-$spacingMult-$spacingAdd-$includePad-$ellipsizedWidth-$ellipsize-" +
             "$maxLines-$breakStrategy-$hyphenationFrequency"
 
     val staticLayout = StaticLayoutCache[cacheKey] ?:
@@ -104,11 +103,8 @@ fun Canvas.drawMultilineText(
     ellipsizedWidth: Int = width,
     ellipsize: TextUtils.TruncateAt? = null) {
 
-    val cacheKey = "$text-$start-$end-$textPaint-$width-$alignment-" +
-            "$spacingMult-$spacingAdd-$includePad-$ellipsizedWidth-$ellipsize"
+    val cacheKey = "$text-$start-$end-$textPaint-$width-$alignment-$spacingMult-$spacingAdd-$includePad-$ellipsizedWidth-$ellipsize"
 
-    // The public constructor was deprecated in API level 28,
-    // but the builder is only available from API level 23 onwards
     val staticLayout = StaticLayoutCache[cacheKey] ?:
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         StaticLayout.Builder.obtain(text, start, end, textPaint, width)
