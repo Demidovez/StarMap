@@ -5,120 +5,195 @@ import android.graphics.*
 import android.graphics.Paint.*
 import android.text.TextPaint
 import android.util.DisplayMetrics
+import android.util.Log
 import androidx.core.content.res.ResourcesCompat
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
 
 class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(context) {
-    private var holst: Paint
-    private var border: Paint
-    private var map: Paint
-    private var mapBorder: Paint
-    private var descTextPaint: TextPaint
-    private var eventLocation: TextPaint
-    private var separator: Paint
+    private lateinit var bitmapHolst: Bitmap
+    private lateinit var bitmapHolstBorder: Bitmap
+    private lateinit var bitmapMap: Bitmap
+    private lateinit var bitmapMapBorder: Bitmap
+    private lateinit var bitmapDesc: Bitmap
+    private lateinit var bitmapSeparator: Bitmap
+    private lateinit var bitmapLocationText: Bitmap
 
     init {
-        holst = Paint(ANTI_ALIAS_FLAG).apply {
-            style = Style.FILL
-            isDither = true
-            isAntiAlias = true
-        }
-
-        border = Paint(ANTI_ALIAS_FLAG).apply {
-            style = Style.STROKE
-            isDither = true
-            isAntiAlias = true
-        }
-
-        map = Paint(ANTI_ALIAS_FLAG).apply {
-            style = Style.FILL
-            isDither = true
-            isAntiAlias = true
-        }
-
-        mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
-            style = Style.FILL
-            isDither = true
-            isAntiAlias = true
-        }
-
-        descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
-            textAlign = Align.CENTER
-            isDither = true
-            isAntiAlias = true
-        }
-
-        eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
-            textAlign = Align.CENTER
-            isDither = true
-            isAntiAlias = true
-        }
-
-        separator = Paint(ANTI_ALIAS_FLAG).apply {
-            isDither = true
-            isAntiAlias = true
-        }
+        drawHolst()
+        drawHolstBorder()
+        drawMap()
+        drawMapBorder()
+        drawDesc()
+        drawSeparator()
+        drawLocationText()
 
         draw()
     }
 
+    private fun drawHolst() {
+        val holst = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.FILL
+            color = backgroundColorCanvas
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawRect(0F, 0F, canvasWidth, canvasHeight, holst)
+
+        bitmapHolst = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.toInt(), canvasHeight.toInt())
+    }
+
+    private fun drawHolstBorder() {
+        val border = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.STROKE
+            color = canvasBorderColor
+            strokeWidth = widthBorderCanvas // TODO: Ширина границы не изменяет общую длину отступа от края?
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawRect(indentBorderCanvas, indentBorderCanvas, canvasWidth - indentBorderCanvas, canvasHeight - indentBorderCanvas, border)
+
+        bitmapHolstBorder = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.toInt(), canvasHeight.toInt())
+    }
+
+    private fun drawMap() {
+        val map = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.FILL
+            color = backgroundColorMap
+            isDither = true
+            isAntiAlias = true
+        }
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawCircle(radiusMap, radiusMap, radiusMap, map)
+        bitmapMap = Bitmap.createBitmap(tempBitmap, 0, 0, (radiusMap * 2).toInt(), (radiusMap * 2).toInt())
+    }
+
+    private fun drawMapBorder() {
+        val mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.FILL
+            color = mapBorderColor
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawCircle(radiusMap + widthBorderMap, radiusMap + widthBorderMap, radiusMap + widthBorderMap, mapBorder)
+
+        bitmapMapBorder = Bitmap.createBitmap(tempBitmap, 0, 0, ((radiusMap + widthBorderMap) * 2).toInt(), ((radiusMap + widthBorderMap) * 2).toInt())
+    }
+
+    private fun drawDesc() {
+        val descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
+            textAlign = Align.CENTER
+            textSize = descTextSize
+            typeface = ResourcesCompat.getFont(context, R.font.caveat_regular)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+
+        val heightAllText = Canvas(tempBitmap).drawMultilineText(descText, descTextPaint, (canvasWidth/1.5).toInt() , canvasWidth/2, 0F)
+
+        bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.toInt(), heightAllText)
+    }
+
+    private fun drawSeparator() {
+        val separator = Paint(ANTI_ALIAS_FLAG).apply {
+            isDither = true
+            isAntiAlias = true
+            strokeWidth = separatorHeight
+            color = separatorColor
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawLine(0F, 0F, separatorWidth, 0F, separator)
+
+        bitmapSeparator = Bitmap.createBitmap(tempBitmap, 0, 0, separatorWidth.toInt(), separatorHeight.toInt())
+    }
+
+    private fun drawLocationText() {
+        val eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
+            textAlign = Align.CENTER
+            textSize = eventLocationSize
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+
+        val heightAllText = Canvas(tempBitmap).drawMultilineText(getLocationText(), eventLocation, (canvasWidth/2).toInt() , canvasWidth/2,  0F)
+
+        bitmapLocationText = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.toInt(), heightAllText)
+    }
+
+    private fun getBottomMarginLocationText(): Int {
+        var margin = bitmapLocationText.height.toFloat()
+
+        if(hasBorderCanvas) {
+            margin += indentBorderCanvas + widthBorderCanvas + (indentBorderCanvas*0.5).toFloat()
+        } else {
+            margin += (canvasHeight * 0.6).toFloat()
+        }
+
+        return margin.toInt()
+    }
+
+    private fun getTopMarginDescText(): Float {
+        var margin = 0F
+
+        if(hasBorderMap) {
+            margin += canvasWidth/2 + bitmapMapBorder.height / 2
+        } else {
+            margin += canvasWidth/2 + bitmapMap.height / 2
+        }
+
+        return margin
+    }
+
     override fun draw() {
-        bitmap = Bitmap.createBitmap(
-            canvasWidth.toInt(),
-            canvasHeight.toInt(),
-            Bitmap.Config.ARGB_8888
-        )
+        bitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
 
         val canvas = Canvas(bitmap)
 
-        holst.color = backgroundColorCanvas
-
         // Рисуем холст
-        canvas.drawRect(0F, 0F, canvasWidth, canvasHeight, holst)
+        canvas.drawBitmap(bitmapHolst, 0F, 0F, Paint())
 
-        // Рисуем рамку
+        // Рисуем рамку холста
         if(hasBorderCanvas) {
-            border.color = canvasBorderColor
-            border.strokeWidth = widthBorderCanvas // TODO: Ширина границы не изменяет общую длину отступа от края?
-
-            canvas.drawRect(indentBorderCanvas, indentBorderCanvas, canvasWidth - indentBorderCanvas, canvasHeight - indentBorderCanvas, border)
+            canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, Paint())
         }
 
         // Рисуем рамку карты
         if(hasBorderMap) {
-            mapBorder.color = mapBorderColor
-            canvas.drawCircle(canvasWidth/2, canvasWidth/2, radiusMap + widthBorderMap, mapBorder)
+            canvas.drawBitmap(bitmapMapBorder, canvasWidth/2 - bitmapMapBorder.width / 2, canvasWidth/2 - bitmapMapBorder.width / 2, Paint())
         }
 
         // Рисуем карту
-        map.color = backgroundColorMap
-        canvas.drawCircle(canvasWidth/2, canvasWidth/2, radiusMap, map)
+        canvas.drawBitmap(bitmapMap, canvasWidth/2 - bitmapMap.width / 2, canvasWidth/2 - bitmapMap.width / 2, Paint())
+
 
         // Рисуем текст описание
-        descTextPaint.textSize = descTextSize
-        descTextPaint.typeface = ResourcesCompat.getFont(context, R.font.caveat_regular)
-        canvas.drawMultilineText(descText, descTextPaint, (canvasWidth/1.5).toInt() , canvasWidth/2, canvasWidth/2 + radiusMap + widthBorderMap + 100F)
+        canvas.drawBitmap(bitmapDesc, 0F, getTopMarginDescText() , Paint())
 
         // Рисуем разделитель
         if(hasSeparator) {
-            separator.strokeWidth = separatorHeight
-            separator.color = separatorColor
-            canvas.drawLine(
-                (canvasWidth - separatorWidth) / 2,
-                canvasHeight - 350F - 200F,
-                canvasWidth - (canvasWidth - separatorWidth) / 2,
-                canvasHeight - 350F - 200F,
-                separator
-            )
+            canvas.drawBitmap(bitmapSeparator, 100F, getTopMarginDescText(), Paint())
         }
 
         // Рисуем текст локации
-        eventLocation.textSize = eventLocationSize
-        canvas.drawMultilineText(getLocationText(), eventLocation, (canvasWidth/2).toInt() , canvasWidth/2,  canvasHeight - 350F)
+        canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight - getBottomMarginLocationText(), Paint())
 
-        //bitmap.density = 300
 
         listener?.onDraw()
     }

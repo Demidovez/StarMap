@@ -3,6 +3,7 @@ package com.nikolaydemidovez.starmap.utils.extensions
 import android.graphics.Canvas
 import android.os.Build
 import android.text.*
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.collection.lruCache
 import androidx.core.graphics.withTranslation
@@ -26,7 +27,7 @@ fun Canvas.drawMultilineText(
     maxLines: Int = Int.MAX_VALUE,
     breakStrategy: Int = Layout.BREAK_STRATEGY_SIMPLE,
     hyphenationFrequency: Int = Layout.HYPHENATION_FREQUENCY_NONE,
-    justificationMode: Int = Layout.JUSTIFICATION_MODE_NONE) {
+    justificationMode: Int = Layout.JUSTIFICATION_MODE_NONE): Int {
 
     val cacheKey = "$text-$start-$end-$textPaint-$width-$alignment-$textDir-" +
             "$spacingMult-$spacingAdd-$includePad-$ellipsizedWidth-$ellipsize-" +
@@ -47,6 +48,8 @@ fun Canvas.drawMultilineText(
         .build().apply { StaticLayoutCache[cacheKey] = this }
 
     staticLayout.draw(this, x, y)
+
+    return staticLayout.height
 }
 
 @RequiresApi(Build.VERSION_CODES.M)
@@ -67,7 +70,7 @@ fun Canvas.drawMultilineText(
     ellipsize: TextUtils.TruncateAt? = null,
     maxLines: Int = Int.MAX_VALUE,
     breakStrategy: Int = Layout.BREAK_STRATEGY_SIMPLE,
-    hyphenationFrequency: Int = Layout.HYPHENATION_FREQUENCY_NONE) {
+    hyphenationFrequency: Int = Layout.HYPHENATION_FREQUENCY_NONE): Int {
 
     val cacheKey = "$text-$start-$end-$textPaint-$width-$alignment-$textDir-$spacingMult-$spacingAdd-$includePad-$ellipsizedWidth-$ellipsize-" +
             "$maxLines-$breakStrategy-$hyphenationFrequency"
@@ -86,6 +89,8 @@ fun Canvas.drawMultilineText(
         .build().apply { StaticLayoutCache[cacheKey] = this }
 
     staticLayout.draw(this, x, y)
+
+    return staticLayout.height
 }
 
 fun Canvas.drawMultilineText(
@@ -101,7 +106,7 @@ fun Canvas.drawMultilineText(
     spacingAdd: Float = 0f,
     includePad: Boolean = true,
     ellipsizedWidth: Int = width,
-    ellipsize: TextUtils.TruncateAt? = null) {
+    ellipsize: TextUtils.TruncateAt? = null): Int {
 
     val cacheKey = "$text-$start-$end-$textPaint-$width-$alignment-$spacingMult-$spacingAdd-$includePad-$ellipsizedWidth-$ellipsize"
 
@@ -121,6 +126,8 @@ fun Canvas.drawMultilineText(
     }
 
     staticLayout.draw(this, x, y)
+
+    return staticLayout.height
 }
 
 private fun StaticLayout.draw(canvas: Canvas, x: Float, y: Float) {
