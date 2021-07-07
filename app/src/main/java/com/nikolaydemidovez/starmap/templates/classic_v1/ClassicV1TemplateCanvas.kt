@@ -1,17 +1,26 @@
 package com.nikolaydemidovez.starmap.templates.classic_v1
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.graphics.Paint.*
+import android.os.AsyncTask
+import android.os.Looper
 import android.text.TextPaint
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.FragmentActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
+import kotlinx.coroutines.delay
+import java.lang.Thread.sleep
 
-class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(context) {
+
+
+
+class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(activity) {
     private lateinit var bitmapHolst: Bitmap
     private lateinit var bitmapHolstBorder: Bitmap
     private lateinit var bitmapMap: Bitmap
@@ -95,7 +104,7 @@ class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(con
         val descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
             textSize = descTextSize
-            typeface = ResourcesCompat.getFont(context, R.font.caveat_regular)
+            typeface = ResourcesCompat.getFont(activity.applicationContext, R.font.caveat_regular)
             isDither = true
             isAntiAlias = true
         }
@@ -162,39 +171,53 @@ class ClassicV1TemplateCanvas(private val context: Context) : TemplateCanvas(con
     }
 
     override fun draw() {
-        bitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+            Thread {
+                // TODO: Оптимизировать (избыточная прорисовка)
+                drawHolst()
+                drawHolstBorder()
+                drawMap()
+                drawMapBorder()
+                drawDesc()
+                drawSeparator()
+                drawLocationText()
 
-        val canvas = Canvas(bitmap)
+                bitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
 
-        // Рисуем холст
-        canvas.drawBitmap(bitmapHolst, 0F, 0F, Paint())
+                val canvas = Canvas(bitmap)
 
-        // Рисуем рамку холста
-        if(hasBorderCanvas) {
-            canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, Paint())
-        }
+                // Рисуем холст
+                canvas.drawBitmap(bitmapHolst, 0F, 0F, Paint())
 
-        // Рисуем рамку карты
-        if(hasBorderMap) {
-            canvas.drawBitmap(bitmapMapBorder, canvasWidth/2 - bitmapMapBorder.width / 2, canvasWidth/2 - bitmapMapBorder.width / 2, Paint())
-        }
+                // Рисуем рамку холста
+                if(hasBorderCanvas) {
+                    canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, Paint())
+                }
 
-        // Рисуем карту
-        canvas.drawBitmap(bitmapMap, canvasWidth/2 - bitmapMap.width / 2, canvasWidth/2 - bitmapMap.width / 2, Paint())
+                // Рисуем рамку карты
+                if(hasBorderMap) {
+                    canvas.drawBitmap(bitmapMapBorder, canvasWidth/2 - bitmapMapBorder.width / 2, canvasWidth/2 - bitmapMapBorder.width / 2, Paint())
+                }
 
-
-        // Рисуем текст описание
-        canvas.drawBitmap(bitmapDesc, 0F, getTopMarginDescText() , Paint())
-
-        // Рисуем разделитель
-        if(hasSeparator) {
-            canvas.drawBitmap(bitmapSeparator, 100F, getTopMarginDescText(), Paint())
-        }
-
-        // Рисуем текст локации
-        canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight - getBottomMarginLocationText(), Paint())
+                // Рисуем карту
+                canvas.drawBitmap(bitmapMap, canvasWidth/2 - bitmapMap.width / 2, canvasWidth/2 - bitmapMap.width / 2, Paint())
 
 
-        listener?.onDraw()
+                // Рисуем текст описание
+                canvas.drawBitmap(bitmapDesc, 0F, getTopMarginDescText() , Paint())
+
+                // Рисуем разделитель
+                if(hasSeparator) {
+                    canvas.drawBitmap(bitmapSeparator, 100F, getTopMarginDescText(), Paint())
+                }
+
+                // Рисуем текст локации
+                canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight - getBottomMarginLocationText(), Paint())
+
+                activity.runOnUiThread {
+                    listener?.onDraw()
+                }
+
+            }.start()
+
     }
 }

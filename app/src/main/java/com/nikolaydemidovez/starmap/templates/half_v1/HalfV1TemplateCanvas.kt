@@ -1,5 +1,6 @@
 package com.nikolaydemidovez.starmap.templates.half_v1
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.widget.Toast
@@ -7,13 +8,13 @@ import androidx.core.content.res.ResourcesCompat
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 
-class HalfV1TemplateCanvas(private val context: Context) : TemplateCanvas(context) {
+class HalfV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(activity) {
     private val STROKE_WIDTH = 12f
     private var holst: Paint
     private var border: Paint
 
     init {
-        backgroundColorCanvas = ResourcesCompat.getColor(context.resources, R.color.white, null)
+        backgroundColorCanvas = ResourcesCompat.getColor(activity.applicationContext.resources, R.color.white, null)
 
         holst = Paint().apply {
             style = Paint.Style.FILL

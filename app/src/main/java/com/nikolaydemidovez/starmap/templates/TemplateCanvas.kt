@@ -1,5 +1,6 @@
 package com.nikolaydemidovez.starmap.templates
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -22,7 +23,7 @@ import java.sql.Time
 import java.util.*
 
 
-abstract class TemplateCanvas(private val context: Context) {
+abstract class TemplateCanvas(private val activity: Activity) {
     private val PIXELS_IN_ONE_MM = 3.779527559055F
 
     // Начало списка основных свойства холста
@@ -213,7 +214,7 @@ abstract class TemplateCanvas(private val context: Context) {
     }
 
     fun convertToSharingFile(typeFile: String): File {
-        val file = File(context.filesDir, "StarMap.${typeFile.lowercase()}")
+        val file = File(activity.applicationContext.filesDir, "StarMap.${typeFile.lowercase()}")
 
         when(typeFile) {
             "PNG" -> {
@@ -256,10 +257,10 @@ abstract class TemplateCanvas(private val context: Context) {
     }
 
     fun saveToJPG(uri: Uri) {
-        context.contentResolver.openOutputStream(uri, "w").use {
+        activity.applicationContext.contentResolver.openOutputStream(uri, "w").use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
 
-            Toast.makeText(context, "Сохранено", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity.applicationContext, "Сохранено", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -277,7 +278,7 @@ abstract class TemplateCanvas(private val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun saveToPDF(uri: Uri) {
-        context.contentResolver.openOutputStream(uri, "w").use {
+        activity.applicationContext.contentResolver.openOutputStream(uri, "w").use {
             val pdfDocument = PdfDocument()
             val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, 1).create()
             val page = pdfDocument.startPage(pageInfo)
@@ -287,7 +288,7 @@ abstract class TemplateCanvas(private val context: Context) {
             pdfDocument.writeTo(it)
             pdfDocument.close()
 
-            Toast.makeText(context, "Сохранено", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity.applicationContext, "Сохранено", Toast.LENGTH_SHORT).show()
         }
     }
 }
