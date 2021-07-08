@@ -28,38 +28,37 @@ import java.util.*
 
 
 abstract class TemplateCanvas(private val activity: Activity) {
-    protected val PIXELS_IN_ONE_MM = 3.779527559055F
 
     // Начало списка основных свойства холста
-    val canvasWidth = MutableLiveData<Float>() //                                        // Ширина холста
-    val canvasHeight = MutableLiveData<Float>() //                                      // Высота холста
-    val backgroundColorCanvas = MutableLiveData<Int>()  // Цвет фона холста
-    val canvasBorderColor = MutableLiveData<Int>()    // Цвет рамки холста
-    val hasBorderCanvas = MutableLiveData<Boolean>()                                               // Добавлена ли рамка холста
-    val indentBorderCanvas = MutableLiveData<Float>()                 // Отступ рамки от края холста
-    val widthBorderCanvas = MutableLiveData<Float>()                    // Ширина рамки холста
-    val backgroundColorMap = MutableLiveData<Int>()     // Цвет фона карты
-    val radiusMap = MutableLiveData<Float>()                                         // Радиус карты
-    val hasBorderMap = MutableLiveData<Boolean>()                                           // Добавлена ли рамка карты
-    val widthBorderMap = MutableLiveData<Float>()                       // Ширина рамки карты
-    val mapBorderColor = MutableLiveData<Int>()         // Цвет рамки карты
-    val descTextSize                    = MutableLiveData<Float>()                                       // Размер основного текста
-    val eventLocationSize               = MutableLiveData<Float>()                                      // Размер текста локации
-    val descText                        = MutableLiveData<String>()              // Основной текст
-    val hasEventDateInLocation          = MutableLiveData<Boolean>()
-    val eventDate                       = MutableLiveData<Date>()
-    val hasEventTimeInLocation          = MutableLiveData<Boolean>()
-    val eventTime                       = MutableLiveData<Long>()
-    val hasEventCityInLocation          = MutableLiveData<Boolean>()
-    val eventCity                       = MutableLiveData<String>()
-    val hasEventLatitudeInLocation      = MutableLiveData<Boolean>()
-    val eventLatitude                   = MutableLiveData<Float>()
-    val hasEventLongitudeInLocation     = MutableLiveData<Boolean>()
-    val eventLongitude                  = MutableLiveData<Float>()
-    val hasSeparator                    = MutableLiveData<Boolean>()
-    val separatorColor                  = MutableLiveData<Int>()
-    val separatorWidth                  = MutableLiveData<Float>()
-    val separatorHeight                 = MutableLiveData<Float>()
+    val canvasWidth                     = MutableLiveData<Float>()      // Ширина холста
+    val canvasHeight                    = MutableLiveData<Float>()      // Высота холста
+    val backgroundColorCanvas           = MutableLiveData<Int>()        // Цвет фона холста
+    val canvasBorderColor               = MutableLiveData<Int>()        // Цвет рамки холста
+    val hasBorderCanvas                 = MutableLiveData<Boolean>()    // Добавлена ли рамка холста
+    val indentBorderCanvas              = MutableLiveData<Float>()      // Отступ рамки от края холста
+    val widthBorderCanvas               = MutableLiveData<Float>()      // Ширина рамки холста
+    val backgroundColorMap              = MutableLiveData<Int>()        // Цвет фона карты
+    val radiusMap                       = MutableLiveData<Float>()      // Радиус карты
+    val hasBorderMap                    = MutableLiveData<Boolean>()    // Добавлена ли рамка карты
+    val widthBorderMap                  = MutableLiveData<Float>()      // Ширина рамки карты
+    val mapBorderColor                  = MutableLiveData<Int>()        // Цвет рамки карты
+    val descTextSize                    = MutableLiveData<Float>()      // Размер основного текста
+    val eventLocationSize               = MutableLiveData<Float>()      // Размер текста локации
+    val descText                        = MutableLiveData<String>()     // Основной текст
+    val hasEventDateInLocation          = MutableLiveData<Boolean>()    // Добавить ли дату в текст локации
+    val eventDate                       = MutableLiveData<Date>()       // Дата события
+    val hasEventTimeInLocation          = MutableLiveData<Boolean>()    // Добавить ли время в текст локации
+    val eventTime                       = MutableLiveData<Long>()       // Время события
+    val hasEventCityInLocation          = MutableLiveData<Boolean>()    // Добавить ли город в текст локации
+    val eventCity                       = MutableLiveData<String>()     // Город события
+    val hasEventLatitudeInLocation      = MutableLiveData<Boolean>()    // Добавить ли широту в текст локации
+    val eventLatitude                   = MutableLiveData<Float>()      // Широта места события
+    val hasEventLongitudeInLocation     = MutableLiveData<Boolean>()    // Добавить ли долготу в текст локации
+    val eventLongitude                  = MutableLiveData<Float>()      // Долгота места события
+    val hasSeparator                    = MutableLiveData<Boolean>()    // Добавить ли разделитель
+    val separatorColor                  = MutableLiveData<Int>()        // Цвет разделителя
+    val separatorWidth                  = MutableLiveData<Float>()      // Длина разделителя
+    val separatorHeight                 = MutableLiveData<Float>()      // Высота разделителя
     // Конец списка свойств
 
     protected var listener: OnDrawListener? = null
@@ -68,7 +67,7 @@ abstract class TemplateCanvas(private val activity: Activity) {
         protected set
 
     init {
-        bitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(),Bitmap.Config.ARGB_8888)
+        bitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(),Bitmap.Config.ARGB_8888)
     }
 
     interface OnDrawListener {
@@ -78,128 +77,10 @@ abstract class TemplateCanvas(private val activity: Activity) {
     abstract fun draw()
 
     fun getShortBitmap(): Bitmap {
-        val scaleFactor: Float = if(Math.max(canvasWidth, canvasHeight) > 3000) Math.max(canvasWidth, canvasHeight) / 3000 else 1F
+        val maxSize = (canvasWidth.value!!).coerceAtLeast(canvasHeight.value!!)
+        val scaleFactor: Float = if(maxSize > 3000) maxSize / 3000 else 1F
 
-        return Bitmap.createScaledBitmap(bitmap, (canvasWidth / scaleFactor).toInt(), (canvasHeight / scaleFactor).toInt(), false)
-    }
-
-    fun updateBackgroundColorCanvas(color: String) {
-        backgroundColorCanvas.value = Color.parseColor(color)
-    }
-
-    fun updateBackgroundColorMap(color: String) {
-        backgroundColorMap = Color.parseColor(color)
-
-        draw()
-    }
-
-    fun updateRadiusMap(radius: Float) {
-        radiusMap = radius
-
-        draw()
-    }
-
-    fun updateHasBorderMap(has: Boolean) {
-        hasBorderMap = has
-
-        draw()
-    }
-
-    fun updateWidthBorderMap(width: Float) {
-        widthBorderMap = width * PIXELS_IN_ONE_MM
-
-        draw()
-    }
-
-    fun updateMapBorderColor(color: String) {
-        mapBorderColor = Color.parseColor(color)
-
-        draw()
-    }
-
-    fun updateCanvasBorderColor(color: String) {
-        canvasBorderColor = Color.parseColor(color)
-
-        draw()
-    }
-
-    fun updateCanvasSize(width: Float, height: Float) {
-        canvasWidth = width
-        canvasHeight = height
-
-        draw()
-    }
-
-    fun updateHasBorderCanvas(has: Boolean) {
-        hasBorderCanvas = has
-
-        draw()
-    }
-
-    fun updateIndentBorderCanvas(indent: Float) {
-        indentBorderCanvas = indent * PIXELS_IN_ONE_MM
-
-        draw()
-    }
-
-    fun updateWidthBorderCanvas(width: Float) {
-        widthBorderCanvas = width * PIXELS_IN_ONE_MM
-
-        draw()
-    }
-
-    fun updateDescText(text: String) {
-        descText = text
-
-        draw()
-    }
-
-    fun updateDescTextSize(size: Float) {
-        descTextSize = size
-
-        draw()
-    }
-
-    fun updateEventLocationSize(size: Float) {
-        eventLocationSize = size
-
-        draw()
-    }
-
-    fun updateHasEventDateInLocation(has: Boolean) {
-        hasEventDateInLocation = has
-
-        draw()
-    }
-
-    fun updateHasEventTimeInLocation(has: Boolean) {
-        hasEventTimeInLocation = has
-
-        draw()
-    }
-
-    fun updateHasEventCityInLocation(has: Boolean) {
-        hasEventCityInLocation = has
-
-        draw()
-    }
-
-    fun updateHasEventLatitudeInLocation(has: Boolean) {
-        hasEventLatitudeInLocation = has
-
-        draw()
-    }
-
-    fun updateHasEventLongitudeInLocation(has: Boolean) {
-        hasEventLongitudeInLocation = has
-
-        draw()
-    }
-
-    fun updateHasSeparator(has: Boolean) {
-        hasSeparator = has
-
-        draw()
+        return Bitmap.createScaledBitmap(bitmap, (canvasWidth.value!! / scaleFactor).toInt(), (canvasHeight.value!! / scaleFactor).toInt(), false)
     }
 
     fun setOnDrawListener(listener: OnDrawListener) {
@@ -260,11 +141,11 @@ abstract class TemplateCanvas(private val activity: Activity) {
     protected fun getLocationText(): String {
         var locationText = ""
 
-        if(hasEventDateInLocation)      locationText = "$locationText $eventDate"
-        if(hasEventTimeInLocation)      locationText = "$locationText $eventTime"
-        if(hasEventCityInLocation)      locationText = "$locationText $eventCity"
-        if(hasEventLatitudeInLocation)  locationText = "$locationText $eventLatitude"
-        if(hasEventLongitudeInLocation) locationText = "$locationText $eventLongitude"
+        if(hasEventDateInLocation.value!!)      locationText = "$locationText $eventDate"
+        if(hasEventTimeInLocation.value!!)      locationText = "$locationText $eventTime"
+        if(hasEventCityInLocation.value!!)      locationText = "$locationText $eventCity"
+        if(hasEventLatitudeInLocation.value!!)  locationText = "$locationText $eventLatitude"
+        if(hasEventLongitudeInLocation.value!!) locationText = "$locationText $eventLongitude"
 
         return locationText.trim()
     }
