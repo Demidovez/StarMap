@@ -8,6 +8,7 @@ import android.view.*
 import android.view.View.OnLayoutChangeListener
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.Toast
+import androidx.core.graphics.scale
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,15 +38,21 @@ class TemplateFragment : Fragment() {
             (activity as MainActivity).supportActionBar?.title = templateTitle
         }
 
-        templateViewModel = ViewModelProviders
-            .of(this, TemplateViewModelFactory(templateName!!))
-            .get(TemplateViewModel::class.java)
+        templateViewModel = ViewModelProviders.of(this, TemplateViewModelFactory(templateName!!)).get(TemplateViewModel::class.java)
 
         binding = FragmentTemplateBinding.inflate(inflater, container, false)
 
         val root: View = binding.root
 
         templateCanvas = getTemplateCanvas(templateName)
+
+        binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
+
+        templateCanvas.setOnDrawListener(object: TemplateCanvas.OnDrawListener {
+            override fun onDraw() {
+                binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
+            }
+        })
 
         adapter = ControllerAdapter(childFragmentManager, templateCanvas)
 
@@ -54,20 +61,6 @@ class TemplateFragment : Fragment() {
         }
 
         recyclerInit()
-
-        binding.canvasImage.setImage(ImageSource.bitmap(templateCanvas.bitmap))
-
-        // Перемасштабируем превью если изменились размеры лайоута картинки
-        binding.canvasImage.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            binding.canvasImage.resetScaleAndCenter()
-        }
-
-        templateCanvas.setOnDrawListener(object: TemplateCanvas.OnDrawListener {
-            override fun onDraw() {
-                binding.canvasImage.recycle()
-                binding.canvasImage.setImage(ImageSource.bitmap(templateCanvas.bitmap))
-            }
-        })
 
         return root
     }

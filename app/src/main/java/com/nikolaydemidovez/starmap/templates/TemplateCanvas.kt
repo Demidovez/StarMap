@@ -88,6 +88,12 @@ abstract class TemplateCanvas(private val activity: Activity) {
 
     abstract fun draw()
 
+    fun getShortBitmap(): Bitmap {
+        val scaleFactor: Float = if(Math.max(canvasWidth, canvasHeight) > 3000) Math.max(canvasWidth, canvasHeight) / 3000 else 1F
+
+        return Bitmap.createScaledBitmap(bitmap, (canvasWidth / scaleFactor).toInt(), (canvasHeight / scaleFactor).toInt(), false)
+    }
+
     fun updateBackgroundColorCanvas(color: String) {
         backgroundColorCanvas = Color.parseColor(color)
 

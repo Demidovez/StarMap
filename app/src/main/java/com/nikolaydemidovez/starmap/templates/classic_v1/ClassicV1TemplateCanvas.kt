@@ -17,9 +17,6 @@ import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
 import kotlinx.coroutines.delay
 import java.lang.Thread.sleep
 
-
-
-
 class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(activity) {
     private lateinit var bitmapHolst: Bitmap
     private lateinit var bitmapHolstBorder: Bitmap
