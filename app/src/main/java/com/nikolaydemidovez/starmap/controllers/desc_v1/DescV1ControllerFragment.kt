@@ -26,7 +26,7 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
 
         val root: View = binding.root
 
-        binding.editDesc.setText(templateCanvas.descText)
+        binding.editDesc.setText(templateCanvas.descText.value)
 
         // Изменяем текст под картой
         binding.editDesc.addTextChangedListener(object : TextWatcher {
@@ -34,8 +34,7 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
             override fun afterTextChanged(s: Editable?) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d("MyLog", s.toString())
-                templateCanvas.updateDescText(s.toString())
+                templateCanvas.descText.value = s.toString()
             }
         })
 

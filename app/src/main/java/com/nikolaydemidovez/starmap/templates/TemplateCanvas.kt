@@ -1,33 +1,18 @@
 package com.nikolaydemidovez.starmap.templates
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
-import android.view.View
-import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.content.res.ResourcesCompat
-import android.provider.MediaStore
-import android.util.DisplayMetrics
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import com.nikolaydemidovez.starmap.controllers.canvas_v1.CanvasV1ControllerViewModel
+import com.nikolaydemidovez.starmap.MainActivity
 import java.io.*
-import java.sql.Time
 import java.util.*
 
 
-abstract class TemplateCanvas(private val activity: Activity) {
+abstract class TemplateCanvas(private val activity: MainActivity) {
 
     // Начало списка основных свойства холста
     val canvasWidth                     = MutableLiveData<Float>()      // Ширина холста
@@ -63,12 +48,8 @@ abstract class TemplateCanvas(private val activity: Activity) {
 
     protected var listener: OnDrawListener? = null
 
-    var bitmap: Bitmap
+    var bitmap: Bitmap = Bitmap.createBitmap(2480, 3508,Bitmap.Config.ARGB_8888)
         protected set
-
-    init {
-        bitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(),Bitmap.Config.ARGB_8888)
-    }
 
     interface OnDrawListener {
         fun onDraw()

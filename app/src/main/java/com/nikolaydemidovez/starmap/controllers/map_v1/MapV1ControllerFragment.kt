@@ -25,9 +25,9 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
         val radioGroupWidthBorder = binding.radioGroupWidthBorder
 
         // Добавлеям/убираем рамку карты
-        binding.checkboxEnableBorder.isChecked = templateCanvas.hasBorderMap
+        binding.checkboxEnableBorder.isChecked = templateCanvas.hasBorderMap.value!!
         binding.checkboxEnableBorder.setOnCheckedChangeListener { _, isChecked ->
-            templateCanvas.updateHasBorderMap(isChecked)
+            templateCanvas.hasBorderMap.value = isChecked
 
             binding.labelWidthBorder.alpha = if (isChecked) 1F else 0.6F
             for (i in 0 until radioGroupColorBorder.childCount) {

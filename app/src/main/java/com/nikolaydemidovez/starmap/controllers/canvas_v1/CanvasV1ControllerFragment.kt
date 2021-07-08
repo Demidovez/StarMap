@@ -45,7 +45,8 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
                 "A1" -> { width = 7016F; height = 9933F }
             }
 
-            templateCanvas.updateCanvasSize(width, height)
+            templateCanvas.canvasWidth.value = width
+            templateCanvas.canvasHeight.value = height
         }
 
         // Изменяем цвет фона холста
@@ -61,13 +62,13 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
                 "Синий" -> color = "#0a3d62"
             }
 
-            templateCanvas.updateBackgroundColorCanvas(color)
+            templateCanvas.backgroundColorCanvas.value = Color.parseColor(color)
         }
 
         // Добавлеям/убираем рамку холста
-        binding.checkboxEnableBorder.isChecked = templateCanvas.hasBorderCanvas
+        binding.checkboxEnableBorder.isChecked = templateCanvas.hasBorderCanvas.value!!
         binding.checkboxEnableBorder.setOnCheckedChangeListener { _, isChecked ->
-            templateCanvas.updateHasBorderCanvas(isChecked)
+            templateCanvas.hasBorderCanvas.value = isChecked
 
             binding.labelIndentBorder.alpha = if (isChecked) 1F else 0.6F
             for (i in 0 until radioGroupIndentBorder.childCount) {
@@ -98,7 +99,7 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
                 "Синий" -> color = "#0a3d62"
             }
 
-            templateCanvas.updateCanvasBorderColor(color)
+            templateCanvas.canvasBorderColor.value = Color.parseColor(color)
         }
 
         // Изменяем отступ рамки от краев холста
@@ -114,7 +115,7 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
                 "25 мм" -> indent = 25F
             }
 
-            templateCanvas.updateIndentBorderCanvas(indent)
+            templateCanvas.indentBorderCanvas.value = indent
         }
 
         // Изменяем ширину рамки
@@ -130,7 +131,7 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
                 "6 мм" -> width = 6F
             }
 
-            templateCanvas.updateWidthBorderCanvas(width)
+            templateCanvas.widthBorderCanvas.value = width
         }
 
         return root

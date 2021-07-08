@@ -21,11 +21,11 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         val root: View = binding.root
 
-        binding.editDate.setText(templateCanvas.eventDate.toString())
-        binding.editTime.setText(templateCanvas.eventTime.toString())
-        binding.editLocation.setText(templateCanvas.eventCity)
-        binding.editLatitude.setText(templateCanvas.eventLatitude.toString())
-        binding.editLongitude.setText(templateCanvas.eventLongitude.toString())
+        binding.editDate.setText(templateCanvas.eventDate.value.toString())
+        binding.editTime.setText(templateCanvas.eventTime.value.toString())
+        binding.editLocation.setText(templateCanvas.eventCity.value)
+        binding.editLatitude.setText(templateCanvas.eventLatitude.value.toString())
+        binding.editLongitude.setText(templateCanvas.eventLongitude.value.toString())
 
         return root
     }

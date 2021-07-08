@@ -1,6 +1,5 @@
 package com.nikolaydemidovez.starmap.templates.classic_v1
 
-import android.app.Activity
 import android.graphics.*
 import android.graphics.Paint.*
 import android.text.TextPaint
@@ -12,7 +11,9 @@ import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
 import java.util.*
 
-class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(activity) {
+class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
+    private var isDataInitialized = false
+
     private lateinit var bitmapHolst: Bitmap
     private lateinit var bitmapHolstBorder: Bitmap
     private lateinit var bitmapMap: Bitmap
@@ -27,12 +28,12 @@ class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(a
         backgroundColorCanvas.value                     = Color.parseColor("#FFFFFF")
         canvasBorderColor.value                         = Color.parseColor("#000000")
         hasBorderCanvas.value                           = true
-        indentBorderCanvas.value                        = 30F * PIXELS_IN_ONE_MM
-        widthBorderCanvas.value                         = 3F * PIXELS_IN_ONE_MM
+        indentBorderCanvas.value                        = 100F
+        widthBorderCanvas.value                         = 10F
         backgroundColorMap.value                        = Color.parseColor("#000000")
         radiusMap.value                                 = 1000F
         hasBorderMap.value                              = false
-        widthBorderMap.value                            = 5F * PIXELS_IN_ONE_MM
+        widthBorderMap.value                            = 15F
         mapBorderColor.value                            = Color.parseColor("#FFFFFF")
         descTextSize.value                              = 160F
         eventLocationSize.value                         = 60F
@@ -52,338 +53,179 @@ class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(a
         separatorWidth.value                            = 1200F
         separatorHeight.value                           = 7F
 
-        canvasWidth.observe(activity as MainActivity, {
-            Toast.makeText(activity, "canvasWidth", Toast.LENGTH_SHORT).show()
-            drawHolst()
+        canvasWidth.observe(activity,                   { redraw(::drawHolst) })
+        canvasHeight.observe(activity,                  { redraw(::drawHolst) })
+        backgroundColorCanvas.observe(activity,         { redraw(::drawHolst) })
+        canvasBorderColor.observe(activity,             { redraw(::drawHolstBorder) })
+        hasBorderCanvas.observe(activity,               { redraw(::drawHolstBorder) })
+        indentBorderCanvas.observe(activity,            { redraw(::drawHolstBorder) })
+        widthBorderCanvas.observe(activity,             { redraw(::drawHolstBorder) })
+        backgroundColorMap.observe(activity,            { redraw(::drawMap) })
+        radiusMap.observe(activity,                     { redraw(::drawMap) })
+        hasBorderMap.observe(activity,                  { redraw(::drawMap) })
+        widthBorderMap.observe(activity,                { redraw(::drawMap) })
+        mapBorderColor.observe(activity,                { redraw(::drawMap) })
+        descTextSize.observe(activity,                  { redraw(::drawDesc) })
+        eventLocationSize.observe(activity,             { redraw(::drawLocationText) })
+        descText.observe(activity,                      { redraw(::drawDesc) })
+        hasEventDateInLocation.observe(activity,        { redraw(::drawLocationText) })
+        eventDate.observe(activity,                     { redraw(::drawLocationText) })
+        hasEventTimeInLocation.observe(activity,        { redraw(::drawLocationText) })
+        eventTime.observe(activity,                     { redraw(::drawLocationText) })
+        hasEventCityInLocation.observe(activity,        { redraw(::drawLocationText) })
+        eventCity.observe(activity,                     { redraw(::drawLocationText) })
+        hasEventLatitudeInLocation.observe(activity,    { redraw(::drawLocationText) })
+        eventLatitude.observe(activity,                 { redraw(::drawLocationText) })
+        hasEventLongitudeInLocation.observe(activity,   { redraw(::drawLocationText) })
+        eventLongitude.observe(activity,                { redraw(::drawLocationText) })
+        hasSeparator.observe(activity,                  { redraw(null) })
+        separatorColor.observe(activity,                { redraw(::drawSeparator) })
+        separatorWidth.observe(activity,                { redraw(::drawSeparator) })
+        separatorHeight.observe(activity,               { redraw(::drawSeparator) })
+
+        firstDraw()
+    }
+
+    private fun firstDraw() {
+        drawHolst()
+        drawHolstBorder()
+        drawMap()
+        drawMapBorder()
+        drawDesc()
+        drawSeparator()
+        drawLocationText()
+        draw()
+
+        isDataInitialized = true
+    }
+
+    private fun redraw(callback: (() -> Unit?)?) {
+        if(isDataInitialized) {
+            if (callback != null) {
+                callback()
+            }
 
             draw()
-        })
-//
-//        canvasHeight.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "canvasHeight", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        backgroundColorCanvas.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "backgroundColorCanvas", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        canvasBorderColor.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "canvasBorderColor", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        hasBorderCanvas.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "hasBorderCanvas", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        indentBorderCanvas.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "indentBorderCanvas", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        widthBorderCanvas.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "widthBorderCanvas", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        backgroundColorMap.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "backgroundColorMap", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        radiusMap.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "radiusMap", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        hasBorderMap.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "hasBorderMap", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        widthBorderMap.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "widthBorderMap", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        mapBorderColor.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "mapBorderColor", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        descTextSize.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "descTextSize", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        eventLocationSize.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "eventLocationSize", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        descText.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "descText", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        hasEventDateInLocation.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "hasEventDateInLocation", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        eventDate.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "eventDate", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        hasEventTimeInLocation.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "hasEventTimeInLocation", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        eventTime.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "eventTime", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        hasEventCityInLocation.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "hasEventCityInLocation", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        eventCity.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "eventCity", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        hasEventLatitudeInLocation.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "hasEventLatitudeInLocation", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        eventLatitude.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "eventLatitude", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        hasEventLongitudeInLocation.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "hasEventLongitudeInLocation", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        eventLongitude.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "eventLongitude", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        hasSeparator.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "hasSeparator", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        separatorColor.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "separatorColor", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        separatorWidth.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "separatorWidth", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//        separatorHeight.observe(activity as MainActivity, {
-//            Toast.makeText(activity, "separatorHeight", Toast.LENGTH_SHORT).show()
-//            drawHolst()
-//
-//            draw()
-//        })
-//
-//
-//        firstDraw()
+        }
     }
-//
-//    private fun firstDraw() {
-//        drawHolst(backgroundColorCanvas.value!!)
-//        drawHolstBorder()
-//        drawMap()
-//        drawMapBorder()
-//        drawDesc()
-//        drawSeparator()
-//        drawLocationText()
-//
-//        draw()
-//    }
-//
-//    private fun drawHolst() {
-//        val holst = Paint(ANTI_ALIAS_FLAG).apply {
-//            style = Style.FILL
-//            color = backgroundColorCanvas.value
-//            isDither = true
-//            isAntiAlias = true
-//        }
-//
-//        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
-//
-//        Canvas(tempBitmap).drawRect(0F, 0F, canvasWidth.value!!, canvasHeight.value!!, holst)
-//
-//        bitmapHolst = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt())
-//    }
-//
-//    private fun drawHolstBorder() {
-//        val border = Paint(ANTI_ALIAS_FLAG).apply {
-//            style = Style.STROKE
-//            color = canvasBorderColor
-//            strokeWidth = widthBorderCanvas // TODO: Ширина границы не изменяет общую длину отступа от края?
-//            isDither = true
-//            isAntiAlias = true
-//        }
-//
-//        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
-//
-//        Canvas(tempBitmap).drawRect(indentBorderCanvas, indentBorderCanvas, canvasWidth - indentBorderCanvas, canvasHeight - indentBorderCanvas, border)
-//
-//        bitmapHolstBorder = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.toInt(), canvasHeight.toInt())
-//    }
-//
-//    private fun drawMap() {
-//        val map = Paint(ANTI_ALIAS_FLAG).apply {
-//            style = Style.FILL
-//            color = backgroundColorMap
-//            isDither = true
-//            isAntiAlias = true
-//        }
-//        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
-//
-//        Canvas(tempBitmap).drawCircle(radiusMap, radiusMap, radiusMap, map)
-//        bitmapMap = Bitmap.createBitmap(tempBitmap, 0, 0, (radiusMap * 2).toInt(), (radiusMap * 2).toInt())
-//    }
-//
-//    private fun drawMapBorder() {
-//        val mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
-//            style = Style.FILL
-//            color = mapBorderColor
-//            isDither = true
-//            isAntiAlias = true
-//        }
-//
-//        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
-//
-//        Canvas(tempBitmap).drawCircle(radiusMap + widthBorderMap, radiusMap + widthBorderMap, radiusMap + widthBorderMap, mapBorder)
-//
-//        bitmapMapBorder = Bitmap.createBitmap(tempBitmap, 0, 0, ((radiusMap + widthBorderMap) * 2).toInt(), ((radiusMap + widthBorderMap) * 2).toInt())
-//    }
-//
-//    private fun drawDesc() {
-//        val descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
-//            textAlign = Align.CENTER
-//            textSize = descTextSize
-//            typeface = ResourcesCompat.getFont(activity.applicationContext, R.font.caveat_regular)
-//            isDither = true
-//            isAntiAlias = true
-//        }
-//
-//        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
-//
-//        val heightAllText = Canvas(tempBitmap).drawMultilineText(descText, descTextPaint, (canvasWidth/1.5).toInt() , canvasWidth/2, 0F)
-//
-//        bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.toInt(), heightAllText)
-//    }
-//
-//    private fun drawSeparator() {
-//        val separator = Paint(ANTI_ALIAS_FLAG).apply {
-//            isDither = true
-//            isAntiAlias = true
-//            strokeWidth = separatorHeight
-//            color = separatorColor
-//        }
-//
-//        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
-//
-//        Canvas(tempBitmap).drawLine(0F, 0F, separatorWidth, 0F, separator)
-//
-//        bitmapSeparator = Bitmap.createBitmap(tempBitmap, 0, 0, separatorWidth.toInt(), separatorHeight.toInt())
-//    }
-//
-    private fun drawLocationText() {
-        val eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
-            textAlign = Align.CENTER
-            textSize = eventLocationSize
+
+    private fun drawHolst() {
+        val holst = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.FILL
+            color = backgroundColorCanvas.value!!
             isDither = true
             isAntiAlias = true
         }
 
-        val tempBitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
 
-        val heightAllText = Canvas(tempBitmap).drawMultilineText(getLocationText(), eventLocation, (canvasWidth/2).toInt() , canvasWidth/2,  0F)
+        Canvas(tempBitmap).drawRect(0F, 0F, canvasWidth.value!!, canvasHeight.value!!, holst)
 
-        bitmapLocationText = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.toInt(), heightAllText)
+        bitmapHolst = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt())
+    }
+
+    private fun drawHolstBorder() {
+        val border = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.STROKE
+            color = canvasBorderColor.value!!
+            strokeWidth = widthBorderCanvas.value!!  //TODO: Ширина границы не изменяет общую длину отступа от края?
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawRect(indentBorderCanvas.value!!, indentBorderCanvas.value!!, canvasWidth.value!! - indentBorderCanvas.value!!, canvasHeight.value!! - indentBorderCanvas.value!!, border)
+
+        bitmapHolstBorder = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt())
+    }
+
+    private fun drawMap() {
+        val map = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.FILL
+            color = backgroundColorMap.value!!
+            isDither = true
+            isAntiAlias = true
+        }
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawCircle(radiusMap.value!!, radiusMap.value!!, radiusMap.value!!, map)
+        bitmapMap = Bitmap.createBitmap(tempBitmap, 0, 0, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt())
+    }
+
+    private fun drawMapBorder() {
+        val mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.FILL
+            color = mapBorderColor.value!!
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawCircle(radiusMap.value!! + widthBorderMap.value!!, radiusMap.value!! + widthBorderMap.value!!, radiusMap.value!! + widthBorderMap.value!!, mapBorder)
+
+        bitmapMapBorder = Bitmap.createBitmap(tempBitmap, 0, 0, ((radiusMap.value!! + widthBorderMap.value!!) * 2).toInt(), ((radiusMap.value!! + widthBorderMap.value!!) * 2).toInt())
+    }
+
+    private fun drawDesc() {
+        val descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
+            textAlign = Align.CENTER
+            textSize = descTextSize.value!!
+            typeface = ResourcesCompat.getFont(activity.applicationContext, R.font.caveat_regular)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+
+        val heightAllText = Canvas(tempBitmap).drawMultilineText(descText.value!!, descTextPaint, (canvasWidth.value!!/1.5).toInt() , canvasWidth.value!!/2, 0F)
+
+        bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), heightAllText)
+    }
+
+    private fun drawSeparator() {
+        val separator = Paint(ANTI_ALIAS_FLAG).apply {
+            isDither = true
+            isAntiAlias = true
+            strokeWidth = separatorHeight.value!!
+            color = separatorColor.value!!
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawLine(0F, 0F, separatorWidth.value!!, 0F, separator)
+
+        bitmapSeparator = Bitmap.createBitmap(tempBitmap, 0, 0, separatorWidth.value!!.toInt(), separatorHeight.value!!.toInt())
+    }
+
+    private fun drawLocationText() {
+        val eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
+            textAlign = Align.CENTER
+            textSize = eventLocationSize.value!!
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+
+        val heightAllText = Canvas(tempBitmap).drawMultilineText(getLocationText(), eventLocation, (canvasWidth.value!!/2).toInt() , canvasWidth.value!!/2,  0F)
+
+        bitmapLocationText = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), heightAllText)
     }
 
     private fun getBottomMarginLocationText(): Int {
-        var margin = bitmapLocationText.height.toFloat()
+        var margin = bitmapLocationText!!.height.toFloat()
 
-        if(hasBorderCanvas) {
-            //margin += indentBorderCanvas + widthBorderCanvas + (indentBorderCanvas*0.5).toFloat()
-        } else {
-           margin += (canvasHeight * 0.6).toFloat()
-       }
+
+        margin = margin.plus(
+            if(hasBorderCanvas.value!!) {
+                indentBorderCanvas.value!! + widthBorderCanvas.value!! + (indentBorderCanvas.value!!*0.5).toFloat()
+            } else {
+                (canvasHeight.value!! * 0.6).toFloat()
+            }
+        )
+
 
         return margin.toInt()
     }
@@ -391,10 +233,10 @@ class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(a
     private fun getTopMarginDescText(): Float {
         var margin = 0F
 
-        if(hasBorderMap) {
-            margin += canvasWidth/2 + bitmapMapBorder.height / 2
+        margin += if(hasBorderMap.value!!) {
+            canvasWidth.value!!/2 + bitmapMapBorder!!.height / 2
         } else {
-            margin += canvasWidth/2 + bitmapMap.height / 2
+            canvasWidth.value!!/2 + bitmapMap!!.height / 2
         }
 
         return margin
@@ -402,37 +244,37 @@ class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(a
 
     override fun draw() {
             Thread {
-                bitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
+                bitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
 
                 val canvas = Canvas(bitmap)
 
                 // Рисуем холст
-                canvas.drawBitmap(bitmapHolst, 0F, 0F, Paint()) // TODO: Paint можно заменить на null
+                canvas.drawBitmap(bitmapHolst, 0F, 0F, null)
 
                 // Рисуем рамку холста
-                if(hasBorderCanvas) {
-                    canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, Paint())
+                if(hasBorderCanvas.value!!) {
+                    canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, null)
                 }
 
                 // Рисуем рамку карты
-                if(hasBorderMap) {
-                    canvas.drawBitmap(bitmapMapBorder, canvasWidth/2 - bitmapMapBorder.width / 2, canvasWidth/2 - bitmapMapBorder.width / 2, Paint())
+                if(hasBorderMap.value!!) {
+                    canvas.drawBitmap(bitmapMapBorder, canvasWidth.value!!/2 - bitmapMapBorder.width / 2, canvasWidth.value!!/2 - bitmapMapBorder.width / 2, null)
                 }
 
                 // Рисуем карту
-                canvas.drawBitmap(bitmapMap, canvasWidth/2 - bitmapMap.width / 2, canvasWidth/2 - bitmapMap.width / 2, Paint())
+                canvas.drawBitmap(bitmapMap, canvasWidth.value!!/2 - bitmapMap.width / 2, canvasWidth.value!!/2 - bitmapMap.width / 2, null)
 
 
                 // Рисуем текст описание
-                canvas.drawBitmap(bitmapDesc, 0F, getTopMarginDescText() , Paint())
+                canvas.drawBitmap(bitmapDesc, 0F, getTopMarginDescText(), null)
 
                 // Рисуем разделитель
-                if(hasSeparator) {
-                    canvas.drawBitmap(bitmapSeparator, 100F, getTopMarginDescText(), Paint())
+                if(hasSeparator.value!!) {
+                    canvas.drawBitmap(bitmapSeparator, 100F, getTopMarginDescText(), null)
                 }
 
                 // Рисуем текст локации
- //               canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight - getBottomMarginLocationText(), Paint())
+                canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight.value!! - getBottomMarginLocationText(), null)
 
                 activity.runOnUiThread {
                     listener?.onDraw()
