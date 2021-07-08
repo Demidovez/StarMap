@@ -18,59 +18,48 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.res.ResourcesCompat
 import android.provider.MediaStore
 import android.util.DisplayMetrics
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.nikolaydemidovez.starmap.controllers.canvas_v1.CanvasV1ControllerViewModel
 import java.io.*
 import java.sql.Time
 import java.util.*
 
 
 abstract class TemplateCanvas(private val activity: Activity) {
-    private val PIXELS_IN_ONE_MM = 3.779527559055F
+    protected val PIXELS_IN_ONE_MM = 3.779527559055F
 
     // Начало списка основных свойства холста
-    protected var canvasWidth: Float = 2480F                                         // Ширина холста
-    protected var canvasHeight: Float = 3508F                                        // Высота холста
-    protected var backgroundColorCanvas: Int = Color.parseColor("#FFFFFF") // Цвет фона холста
-    protected var canvasBorderColor: Int = Color.parseColor("#000000")     // Цвет рамки холста
-    var hasBorderCanvas: Boolean = true                                              // Добавлена ли рамка холста
-        private set
-    protected var indentBorderCanvas: Float = 30F * PIXELS_IN_ONE_MM                 // Отступ рамки от края холста
-    protected var widthBorderCanvas: Float = 3F * PIXELS_IN_ONE_MM                   // Ширина рамки холста
-    protected var backgroundColorMap: Int = Color.parseColor("#000000")    // Цвет фона карты
-    protected var radiusMap: Float = 1000F                                            // Радиус карты
-    var hasBorderMap: Boolean = false                                                // Добавлена ли рамка карты
-        private set
-    protected var widthBorderMap: Float = 5F * PIXELS_IN_ONE_MM                      // Ширина рамки карты
-    protected var mapBorderColor: Int = Color.parseColor("#FFFFFF")        // Цвет рамки карты
-    protected var descTextSize: Float = 160F                                         // Размер основного текста
-    protected var eventLocationSize: Float = 60F                                     // Размер текста локации
-    var descText: String = "День, когда сошлись все звезды вселенной..."             // Основной текст
-        private set
-    var hasEventDateInLocation: Boolean = true
-        private set
-    var eventDate: Date = Date()
-        private set
-    var hasEventTimeInLocation: Boolean = true
-        private set
-    var eventTime: Long = Date().time
-        private set
-    var hasEventCityInLocation: Boolean = true
-        private set
-    var eventCity: String = "Москва"
-        private set
-    var hasEventLatitudeInLocation: Boolean = true
-        private set
-    var eventLatitude: Float = 55.7522200F
-        private set
-    var hasEventLongitudeInLocation: Boolean = true
-        private set
-    var eventLongitude: Float = 37.6155600F
-        private set
-    var hasSeparator: Boolean = true
-        private set
-    protected var separatorColor: Int = Color.parseColor("#000000")
-    protected var separatorWidth: Float = 1200F
-    protected var separatorHeight: Float = 7F
-
+    val canvasWidth = MutableLiveData<Float>() //                                        // Ширина холста
+    val canvasHeight = MutableLiveData<Float>() //                                      // Высота холста
+    val backgroundColorCanvas = MutableLiveData<Int>()  // Цвет фона холста
+    val canvasBorderColor = MutableLiveData<Int>()    // Цвет рамки холста
+    val hasBorderCanvas = MutableLiveData<Boolean>()                                               // Добавлена ли рамка холста
+    val indentBorderCanvas = MutableLiveData<Float>()                 // Отступ рамки от края холста
+    val widthBorderCanvas = MutableLiveData<Float>()                    // Ширина рамки холста
+    val backgroundColorMap = MutableLiveData<Int>()     // Цвет фона карты
+    val radiusMap = MutableLiveData<Float>()                                         // Радиус карты
+    val hasBorderMap = MutableLiveData<Boolean>()                                           // Добавлена ли рамка карты
+    val widthBorderMap = MutableLiveData<Float>()                       // Ширина рамки карты
+    val mapBorderColor = MutableLiveData<Int>()         // Цвет рамки карты
+    val descTextSize                    = MutableLiveData<Float>()                                       // Размер основного текста
+    val eventLocationSize               = MutableLiveData<Float>()                                      // Размер текста локации
+    val descText                        = MutableLiveData<String>()              // Основной текст
+    val hasEventDateInLocation          = MutableLiveData<Boolean>()
+    val eventDate                       = MutableLiveData<Date>()
+    val hasEventTimeInLocation          = MutableLiveData<Boolean>()
+    val eventTime                       = MutableLiveData<Long>()
+    val hasEventCityInLocation          = MutableLiveData<Boolean>()
+    val eventCity                       = MutableLiveData<String>()
+    val hasEventLatitudeInLocation      = MutableLiveData<Boolean>()
+    val eventLatitude                   = MutableLiveData<Float>()
+    val hasEventLongitudeInLocation     = MutableLiveData<Boolean>()
+    val eventLongitude                  = MutableLiveData<Float>()
+    val hasSeparator                    = MutableLiveData<Boolean>()
+    val separatorColor                  = MutableLiveData<Int>()
+    val separatorWidth                  = MutableLiveData<Float>()
+    val separatorHeight                 = MutableLiveData<Float>()
     // Конец списка свойств
 
     protected var listener: OnDrawListener? = null
@@ -95,9 +84,7 @@ abstract class TemplateCanvas(private val activity: Activity) {
     }
 
     fun updateBackgroundColorCanvas(color: String) {
-        backgroundColorCanvas = Color.parseColor(color)
-
-        draw()
+        backgroundColorCanvas.value = Color.parseColor(color)
     }
 
     fun updateBackgroundColorMap(color: String) {

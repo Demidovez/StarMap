@@ -1,21 +1,16 @@
 package com.nikolaydemidovez.starmap.templates.classic_v1
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.*
 import android.graphics.Paint.*
-import android.os.AsyncTask
-import android.os.Looper
 import android.text.TextPaint
-import android.util.DisplayMetrics
-import android.util.Log
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.FragmentActivity
+import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
-import kotlinx.coroutines.delay
-import java.lang.Thread.sleep
+import java.util.*
 
 class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(activity) {
     private lateinit var bitmapHolst: Bitmap
@@ -26,8 +21,54 @@ class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(a
     private lateinit var bitmapSeparator: Bitmap
     private lateinit var bitmapLocationText: Bitmap
 
+
     init {
-        drawHolst()
+        canvasWidth.value                               = 2480F
+        canvasHeight.value                              = 3508F
+        backgroundColorCanvas.value                     = Color.parseColor("#FFFFFF")
+        canvasBorderColor.value                         = Color.parseColor("#000000")
+        hasBorderCanvas.value                           = true
+        indentBorderCanvas.value                        = 30F * PIXELS_IN_ONE_MM
+        widthBorderCanvas.value                         = 3F * PIXELS_IN_ONE_MM
+        backgroundColorMap.value                        = Color.parseColor("#000000")
+        radiusMap.value                                 = 1000F
+        hasBorderMap.value                              = false
+        widthBorderMap.value                            = 5F * PIXELS_IN_ONE_MM
+        mapBorderColor.value                            = Color.parseColor("#FFFFFF")
+        descTextSize.value                              = 160F
+        eventLocationSize.value                         = 60F
+        descText.value                                  = "День, когда сошлись все звезды вселенной..."
+        hasEventDateInLocation.value                    = true
+        eventDate.value                                 = Date()
+        hasEventTimeInLocation.value                    = true
+        eventTime.value                                 = Date().time
+        hasEventCityInLocation.value                    = true
+        eventCity.value                                 = "Москва"
+        hasEventLatitudeInLocation.value                = true
+        eventLatitude.value                             = 55.7522200F
+        hasEventLongitudeInLocation.value               = true
+        eventLongitude.value                            = 37.6155600F
+        hasSeparator.value                              = true
+        separatorColor.value                            = Color.parseColor("#000000")
+        separatorWidth.value                            = 1200F
+        separatorHeight.value                           = 7F
+
+
+
+
+
+        backgroundColorCanvas.observe(activity as MainActivity, {
+            Toast.makeText(activity, "backgroundColorCanvas", Toast.LENGTH_SHORT).show()
+            drawHolst(it)
+
+            draw()
+        })
+
+        firstDraw()
+    }
+
+    private fun firstDraw() {
+        drawHolst(backgroundColorCanvas.value!!)
         drawHolstBorder()
         drawMap()
         drawMapBorder()
@@ -38,10 +79,10 @@ class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(a
         draw()
     }
 
-    private fun drawHolst() {
+    private fun drawHolst(background: Int) {
         val holst = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            color = backgroundColorCanvas
+            color = background
             isDither = true
             isAntiAlias = true
         }
@@ -170,13 +211,13 @@ class ClassicV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(a
     override fun draw() {
             Thread {
                 // TODO: Оптимизировать (избыточная прорисовка)
-                drawHolst()
-                drawHolstBorder()
-                drawMap()
-                drawMapBorder()
-                drawDesc()
-                drawSeparator()
-                drawLocationText()
+                //drawHolst(it)
+//                drawHolstBorder()
+//                drawMap()
+//                drawMapBorder()
+//                drawDesc()
+//                drawSeparator()
+//                drawLocationText()
 
                 bitmap = Bitmap.createBitmap(canvasWidth.toInt(), canvasHeight.toInt(), Bitmap.Config.ARGB_8888)
 

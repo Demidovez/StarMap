@@ -14,7 +14,7 @@ class HalfV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(acti
     private var border: Paint
 
     init {
-        backgroundColorCanvas = ResourcesCompat.getColor(activity.applicationContext.resources, R.color.white, null)
+        //backgroundColorCanvas = ResourcesCompat.getColor(activity.applicationContext.resources, R.color.white, null)
 
         holst = Paint().apply {
             style = Paint.Style.FILL
@@ -37,7 +37,7 @@ class HalfV1TemplateCanvas(private val activity: Activity) : TemplateCanvas(acti
 
         val canvas = Canvas(bitmap!!)
 
-        holst.color = backgroundColorCanvas
+        //holst.color = backgroundColorCanvas
         border.color = canvasBorderColor
 
         // Рисуем холст

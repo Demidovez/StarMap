@@ -135,5 +135,4 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
 
         return root
     }
-
 }
