@@ -3,14 +3,11 @@ package com.nikolaydemidovez.starmap.templates.classic_v1
 import android.graphics.*
 import android.graphics.Paint.*
 import android.text.TextPaint
-import android.util.Log
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
-import java.sql.Time
 import java.util.*
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
@@ -54,8 +51,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         separatorWidth.value                            = 1200F
         separatorHeight.value                           = 7F
 
-        canvasWidth.observe(activity,                   { redraw(arrayOf(::drawHolst, ::drawHolstBorder)) })
-        canvasHeight.observe(activity,                  { redraw(arrayOf(::drawHolst, ::drawHolstBorder)) })
+        canvasWidth.observe(activity,                   { redraw(arrayOf(::drawHolst, ::drawHolstBorder, ::drawDesc, ::drawLocationText)) })
+        canvasHeight.observe(activity,                  { redraw(arrayOf(::drawHolst, ::drawHolstBorder, ::drawDesc, ::drawLocationText)) })
         backgroundColorCanvas.observe(activity,         { redraw(arrayOf(::drawHolst)) })
         canvasBorderColor.observe(activity,             { redraw(arrayOf(::drawHolstBorder)) })
         hasBorderCanvas.observe(activity,               { redraw(arrayOf(::drawHolstBorder)) })
@@ -87,24 +84,28 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     }
 
     private fun firstDraw() {
-        drawHolst()
-        drawHolstBorder()
-        drawMap()
-        drawMapBorder()
-        drawDesc()
-        drawSeparator()
-        drawLocationText()
-        draw()
+        Thread {
+            drawHolst()
+            drawHolstBorder()
+            drawMap()
+            drawMapBorder()
+            drawDesc()
+            drawSeparator()
+            drawLocationText()
+            draw()
 
-        isDataInitialized = true
+            isDataInitialized = true
+        }.start()
     }
 
     private fun redraw(callbacks: Array<() -> Unit?>?) {
-        if(isDataInitialized) {
-            callbacks?.forEach { it() }
+        Thread {
+            if(isDataInitialized) {
+                callbacks?.forEach { it() }
 
-            draw()
-        }
+                draw()
+            }
+        }.start()
     }
 
     private fun drawHolst() {
@@ -227,14 +228,13 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     }
 
     private fun getBottomMarginLocationText(): Int {
-        var margin = bitmapLocationText.height.toFloat()
-
+        var margin = 0F
 
         margin = margin.plus(
             if(hasBorderCanvas.value!!) {
                 indentBorderCanvas.value!! + widthBorderCanvas.value!! + (indentBorderCanvas.value!!*0.5).toFloat()
             } else {
-                (canvasHeight.value!! * 0.6).toFloat()
+                (bitmapLocationText.height * 0.5).toFloat()
             }
         )
 
@@ -242,7 +242,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         return margin.toInt()
     }
 
-    private fun getTopMarginDescText(): Float {
+    private fun getAbsoluteHeightMap(): Float {
+        // Определяем высоту карты (с рамкой и без) с ее верхним отступом от края холста
         var margin = 0F
 
         margin += if(hasBorderMap.value!!) {
@@ -252,6 +253,31 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
 
         return margin
+    }
+
+    private fun getAutoAlignMargin(): Float {
+        // Определяем какой отступ нужен для текста, разделителя и текста локации, чтобы они ровно расположились
+        var heightAllObjects = canvasWidth.value!!.toFloat() / 2
+
+        heightAllObjects += if(hasBorderMap.value!!) {
+            bitmapMapBorder.height.toFloat() / 2
+        } else {
+            bitmapMap.height.toFloat() / 2
+        }
+
+        heightAllObjects += bitmapDesc.height
+
+        if(hasSeparator.value!!) {
+            heightAllObjects += bitmapSeparator.height
+        }
+
+        heightAllObjects += bitmapLocationText.height + getBottomMarginLocationText()
+
+        var countObjectsForSetMargin = 0
+
+        countObjectsForSetMargin = if(hasSeparator.value!!) 3  else 2
+
+        return (canvasHeight.value!! - heightAllObjects) / countObjectsForSetMargin
     }
 
     override fun draw() {
@@ -276,17 +302,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             // Рисуем карту
             canvas.drawBitmap(bitmapMap, canvasWidth.value!!/2 - bitmapMap.width / 2, canvasWidth.value!!/2 - bitmapMap.width / 2, null)
 
+            val autoMargin = getAutoAlignMargin()
 
             // Рисуем текст описание
-            canvas.drawBitmap(bitmapDesc, 0F, getTopMarginDescText(), null)
+            canvas.drawBitmap(bitmapDesc, 0F, getAbsoluteHeightMap() + autoMargin, null)
 
             // Рисуем разделитель
             if(hasSeparator.value!!) {
-                canvas.drawBitmap(bitmapSeparator, 100F, getTopMarginDescText(), null)
+                canvas.drawBitmap(bitmapSeparator, (canvasWidth.value!! - separatorWidth.value!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
             }
 
             // Рисуем текст локации
-            canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight.value!! - getBottomMarginLocationText(), null)
+            canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight.value!! - bitmapLocationText.height - getBottomMarginLocationText(), null)
 
             activity.runOnUiThread {
                 listener?.onDraw()
