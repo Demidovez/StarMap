@@ -2,13 +2,16 @@ package com.nikolaydemidovez.starmap.templates
 
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfDocument
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.MainActivity
+import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import java.io.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -33,23 +36,26 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val hasEventDateInLocation          = MutableLiveData<Boolean>()    // Добавить ли дату в текст локации
     val eventDate                       = MutableLiveData<Date>()       // Дата события
     val hasEventTimeInLocation          = MutableLiveData<Boolean>()    // Добавить ли время в текст локации
-    val eventTime                       = MutableLiveData<Long>()       // Время события
+    val eventTime                       = MutableLiveData<Date>()       // Время события
     val hasEventCityInLocation          = MutableLiveData<Boolean>()    // Добавить ли город в текст локации
     val eventCity                       = MutableLiveData<String>()     // Город события
-    val hasEventLatitudeInLocation      = MutableLiveData<Boolean>()    // Добавить ли широту в текст локации
-    val eventLatitude                   = MutableLiveData<Float>()      // Широта места события
-    val hasEventLongitudeInLocation     = MutableLiveData<Boolean>()    // Добавить ли долготу в текст локации
-    val eventLongitude                  = MutableLiveData<Float>()      // Долгота места события
+    val hasEventCoordinatesInLocation   = MutableLiveData<Boolean>()    // Добавить ли широту и долготу в текст локации
+    val eventLatitude                   = MutableLiveData<Double>()     // Широта места события
+    val eventLongitude                  = MutableLiveData<Double>()     // Долгота места события
     val hasSeparator                    = MutableLiveData<Boolean>()    // Добавить ли разделитель
     val separatorColor                  = MutableLiveData<Int>()        // Цвет разделителя
     val separatorWidth                  = MutableLiveData<Float>()      // Длина разделителя
     val separatorHeight                 = MutableLiveData<Float>()      // Высота разделителя
     // Конец списка свойств
 
-    protected var listener: OnDrawListener? = null
-
     var bitmap: Bitmap = Bitmap.createBitmap(2480, 3508,Bitmap.Config.ARGB_8888)
         protected set
+
+    protected var listener: OnDrawListener? = null
+
+    fun setOnDrawListener(listener: OnDrawListener) {
+        this.listener = listener
+    }
 
     interface OnDrawListener {
         fun onDraw()
@@ -62,10 +68,6 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         val scaleFactor: Float = if(maxSize > 3000) maxSize / 3000 else 1F
 
         return Bitmap.createScaledBitmap(bitmap, (canvasWidth.value!! / scaleFactor).toInt(), (canvasHeight.value!! / scaleFactor).toInt(), false)
-    }
-
-    fun setOnDrawListener(listener: OnDrawListener) {
-        this.listener = listener
     }
 
     fun convertToSharingFile(typeFile: String): File {
@@ -122,14 +124,21 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     protected fun getLocationText(): String {
         var locationText = ""
 
-        if(hasEventDateInLocation.value!!)      locationText = "$locationText $eventDate"
-        if(hasEventTimeInLocation.value!!)      locationText = "$locationText $eventTime"
-        if(hasEventCityInLocation.value!!)      locationText = "$locationText $eventCity"
-        if(hasEventLatitudeInLocation.value!!)  locationText = "$locationText $eventLatitude"
-        if(hasEventLongitudeInLocation.value!!) locationText = "$locationText $eventLongitude"
+        if(hasEventDateInLocation.value!!)
+            locationText = "$locationText ${SimpleDateFormat("dd MMMM yyyy", Locale("ru")).format(eventDate.value!!)}"
+
+        if(hasEventTimeInLocation.value!!)
+            locationText = "$locationText, ${SimpleDateFormat("HH:mm", Locale("ru")).format(eventTime.value!!)}\n"
+
+        if(hasEventCityInLocation.value!!)
+            locationText = "$locationText г. ${eventCity.value}, Беларусь\n"
+
+        if(hasEventCoordinatesInLocation.value!!)
+            locationText = "$locationText ${Helper.convert(eventLatitude.value!!, eventLongitude.value!!)}"
 
         return locationText.trim()
     }
+
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun saveToPDF(uri: Uri) {

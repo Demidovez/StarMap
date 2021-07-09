@@ -3,12 +3,14 @@ package com.nikolaydemidovez.starmap.templates.classic_v1
 import android.graphics.*
 import android.graphics.Paint.*
 import android.text.TextPaint
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
+import java.sql.Time
 import java.util.*
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
@@ -37,51 +39,49 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         mapBorderColor.value                            = Color.parseColor("#FFFFFF")
         descTextSize.value                              = 160F
         eventLocationSize.value                         = 60F
-        descText.value                                  = "День, когда сошлись все звезды вселенной..."
+        descText.value                                  = "День, когда сошлись\nвсе звезды вселенной..."
         hasEventDateInLocation.value                    = true
         eventDate.value                                 = Date()
         hasEventTimeInLocation.value                    = true
-        eventTime.value                                 = Date().time
+        eventTime.value                                 = Date()
         hasEventCityInLocation.value                    = true
         eventCity.value                                 = "Москва"
-        hasEventLatitudeInLocation.value                = true
-        eventLatitude.value                             = 55.7522200F
-        hasEventLongitudeInLocation.value               = true
-        eventLongitude.value                            = 37.6155600F
+        hasEventCoordinatesInLocation.value             = true
+        eventLatitude.value                             = 41.40338
+        eventLongitude.value                            = 2.17403
         hasSeparator.value                              = true
         separatorColor.value                            = Color.parseColor("#000000")
         separatorWidth.value                            = 1200F
         separatorHeight.value                           = 7F
 
-        canvasWidth.observe(activity,                   { redraw(::drawHolst) })
-        canvasHeight.observe(activity,                  { redraw(::drawHolst) })
-        backgroundColorCanvas.observe(activity,         { redraw(::drawHolst) })
-        canvasBorderColor.observe(activity,             { redraw(::drawHolstBorder) })
-        hasBorderCanvas.observe(activity,               { redraw(::drawHolstBorder) })
-        indentBorderCanvas.observe(activity,            { redraw(::drawHolstBorder) })
-        widthBorderCanvas.observe(activity,             { redraw(::drawHolstBorder) })
-        backgroundColorMap.observe(activity,            { redraw(::drawMap) })
-        radiusMap.observe(activity,                     { redraw(::drawMap) })
-        hasBorderMap.observe(activity,                  { redraw(::drawMap) })
-        widthBorderMap.observe(activity,                { redraw(::drawMap) })
-        mapBorderColor.observe(activity,                { redraw(::drawMap) })
-        descTextSize.observe(activity,                  { redraw(::drawDesc) })
-        eventLocationSize.observe(activity,             { redraw(::drawLocationText) })
-        descText.observe(activity,                      { redraw(::drawDesc) })
-        hasEventDateInLocation.observe(activity,        { redraw(::drawLocationText) })
-        eventDate.observe(activity,                     { redraw(::drawLocationText) })
-        hasEventTimeInLocation.observe(activity,        { redraw(::drawLocationText) })
-        eventTime.observe(activity,                     { redraw(::drawLocationText) })
-        hasEventCityInLocation.observe(activity,        { redraw(::drawLocationText) })
-        eventCity.observe(activity,                     { redraw(::drawLocationText) })
-        hasEventLatitudeInLocation.observe(activity,    { redraw(::drawLocationText) })
-        eventLatitude.observe(activity,                 { redraw(::drawLocationText) })
-        hasEventLongitudeInLocation.observe(activity,   { redraw(::drawLocationText) })
-        eventLongitude.observe(activity,                { redraw(::drawLocationText) })
+        canvasWidth.observe(activity,                   { redraw(arrayOf(::drawHolst, ::drawHolstBorder)) })
+        canvasHeight.observe(activity,                  { redraw(arrayOf(::drawHolst, ::drawHolstBorder)) })
+        backgroundColorCanvas.observe(activity,         { redraw(arrayOf(::drawHolst)) })
+        canvasBorderColor.observe(activity,             { redraw(arrayOf(::drawHolstBorder)) })
+        hasBorderCanvas.observe(activity,               { redraw(arrayOf(::drawHolstBorder)) })
+        indentBorderCanvas.observe(activity,            { redraw(arrayOf(::drawHolstBorder)) })
+        widthBorderCanvas.observe(activity,             { redraw(arrayOf(::drawHolstBorder)) })
+        backgroundColorMap.observe(activity,            { redraw(arrayOf(::drawMap)) })
+        radiusMap.observe(activity,                     { redraw(arrayOf(::drawMap)) })
+        hasBorderMap.observe(activity,                  { redraw(arrayOf(::drawMap)) })
+        widthBorderMap.observe(activity,                { redraw(arrayOf(::drawMap)) })
+        mapBorderColor.observe(activity,                { redraw(arrayOf(::drawMap)) })
+        descTextSize.observe(activity,                  { redraw(arrayOf(::drawDesc)) })
+        eventLocationSize.observe(activity,             { redraw(arrayOf(::drawLocationText)) })
+        descText.observe(activity,                      { redraw(arrayOf(::drawDesc)) })
+        hasEventDateInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
+        eventDate.observe(activity,                     { redraw(arrayOf(::drawLocationText)) })
+        hasEventTimeInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
+        eventTime.observe(activity,                     { redraw(arrayOf(::drawLocationText)) })
+        hasEventCityInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
+        eventCity.observe(activity,                     { redraw(arrayOf(::drawLocationText)) })
+        hasEventCoordinatesInLocation.observe(activity, { redraw(arrayOf(::drawLocationText)) })
+        eventLatitude.observe(activity,                 { redraw(arrayOf(::drawLocationText)) })
+        eventLongitude.observe(activity,                { redraw(arrayOf(::drawLocationText)) })
         hasSeparator.observe(activity,                  { redraw(null) })
-        separatorColor.observe(activity,                { redraw(::drawSeparator) })
-        separatorWidth.observe(activity,                { redraw(::drawSeparator) })
-        separatorHeight.observe(activity,               { redraw(::drawSeparator) })
+        separatorColor.observe(activity,                { redraw(arrayOf(::drawSeparator)) })
+        separatorWidth.observe(activity,                { redraw(arrayOf(::drawSeparator)) })
+        separatorHeight.observe(activity,               { redraw(arrayOf(::drawSeparator)) })
 
         firstDraw()
     }
@@ -99,11 +99,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         isDataInitialized = true
     }
 
-    private fun redraw(callback: (() -> Unit?)?) {
+    private fun redraw(callbacks: Array<() -> Unit?>?) {
         if(isDataInitialized) {
-            if (callback != null) {
-                callback()
-            }
+            callbacks?.forEach { it() }
 
             draw()
         }
@@ -179,9 +177,16 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
 
-        val heightAllText = Canvas(tempBitmap).drawMultilineText(descText.value!!, descTextPaint, (canvasWidth.value!!/1.5).toInt() , canvasWidth.value!!/2, 0F)
+        val canvas = Canvas(tempBitmap)
 
-        bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), heightAllText)
+        val textLines = descText.value!!.split("\n")
+        var totalHeightText = 0F
+
+        for(textLine in textLines) {
+            totalHeightText += canvas.drawMultilineText(textLine, descTextPaint, (canvasWidth.value!!/1.5).toInt() , canvasWidth.value!!/2, totalHeightText)
+        }
+
+        bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), totalHeightText.toInt())
     }
 
     private fun drawSeparator() {
@@ -209,13 +214,20 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
 
-        val heightAllText = Canvas(tempBitmap).drawMultilineText(getLocationText(), eventLocation, (canvasWidth.value!!/2).toInt() , canvasWidth.value!!/2,  0F)
+        val canvas = Canvas(tempBitmap)
 
-        bitmapLocationText = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), heightAllText)
+        val textLines = getLocationText().split("\n")
+        var totalHeightText = 0F
+
+        for(textLine in textLines) {
+            totalHeightText += canvas.drawMultilineText(textLine, eventLocation, (canvasWidth.value!!/2).toInt() , canvasWidth.value!!/2,  totalHeightText)
+        }
+
+        bitmapLocationText = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), totalHeightText.toInt())
     }
 
     private fun getBottomMarginLocationText(): Int {
-        var margin = bitmapLocationText!!.height.toFloat()
+        var margin = bitmapLocationText.height.toFloat()
 
 
         margin = margin.plus(
@@ -234,53 +246,52 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         var margin = 0F
 
         margin += if(hasBorderMap.value!!) {
-            canvasWidth.value!!/2 + bitmapMapBorder!!.height / 2
+            canvasWidth.value!!/2 + bitmapMapBorder.height / 2
         } else {
-            canvasWidth.value!!/2 + bitmapMap!!.height / 2
+            canvasWidth.value!!/2 + bitmapMap.height / 2
         }
 
         return margin
     }
 
     override fun draw() {
-            Thread {
-                bitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+        Thread {
+            bitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
 
-                val canvas = Canvas(bitmap)
+            val canvas = Canvas(bitmap)
 
-                // Рисуем холст
-                canvas.drawBitmap(bitmapHolst, 0F, 0F, null)
+            // Рисуем холст
+            canvas.drawBitmap(bitmapHolst, 0F, 0F, null)
 
-                // Рисуем рамку холста
-                if(hasBorderCanvas.value!!) {
-                    canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, null)
-                }
+            // Рисуем рамку холста
+            if(hasBorderCanvas.value!!) {
+                canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, null)
+            }
 
-                // Рисуем рамку карты
-                if(hasBorderMap.value!!) {
-                    canvas.drawBitmap(bitmapMapBorder, canvasWidth.value!!/2 - bitmapMapBorder.width / 2, canvasWidth.value!!/2 - bitmapMapBorder.width / 2, null)
-                }
+            // Рисуем рамку карты
+            if(hasBorderMap.value!!) {
+                canvas.drawBitmap(bitmapMapBorder, canvasWidth.value!!/2 - bitmapMapBorder.width / 2, canvasWidth.value!!/2 - bitmapMapBorder.width / 2, null)
+            }
 
-                // Рисуем карту
-                canvas.drawBitmap(bitmapMap, canvasWidth.value!!/2 - bitmapMap.width / 2, canvasWidth.value!!/2 - bitmapMap.width / 2, null)
+            // Рисуем карту
+            canvas.drawBitmap(bitmapMap, canvasWidth.value!!/2 - bitmapMap.width / 2, canvasWidth.value!!/2 - bitmapMap.width / 2, null)
 
 
-                // Рисуем текст описание
-                canvas.drawBitmap(bitmapDesc, 0F, getTopMarginDescText(), null)
+            // Рисуем текст описание
+            canvas.drawBitmap(bitmapDesc, 0F, getTopMarginDescText(), null)
 
-                // Рисуем разделитель
-                if(hasSeparator.value!!) {
-                    canvas.drawBitmap(bitmapSeparator, 100F, getTopMarginDescText(), null)
-                }
+            // Рисуем разделитель
+            if(hasSeparator.value!!) {
+                canvas.drawBitmap(bitmapSeparator, 100F, getTopMarginDescText(), null)
+            }
 
-                // Рисуем текст локации
-                canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight.value!! - getBottomMarginLocationText(), null)
+            // Рисуем текст локации
+            canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight.value!! - getBottomMarginLocationText(), null)
 
-                activity.runOnUiThread {
-                    listener?.onDraw()
-                }
+            activity.runOnUiThread {
+                listener?.onDraw()
+            }
 
-            }.start()
-
+        }.start()
     }
 }
