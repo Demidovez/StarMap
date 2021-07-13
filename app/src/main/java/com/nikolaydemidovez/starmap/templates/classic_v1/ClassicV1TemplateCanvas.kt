@@ -3,7 +3,9 @@ package com.nikolaydemidovez.starmap.templates.classic_v1
 import android.graphics.*
 import android.graphics.Paint.*
 import android.text.TextPaint
+import android.util.Log
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.scale
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
@@ -140,16 +142,21 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     }
 
     private fun drawMap() {
-        val map = Paint(ANTI_ALIAS_FLAG).apply {
-            style = Style.FILL
-            color = backgroundColorMap.value!!
-            isDither = true
-            isAntiAlias = true
-        }
-        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+        var tempBitmap: Bitmap
 
-        Canvas(tempBitmap).drawCircle(radiusMap.value!!, radiusMap.value!!, radiusMap.value!!, map)
-        bitmapMap = Bitmap.createBitmap(tempBitmap, 0, 0, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt())
+        if(bitmapStarMap != null) {
+            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap!!, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt(), true)
+        } else {
+            tempBitmap = BitmapFactory.decodeResource(activity.resources, R.drawable.map);
+
+            tempBitmap = Bitmap.createScaledBitmap(tempBitmap, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt(), true)
+        }
+
+        val x = (tempBitmap.width / 2) - radiusMap.value!!
+        val y = (tempBitmap.height / 2) - radiusMap.value!!
+        val width = (radiusMap.value!! * 2).toInt()
+
+        bitmapMap = Bitmap.createBitmap(tempBitmap, x.toInt(), y.toInt(), width, width)
     }
 
     private fun drawMapBorder() {

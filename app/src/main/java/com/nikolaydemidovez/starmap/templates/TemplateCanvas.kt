@@ -1,15 +1,22 @@
 package com.nikolaydemidovez.starmap.templates
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.pdf.PdfDocument
 import android.location.Location
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.MainActivity
+import com.nikolaydemidovez.starmap.retrofit.common.Common
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -50,6 +57,22 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
 
     var bitmap: Bitmap = Bitmap.createBitmap(2480, 3508,Bitmap.Config.ARGB_8888)
         protected set
+
+    var bitmapStarMap: Bitmap? = null
+
+    init {
+        Common.retrofitService.getClassicV1Map().enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                val bodyBytes = response?.body()!!.bytes()
+                Log.d("MyLog", bodyBytes.size.toString())
+                bitmapStarMap = BitmapFactory.decodeByteArray(bodyBytes, 0, bodyBytes.size)
+            }
+        })
+    }
 
     protected var listener: OnDrawListener? = null
 
