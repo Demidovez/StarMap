@@ -3,14 +3,21 @@ package com.nikolaydemidovez.starmap.templates.classic_v1
 import android.graphics.*
 import android.graphics.Paint.*
 import android.text.TextPaint
-import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
 import java.util.*
+import androidx.core.graphics.drawable.DrawableCompat
+
+import android.graphics.drawable.Drawable
+import android.graphics.Bitmap
+import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
+
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
     private var isDataInitialized = false
@@ -65,6 +72,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasBorderMap.observe(activity,                  { redraw(arrayOf(::drawMap)) })
         widthBorderMap.observe(activity,                { redraw(arrayOf(::drawMap)) })
         mapBorderColor.observe(activity,                { redraw(arrayOf(::drawMap)) })
+        isLoadedStarMap.observe(activity,               { redraw(arrayOf(::drawMap)) })
         descTextSize.observe(activity,                  { redraw(arrayOf(::drawDesc)) })
         eventLocationSize.observe(activity,             { redraw(arrayOf(::drawLocationText)) })
         descText.observe(activity,                      { redraw(arrayOf(::drawDesc)) })
@@ -146,17 +154,16 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         if(bitmapStarMap != null) {
             tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap!!, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt(), true)
+            tempBitmap = getBitmapClippedCircle(tempBitmap)!!
+
+            val x = (tempBitmap.width / 2) - radiusMap.value!!
+            val y = (tempBitmap.height / 2) - radiusMap.value!!
+            val width = (radiusMap.value!! * 2).toInt()
+
+            bitmapMap = Bitmap.createBitmap(tempBitmap, x.toInt(), y.toInt(), width, width)
         } else {
-            tempBitmap = BitmapFactory.decodeResource(activity.resources, R.drawable.map);
-
-            tempBitmap = Bitmap.createScaledBitmap(tempBitmap, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt(), true)
+            bitmapMap = getLoadingBitmap()
         }
-
-        val x = (tempBitmap.width / 2) - radiusMap.value!!
-        val y = (tempBitmap.height / 2) - radiusMap.value!!
-        val width = (radiusMap.value!! * 2).toInt()
-
-        bitmapMap = Bitmap.createBitmap(tempBitmap, x.toInt(), y.toInt(), width, width)
     }
 
     private fun drawMapBorder() {
@@ -285,6 +292,32 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         countObjectsForSetMargin = if(hasSeparator.value!!) 3  else 2
 
         return (canvasHeight.value!! - heightAllObjects) / countObjectsForSetMargin
+    }
+
+    private fun getLoadingBitmap(): Bitmap {
+        val map = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.FILL
+            color = backgroundColorMap.value!!
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+
+        val loadingCanvas = Canvas(tempBitmap)
+
+        loadingCanvas.drawCircle(radiusMap.value!!, radiusMap.value!!, radiusMap.value!!, map)
+
+        val widthLoadingIcon = radiusMap.value!! * 0.5
+        val heightLoadingIcon = radiusMap.value!! * 0.5
+        val drawableLoadingIcon = ContextCompat.getDrawable(activity, R.drawable.ic_loading_map)!!
+        val wrappedDrawable = DrawableCompat.wrap(drawableLoadingIcon)
+        DrawableCompat.setTint(wrappedDrawable, if (backgroundColorMap.value!! == Color.parseColor("#FFFFFF")) Color.BLACK else Color.WHITE)
+        val bitmapLoadingIcon = wrappedDrawable.toBitmap(widthLoadingIcon.toInt(), heightLoadingIcon.toInt())
+
+        loadingCanvas.drawBitmap(bitmapLoadingIcon, (radiusMap.value!! - widthLoadingIcon / 2).toFloat(), (radiusMap.value!! - heightLoadingIcon / 2).toFloat(), null)
+
+        return Bitmap.createBitmap(tempBitmap, 0, 0, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt())
     }
 
     override fun draw() {

@@ -58,6 +58,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     var bitmap: Bitmap = Bitmap.createBitmap(2480, 3508,Bitmap.Config.ARGB_8888)
         protected set
 
+    val isLoadedStarMap                 = MutableLiveData<Boolean>()    // Загрузилась ли звездная карта с сервера
     var bitmapStarMap: Bitmap? = null
 
     init {
@@ -68,8 +69,10 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
 
             override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
                 val bodyBytes = response?.body()!!.bytes()
-                Log.d("MyLog", bodyBytes.size.toString())
+
                 bitmapStarMap = BitmapFactory.decodeByteArray(bodyBytes, 0, bodyBytes.size)
+
+                isLoadedStarMap.value = true
             }
         })
     }

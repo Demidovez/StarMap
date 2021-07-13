@@ -1,5 +1,8 @@
 package com.nikolaydemidovez.starmap.utils.helpers
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Path
 import android.location.Location
 import kotlin.math.abs
 
@@ -46,6 +49,28 @@ class Helper {
 
 
             return builder.toString()
+        }
+
+        // Bitmap из прямоугольной формы в круглую
+        fun getBitmapClippedCircle(bitmap: Bitmap): Bitmap? {
+            val width = bitmap.width
+            val height = bitmap.height
+
+            val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            val path = Path()
+
+            path.addCircle(
+                (width / 2).toFloat(),
+                (height / 2).toFloat(),
+                width.coerceAtMost(height / 2).toFloat(),
+                Path.Direction.CCW
+            )
+
+            val canvas = Canvas(outputBitmap)
+            canvas.clipPath(path)
+            canvas.drawBitmap(bitmap, 0F, 0F, null)
+
+            return outputBitmap
         }
     }
 }
