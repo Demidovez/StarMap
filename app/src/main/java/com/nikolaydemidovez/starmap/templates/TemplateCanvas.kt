@@ -32,7 +32,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val hasBorderCanvas                 = MutableLiveData<Boolean>()    // Добавлена ли рамка холста
     val indentBorderCanvas              = MutableLiveData<Float>()      // Отступ рамки от края холста
     val widthBorderCanvas               = MutableLiveData<Float>()      // Ширина рамки холста
-    val backgroundColorMap              = MutableLiveData<Int>()        // Цвет фона карты
+    val backgroundColorMap              = MutableLiveData<String>()     // Цвет фона карты
     val radiusMap                       = MutableLiveData<Float>()      // Радиус карты
     val hasBorderMap                    = MutableLiveData<Boolean>()    // Добавлена ли рамка карты
     val widthBorderMap                  = MutableLiveData<Float>()      // Ширина рамки карты
@@ -57,25 +57,6 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
 
     var bitmap: Bitmap = Bitmap.createBitmap(2480, 3508,Bitmap.Config.ARGB_8888)
         protected set
-
-    val isLoadedStarMap                 = MutableLiveData<Boolean>()    // Загрузилась ли звездная карта с сервера
-    var bitmapStarMap: Bitmap? = null
-
-    init {
-        Common.retrofitService.getClassicV1Map().enqueue(object : Callback<ResponseBody> {
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-
-            }
-
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                val bodyBytes = response?.body()!!.bytes()
-
-                bitmapStarMap = BitmapFactory.decodeByteArray(bodyBytes, 0, bodyBytes.size)
-
-                isLoadedStarMap.value = true
-            }
-        })
-    }
 
     protected var listener: OnDrawListener? = null
 

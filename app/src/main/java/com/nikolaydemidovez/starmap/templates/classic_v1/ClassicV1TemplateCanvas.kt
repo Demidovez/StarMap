@@ -16,11 +16,23 @@ import androidx.core.graphics.drawable.DrawableCompat
 
 import android.graphics.drawable.Drawable
 import android.graphics.Bitmap
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
+import com.nikolaydemidovez.starmap.retrofit.common.Common
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
     private var isDataInitialized = false
+    private var isLoadedStarMap                         = MutableLiveData<Boolean>()    // Загрузилась ли звездная карта с сервера
 
     private lateinit var bitmapHolst: Bitmap
     private lateinit var bitmapHolstBorder: Bitmap
@@ -29,6 +41,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private lateinit var bitmapDesc: Bitmap
     private lateinit var bitmapSeparator: Bitmap
     private lateinit var bitmapLocationText: Bitmap
+    private var bitmapStarMap: Bitmap? = null
 
     init {
         canvasWidth.value                               = 2480F
@@ -38,7 +51,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasBorderCanvas.value                           = true
         indentBorderCanvas.value                        = 100F
         widthBorderCanvas.value                         = 10F
-        backgroundColorMap.value                        = Color.parseColor("#000000")
+        backgroundColorMap.value                        = "#000000"
         radiusMap.value                                 = 1000F
         hasBorderMap.value                              = false
         widthBorderMap.value                            = 15F
@@ -67,9 +80,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasBorderCanvas.observe(activity,               { redraw(arrayOf(::drawHolstBorder)) })
         indentBorderCanvas.observe(activity,            { redraw(arrayOf(::drawHolstBorder)) })
         widthBorderCanvas.observe(activity,             { redraw(arrayOf(::drawHolstBorder)) })
-        backgroundColorMap.observe(activity,            { redraw(arrayOf(::drawMap)) })
-        radiusMap.observe(activity,                     { redraw(arrayOf(::drawMap)) })
-        hasBorderMap.observe(activity,                  { redraw(arrayOf(::drawMap)) })
+        backgroundColorMap.observe(activity,            { redraw(arrayOf(::requestStarMap)) })
+        radiusMap.observe(activity,                     { redraw(arrayOf(::requestStarMap)) })
+        hasBorderMap.observe(activity,                  { redraw(arrayOf(::requestStarMap, ::drawMap)) })
         widthBorderMap.observe(activity,                { redraw(arrayOf(::drawMap)) })
         mapBorderColor.observe(activity,                { redraw(arrayOf(::drawMap)) })
         isLoadedStarMap.observe(activity,               { redraw(arrayOf(::drawMap)) })
@@ -95,6 +108,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
     private fun firstDraw() {
         Thread {
+            requestStarMap()
             drawHolst()
             drawHolstBorder()
             drawMap()
@@ -106,6 +120,107 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
             isDataInitialized = true
         }.start()
+    }
+
+    private fun requestStarMap() {
+        bitmapStarMap = null
+
+        Common.retrofitService.getClassicV1Map(getRequestBodyStarMap()).enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {}
+
+            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                val bodyBytes = response?.body()!!.bytes()
+
+                bitmapStarMap = BitmapFactory.decodeByteArray(bodyBytes, 0, bodyBytes.size)
+
+                isLoadedStarMap.value = true
+            }
+        })
+    }
+
+    private fun getRequestBodyStarMap(): RequestBody {
+        val jsonString =
+            """
+                {
+                    "date": 1626283443816,
+                    "location": [25.1, 25.1],
+                    "width": 1000,
+                    "options": {
+                        "background": {
+                            "fill": "${backgroundColorMap.value}"
+                        },
+                        "stars": {
+                            "propername": false,
+                            "propernameType": "ru",
+                            "propernameStyle": {
+                                "fill": "#ddddbb",
+                                "font": "13px Arial, Times, 'Times Roman', serif",
+                                "align": "right",
+                                "baseline": "bottom"
+                            },
+                            "style": { 
+                                "fill": "#ffffff", 
+                                "opacity": 1 
+                            },
+                            "size": 12
+                        },
+                        "dsos": {
+                            "names": false,
+                            "namesType": "ru",
+                            "nameStyle": {
+                                "fill": "#000000",
+                                "font": "11px Helvetica, Arial, serif",
+                                "align": "left",
+                                "baseline": "top"
+                            }
+                        },
+                        "planets": {
+                            "show": true,
+                            "names": false,
+                            "namesType": "ru",
+                            "nameStyle": {
+                                "fill": "#00ccff",
+                                "font": "14px 'Lucida Sans Unicode', Consolas, sans-serif",
+                                "align": "right",
+                                "baseline": "top"
+                            }
+                        },
+                        "constellations": {
+                            "names": false,
+                            "namesType": "ru",
+                            "nameStyle": {
+                                "fill": "#cccc99",
+                                "align": "center",
+                                "baseline": "middle",
+                                "font": [
+                                    "14px Helvetica, Arial, sans-serif",
+                                    "12px Helvetica, Arial, sans-serif",
+                                    "11px Helvetica, Arial, sans-serif"
+                                ]
+                            },
+                            "lineStyle": { 
+                                "stroke": "#FFFFFF", 
+                                "width": 3, 
+                                "opacity": 1 
+                            }
+                        },
+                        "mw": {
+                            "show": true
+                        },
+                        "lines": {
+                            "graticule": {
+                                "show": true,
+                                "stroke": "#cccccc",
+                                "dash": [5, 5],
+                                "width": 0.6,
+                                "opacity": 0.8
+                            }
+                        }
+                    }
+                }       
+            """
+
+        return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonString)
     }
 
     private fun redraw(callbacks: Array<() -> Unit?>?) {
@@ -297,7 +412,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private fun getLoadingBitmap(): Bitmap {
         val map = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            color = backgroundColorMap.value!!
+            color = Color.parseColor(backgroundColorMap.value!!)
             isDither = true
             isAntiAlias = true
         }
@@ -312,7 +427,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         val heightLoadingIcon = radiusMap.value!! * 0.5
         val drawableLoadingIcon = ContextCompat.getDrawable(activity, R.drawable.ic_loading_map)!!
         val wrappedDrawable = DrawableCompat.wrap(drawableLoadingIcon)
-        DrawableCompat.setTint(wrappedDrawable, if (backgroundColorMap.value!! == Color.parseColor("#FFFFFF")) Color.BLACK else Color.WHITE)
+        DrawableCompat.setTint(wrappedDrawable, if (backgroundColorMap.value!! == "#FFFFFF") Color.BLACK else Color.WHITE)
         val bitmapLoadingIcon = wrappedDrawable.toBitmap(widthLoadingIcon.toInt(), heightLoadingIcon.toInt())
 
         loadingCanvas.drawBitmap(bitmapLoadingIcon, (radiusMap.value!! - widthLoadingIcon / 2).toFloat(), (radiusMap.value!! - heightLoadingIcon / 2).toFloat(), null)
