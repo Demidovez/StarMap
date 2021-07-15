@@ -1,13 +1,16 @@
 package com.nikolaydemidovez.starmap.pages.templates
 
+import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.nikolaydemidovez.starmap.MainActivity
+import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplatesBinding
 
 class TemplatesFragment : Fragment() {
@@ -17,6 +20,7 @@ class TemplatesFragment : Fragment() {
     private val adapter = TemplateAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        editActionAndStatusBar()
         templatesViewModel = ViewModelProvider(this).get(TemplatesViewModel::class.java)
 
         binding = FragmentTemplatesBinding.inflate(inflater, container, false)
@@ -26,6 +30,17 @@ class TemplatesFragment : Fragment() {
         recyclerInit()
 
         return root
+    }
+
+    private fun editActionAndStatusBar() {
+        if (activity != null) {
+            (activity as MainActivity).supportActionBar?.show()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val window: Window = requireActivity().window
+            window.statusBarColor = ContextCompat.getColor(requireActivity(), R.color.white)
+        }
     }
 
     private fun recyclerInit() {

@@ -1,14 +1,11 @@
 package com.nikolaydemidovez.starmap.pages.template
 
 import android.app.Dialog
-import android.graphics.PointF
+import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.*
-import android.view.View.OnLayoutChangeListener
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.widget.Toast
-import androidx.core.graphics.scale
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +18,14 @@ import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.half_v1.HalfV1TemplateCanvas
+import android.view.WindowManager
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import androidx.core.view.marginTop
+import androidx.core.view.updatePadding
+import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.dpToPx
 
 
 class TemplateFragment : Fragment() {
@@ -31,12 +36,8 @@ class TemplateFragment : Fragment() {
     private lateinit var templateCanvas: TemplateCanvas
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        editActionAndStatusBar()
         val templateName = arguments?.getString("templateName")
-        val templateTitle = arguments?.getString("templateTitle")
-
-        if (activity != null) {
-            (activity as MainActivity).supportActionBar?.title = templateTitle
-        }
 
         templateViewModel = ViewModelProviders.of(this, TemplateViewModelFactory(templateName!!)).get(TemplateViewModel::class.java)
 
@@ -56,6 +57,10 @@ class TemplateFragment : Fragment() {
 
         adapter = ControllerAdapter(childFragmentManager, templateCanvas)
 
+        binding.btnBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
         binding.fullScreen.setOnClickListener {
             showFullScreenCanvasDialog(templateCanvas)
         }
@@ -63,6 +68,19 @@ class TemplateFragment : Fragment() {
         recyclerInit()
 
         return root
+    }
+
+
+    private fun editActionAndStatusBar() {
+        if (activity != null) {
+            (activity as MainActivity).supportActionBar?.hide()
+        }
+
+        val window: Window = requireActivity().window
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = ContextCompat.getColor(requireActivity(), R.color.gray)
+        }
     }
 
     private fun recyclerInit() {

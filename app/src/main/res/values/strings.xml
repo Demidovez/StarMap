@@ -4,7 +4,8 @@
     <string name="title_projects">Проекты</string>
     <string name="title_settings">Настройки</string>
     <string name="title_template">Шаблон</string>
-    <string name="full_screen">Full Screen</string>
+    <string name="full_screen">На весь экран</string>
+    <string name="btn_back">Назад</string>
     <string name="label_date">Дата</string>
     <string name="label_time">Время</string>
     <string name="label_location">Место</string>

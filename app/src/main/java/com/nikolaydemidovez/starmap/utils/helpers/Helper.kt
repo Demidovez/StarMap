@@ -1,10 +1,15 @@
 package com.nikolaydemidovez.starmap.utils.helpers
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Path
 import android.location.Location
 import kotlin.math.abs
+import android.util.TypedValue
+
+
+
 
 class Helper {
     companion object {
@@ -71,6 +76,10 @@ class Helper {
             canvas.drawBitmap(bitmap, 0F, 0F, null)
 
             return outputBitmap
+        }
+
+        fun dpToPx(dp: Float, context: Context): Int {
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics).toInt()
         }
     }
 }
