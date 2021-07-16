@@ -19,6 +19,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.nikolaydemidovez.starmap.pages.template.Controller
 import com.nikolaydemidovez.starmap.retrofit.common.Common
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
 import okhttp3.MediaType
@@ -28,9 +29,21 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.collections.ArrayList
 
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
+    private val controllerList = arrayListOf(
+        Controller("event_v1",     "Событие",     ContextCompat.getDrawable(activity,R.drawable.ic_event_v1)),
+        Controller("canvas_v1",    "Холст",       ContextCompat.getDrawable(activity,R.drawable.ic_canvas_v1)),
+        Controller("map_v1",       "Карта",       ContextCompat.getDrawable(activity,R.drawable.ic_map_v1)),
+        Controller("stars_v1",     "Звезды",      ContextCompat.getDrawable(activity,R.drawable.ic_stars_v1)),
+        Controller("desc_v1",      "Текст",       ContextCompat.getDrawable(activity,R.drawable.ic_desc_v1)),
+        Controller("separator_v1", "Разделитель", ContextCompat.getDrawable(activity,R.drawable.ic_separator_v1)),
+        Controller("location_v1",  "Локация",     ContextCompat.getDrawable(activity,R.drawable.ic_location_v1)),
+        Controller("save_v1",      "Сохранение",  ContextCompat.getDrawable(activity,R.drawable.ic_save_v1)),
+    );
+
     private var isDataInitialized = false
     private var isLoadedStarMap                         = MutableLiveData<Boolean>()    // Загрузилась ли звездная карта с сервера
 
@@ -475,5 +488,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             }
 
         }.start()
+    }
+
+    override fun getControllerList(): ArrayList<Controller> {
+        return controllerList
     }
 }

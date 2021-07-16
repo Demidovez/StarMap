@@ -11,10 +11,11 @@
 
     <ImageView
         android:id="@+id/canvas_image"
-        android:paddingTop="8dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/recycler_controllers"
+        app:layout_constraintBottom_toTopOf="@id/tab_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -39,25 +40,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="@string/full_screen" />
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_controllers"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:clipToPadding="false"
-        app:layout_constraintBottom_toTopOf="@id/controller_wrapper"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        app:layout_constraintBottom_toTopOf="@id/tabs_viewpager"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <FrameLayout
-        android:id="@+id/controller_wrapper"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabIndicatorFullWidth="false"
+        app:tabRippleColor = "@android:color/transparent"
+        app:tabIndicatorColor="@color/dark"
+        app:tabTextColor="@color/dark_gray"
+        app:tabSelectedTextColor="@color/dark"
+        app:tabTextAppearance="@style/TabLayoutTextAppearance"
+        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:background="@drawable/rounded_top_background"
+        android:layout_height="40dp" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/tabs_viewpager"
+        android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_weight="1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

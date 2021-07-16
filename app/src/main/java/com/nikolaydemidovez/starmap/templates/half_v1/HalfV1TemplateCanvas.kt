@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
+import com.nikolaydemidovez.starmap.pages.template.Controller
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 
 class HalfV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
@@ -36,7 +38,7 @@ class HalfV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(
             Bitmap.Config.ARGB_8888
         )
 
-        val canvas = Canvas(bitmap!!)
+        val canvas = Canvas(bitmap)
 
         //holst.color = backgroundColorCanvas
         border.color = canvasBorderColor.value!!
@@ -48,5 +50,18 @@ class HalfV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(
         canvas.drawRect(40F, 40F, canvasWidth.value!! - 40F, canvasHeight.value!! - 40F, border)
 
         listener?.onDraw()
+    }
+
+    override fun getControllerList(): ArrayList<Controller> {
+        return arrayListOf(
+            Controller("event_v1",     "Событие",     ContextCompat.getDrawable(activity,R.drawable.ic_event_v1)),
+            Controller("canvas_v1",    "Холст",       ContextCompat.getDrawable(activity,R.drawable.ic_canvas_v1)),
+            Controller("map_v1",       "Карта",       ContextCompat.getDrawable(activity,R.drawable.ic_map_v1)),
+            Controller("stars_v1",     "Звезды",      ContextCompat.getDrawable(activity,R.drawable.ic_stars_v1)),
+            Controller("desc_v1",      "Текст",       ContextCompat.getDrawable(activity,R.drawable.ic_desc_v1)),
+            Controller("separator_v1", "Разделитель", ContextCompat.getDrawable(activity,R.drawable.ic_separator_v1)),
+            Controller("location_v1",  "Локация",     ContextCompat.getDrawable(activity,R.drawable.ic_location_v1)),
+            Controller("save_v1",      "Сохранение",  ContextCompat.getDrawable(activity,R.drawable.ic_save_v1)),
+        )
     }
 }

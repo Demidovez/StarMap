@@ -11,4 +11,7 @@
     <color name="red">#FF0000</color>
     <color name="green">#008C4F</color>
     <color name="nav_item_color">#9F9F9F</color>
+    <color name="dark">#4a5660</color>
+    <color name="dark_gray">#7F888F</color>
+
 </resources>

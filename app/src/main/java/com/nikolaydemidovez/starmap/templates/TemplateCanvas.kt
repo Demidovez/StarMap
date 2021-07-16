@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.MainActivity
+import com.nikolaydemidovez.starmap.pages.template.Controller
 import com.nikolaydemidovez.starmap.retrofit.common.Common
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import okhttp3.ResponseBody
@@ -20,6 +21,7 @@ import retrofit2.Response
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 abstract class TemplateCanvas(private val activity: MainActivity) {
@@ -69,6 +71,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     }
 
     abstract fun draw()
+    abstract fun getControllerList(): ArrayList<Controller>
 
     fun getShortBitmap(): Bitmap {
         val maxSize = (canvasWidth.value!!).coerceAtLeast(canvasHeight.value!!)

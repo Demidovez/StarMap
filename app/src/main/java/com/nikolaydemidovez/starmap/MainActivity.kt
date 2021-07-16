@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.itemIconTintList = null
+        navView.itemRippleColor = null
     }
 
     override fun onSupportNavigateUp(): Boolean {

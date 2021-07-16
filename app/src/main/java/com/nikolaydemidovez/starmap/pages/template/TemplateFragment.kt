@@ -1,38 +1,29 @@
 package com.nikolaydemidovez.starmap.pages.template
 
 import android.app.Dialog
-import android.content.res.Resources
-import android.graphics.Color
-import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.google.android.material.tabs.TabLayoutMediator
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.half_v1.HalfV1TemplateCanvas
-import android.view.WindowManager
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import androidx.core.view.marginTop
-import androidx.core.view.updatePadding
-import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.dpToPx
-
 
 class TemplateFragment : Fragment() {
-
     private lateinit var templateViewModel: TemplateViewModel
     private lateinit var binding: FragmentTemplateBinding
-    private lateinit var adapter: ControllerAdapter
     private lateinit var templateCanvas: TemplateCanvas
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -55,8 +46,6 @@ class TemplateFragment : Fragment() {
             }
         })
 
-        adapter = ControllerAdapter(childFragmentManager, templateCanvas)
-
         binding.btnBack.setOnClickListener {
             requireActivity().onBackPressed()
         }
@@ -65,11 +54,35 @@ class TemplateFragment : Fragment() {
             showFullScreenCanvasDialog(templateCanvas)
         }
 
-        recyclerInit()
+        initTabControllers()
 
         return root
     }
 
+    private fun initTabControllers() {
+        binding.tabLayout.tabMode = TabLayout.MODE_SCROLLABLE
+        binding.tabLayout.isInlineLabel = true
+        binding.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                tab.icon?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(ContextCompat.getColor(requireContext(), R.color.dark), BlendModeCompat.SRC_ATOP)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                tab.icon?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(ContextCompat.getColor(requireContext(), R.color.dark_gray), BlendModeCompat.SRC_ATOP)
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
+        binding.tabsViewpager.adapter = ControllerTabAdapter(requireActivity().supportFragmentManager, lifecycle, templateCanvas.getControllerList().size, templateCanvas)
+        binding.tabsViewpager.isUserInputEnabled = true
+
+        TabLayoutMediator(binding.tabLayout, binding.tabsViewpager) { tab, position ->
+            tab.text = templateCanvas.getControllerList()[position].title
+            tab.icon = templateCanvas.getControllerList()[position].drawable
+            tab.icon?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(ContextCompat.getColor(requireContext(), R.color.dark_gray), BlendModeCompat.SRC_ATOP)
+        }.attach()
+    }
 
     private fun editActionAndStatusBar() {
         if (activity != null) {
@@ -81,18 +94,6 @@ class TemplateFragment : Fragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = ContextCompat.getColor(requireActivity(), R.color.gray)
         }
-    }
-
-    private fun recyclerInit() {
-        val recyclerTemplates: RecyclerView = binding.recyclerControllers
-
-        recyclerTemplates.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
-        recyclerTemplates.adapter = adapter
-
-        templateViewModel.controllerList.observe(viewLifecycleOwner, {
-            adapter.addAllControllerList(it)
-        })
-
     }
 
     private fun showFullScreenCanvasDialog(templateCanvas: TemplateCanvas) {
