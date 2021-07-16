@@ -12,6 +12,9 @@
     <color name="green">#008C4F</color>
     <color name="nav_item_color">#9F9F9F</color>
     <color name="dark">#4a5660</color>
-    <color name="dark_gray">#7F888F</color>
+    <color name="dark_shadow">#606B75</color>
+    <color name="dark_gray">#94999E</color>
+    <color name="dark_light">#B2B6BA</color>
+    <color name="dark_white">#EDEEF1</color>
 
 </resources>

@@ -9,6 +9,7 @@
     <string name="label_date">Дата</string>
     <string name="label_time">Время</string>
     <string name="label_location">Место</string>
+    <string name="label_or">или</string>
     <string name="label_latitude">Широта</string>
     <string name="label_longitude">Долгота</string>
     <string name="label_size">Выберите размер холста</string>

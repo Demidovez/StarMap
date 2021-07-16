@@ -2,7 +2,7 @@
     <style name="Theme.StarMap" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryVariant">@color/white</item>
-        <item name="colorAccent">@color/black</item>
+        <item name="colorAccent">@color/dark</item>
         <item name="android:statusBarColor" tools:targetApi="21">@color/white</item>-->
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
         <item name="android:navigationBarColor" tools:targetApi="21">@color/white</item>
@@ -24,5 +24,24 @@
     <style name="TabLayoutTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
     </style>
+
+    <style name="label_controller">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/dark_shadow</item>
+        <item name="android:fontFamily">@font/nunito_semi_bold</item>
+    </style>
+
+    <style name="edit_text_controller" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:padding">8dp</item>
+        <item name="android:background">@drawable/rounded_border_edittext</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/nunito_semi_bold</item>
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:gravity">top</item>
+        <item name="android:inputType">textNoSuggestions</item>
+    </style>
+
+
 </resources>

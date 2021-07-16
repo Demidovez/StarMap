@@ -77,7 +77,7 @@ class TemplateFragment : Fragment() {
         binding.tabsViewpager.adapter = ControllerTabAdapter(requireActivity().supportFragmentManager, lifecycle, templateCanvas.getControllerList().size, templateCanvas)
         binding.tabsViewpager.isUserInputEnabled = true
 
-        TabLayoutMediator(binding.tabLayout, binding.tabsViewpager) { tab, position ->
+        TabLayoutMediator(binding.tabLayout, binding.tabsViewpager, false, false) { tab, position ->
             tab.text = templateCanvas.getControllerList()[position].title
             tab.icon = templateCanvas.getControllerList()[position].drawable
             tab.icon?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(ContextCompat.getColor(requireContext(), R.color.dark_gray), BlendModeCompat.SRC_ATOP)

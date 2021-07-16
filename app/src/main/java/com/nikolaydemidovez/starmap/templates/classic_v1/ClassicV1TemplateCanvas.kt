@@ -73,7 +73,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         eventLocationSize.value                         = 60F
         descText.value                                  = "День, когда сошлись\nвсе звезды вселенной..."
         hasEventDateInLocation.value                    = true
-        eventDate.value                                 = Date()
+        eventDate.value                                 = Calendar.getInstance().time
         hasEventTimeInLocation.value                    = true
         eventTime.value                                 = Date()
         hasEventCityInLocation.value                    = true
