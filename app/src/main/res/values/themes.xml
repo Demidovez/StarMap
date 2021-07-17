@@ -53,5 +53,17 @@
         <item name="android:timePickerMode">spinner</item>
     </style>
 
+    <style name="location_in_event_dialog">
+        <item name="android:textSize">19sp</item>
+        <item name="android:textColor">@color/dark_shadow</item>
+        <item name="android:fontFamily">@font/nunito_semi_bold</item>
+    </style>
+
+    <style name="country_in_event_dialog">
+        <item name="android:textSize">19sp</item>
+        <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+    </style>
+
 
 </resources>

@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
+import com.nikolaydemidovez.starmap.adapters.ControllerTabAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas

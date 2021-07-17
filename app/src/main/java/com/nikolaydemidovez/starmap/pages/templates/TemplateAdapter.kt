@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.TemplateItemBinding
+import com.nikolaydemidovez.starmap.pojo.Template
 import com.squareup.picasso.Picasso
 
 class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {

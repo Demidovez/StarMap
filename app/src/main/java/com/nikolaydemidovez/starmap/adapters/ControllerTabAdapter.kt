@@ -1,4 +1,4 @@
-package com.nikolaydemidovez.starmap.pages.template
+package com.nikolaydemidovez.starmap.adapters
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

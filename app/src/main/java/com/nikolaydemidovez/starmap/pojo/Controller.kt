@@ -1,4 +1,4 @@
-package com.nikolaydemidovez.starmap.pages.template
+package com.nikolaydemidovez.starmap.pojo
 
 import android.graphics.drawable.Drawable
 

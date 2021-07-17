@@ -3,6 +3,7 @@ package com.nikolaydemidovez.starmap.pages.templates
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.nikolaydemidovez.starmap.pojo.Template
 import com.nikolaydemidovez.starmap.retrofit.common.Common
 import retrofit2.Call
 import retrofit2.Callback

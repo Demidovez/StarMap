@@ -6,7 +6,6 @@ import android.text.TextPaint
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.scale
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
@@ -14,18 +13,14 @@ import com.nikolaydemidovez.starmap.utils.extensions.drawMultilineText
 import java.util.*
 import androidx.core.graphics.drawable.DrawableCompat
 
-import android.graphics.drawable.Drawable
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
-import com.nikolaydemidovez.starmap.pages.template.Controller
+import com.nikolaydemidovez.starmap.pojo.Controller
 import com.nikolaydemidovez.starmap.retrofit.common.Common
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -82,10 +77,11 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasEventTimeInLocation.value                    = true
         eventTime.value                                 = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
         hasEventCityInLocation.value                    = true
-        eventCity.value                                 = "Москва"
+        eventLocation.value                             = "Москва"
+        eventCountry.value                              = "Россия"
         hasEventCoordinatesInLocation.value             = true
-        eventLatitude.value                             = 41.40338
-        eventLongitude.value                            = 2.17403
+        eventLatitude.value                             = 55.755826
+        eventLongitude.value                            = 37.6173
         hasSeparator.value                              = true
         separatorColor.value                            = Color.parseColor("#000000")
         separatorWidth.value                            = 1200F
@@ -112,10 +108,10 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasEventTimeInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
         eventTime.observe(activity,                     { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
         hasEventCityInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
-        eventCity.observe(activity,                     { redraw(arrayOf(::drawLocationText)) })
+        eventLocation.observe(activity,                 { redraw(arrayOf(::drawLocationText)) })
         hasEventCoordinatesInLocation.observe(activity, { redraw(arrayOf(::drawLocationText)) })
-        eventLatitude.observe(activity,                 { redraw(arrayOf(::drawLocationText)) })
-        eventLongitude.observe(activity,                { redraw(arrayOf(::drawLocationText)) })
+        eventLatitude.observe(activity,                 { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
+        eventLongitude.observe(activity,                { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
         hasSeparator.observe(activity,                  { redraw(null) })
         separatorColor.observe(activity,                { redraw(arrayOf(::drawSeparator)) })
         separatorWidth.observe(activity,                { redraw(arrayOf(::drawSeparator)) })
@@ -172,7 +168,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             """
                 {
                     "date": ${date.time.time},
-                    "location": [25.1, 25.1],
+                    "location": [${eventLatitude.value}, ${eventLongitude.value}],
                     "width": 1000,
                     "options": {
                         "background": {

@@ -1,25 +1,16 @@
 package com.nikolaydemidovez.starmap.templates
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.pdf.PdfDocument
-import android.location.Location
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.MainActivity
-import com.nikolaydemidovez.starmap.pages.template.Controller
-import com.nikolaydemidovez.starmap.retrofit.common.Common
+import com.nikolaydemidovez.starmap.pojo.Controller
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.*
-import java.sql.Time
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -48,7 +39,8 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val hasEventTimeInLocation          = MutableLiveData<Boolean>()    // Добавить ли время в текст локации
     val eventTime                       = MutableLiveData<String>()     // Время события
     val hasEventCityInLocation          = MutableLiveData<Boolean>()    // Добавить ли город в текст локации
-    val eventCity                       = MutableLiveData<String>()     // Город события
+    val eventLocation                   = MutableLiveData<String>()     // Место события
+    val eventCountry                    = MutableLiveData<String>()     // Страна события
     val hasEventCoordinatesInLocation   = MutableLiveData<Boolean>()    // Добавить ли широту и долготу в текст локации
     val eventLatitude                   = MutableLiveData<Double>()     // Широта места события
     val eventLongitude                  = MutableLiveData<Double>()     // Долгота места события
@@ -142,7 +134,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             locationText = "$locationText, ${eventTime.value!!}\n"
 
         if(hasEventCityInLocation.value!!)
-            locationText = "$locationText г. ${eventCity.value}, Беларусь\n"
+            locationText = "$locationText г. ${eventLocation.value}, Беларусь\n"
 
         if(hasEventCoordinatesInLocation.value!!)
             locationText = "$locationText ${Helper.convert(eventLatitude.value!!, eventLongitude.value!!)}"

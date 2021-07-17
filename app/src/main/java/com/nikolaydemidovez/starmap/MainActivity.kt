@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.libraries.places.api.Places
 import com.nikolaydemidovez.starmap.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -54,6 +55,11 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
         navView.itemIconTintList = null
         navView.itemRippleColor = null
+
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, resources.getString(R.string.api_key_places))
+        }
+
     }
 
     override fun onSupportNavigateUp(): Boolean {

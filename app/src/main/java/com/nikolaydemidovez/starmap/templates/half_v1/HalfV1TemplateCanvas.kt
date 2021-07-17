@@ -1,14 +1,10 @@
 package com.nikolaydemidovez.starmap.templates.half_v1
 
-import android.app.Activity
-import android.content.Context
 import android.graphics.*
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
-import com.nikolaydemidovez.starmap.pages.template.Controller
+import com.nikolaydemidovez.starmap.pojo.Controller
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 
 class HalfV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
