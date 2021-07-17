@@ -3,6 +3,7 @@ package com.nikolaydemidovez.starmap
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
@@ -34,6 +35,13 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
 
         navController = navHostFragment.findNavController()
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.templateFragment -> navView.visibility = View.GONE
+                else -> navView.visibility = View.VISIBLE
+            }
+        }
 
         val appBarConfiguration = AppBarConfiguration(
             setOf(

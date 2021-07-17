@@ -57,6 +57,11 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private var bitmapStarMap: Bitmap? = null
 
     init {
+        val date = Calendar.getInstance()
+
+        val hourOfDay = date.get(Calendar.HOUR_OF_DAY)
+        val minute    = date.get(Calendar.MINUTE)
+
         canvasWidth.value                               = 2480F
         canvasHeight.value                              = 3508F
         backgroundColorCanvas.value                     = Color.parseColor("#FFFFFF")
@@ -75,7 +80,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasEventDateInLocation.value                    = true
         eventDate.value                                 = Calendar.getInstance().time
         hasEventTimeInLocation.value                    = true
-        eventTime.value                                 = Date()
+        eventTime.value                                 = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
         hasEventCityInLocation.value                    = true
         eventCity.value                                 = "Москва"
         hasEventCoordinatesInLocation.value             = true
@@ -103,9 +108,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         eventLocationSize.observe(activity,             { redraw(arrayOf(::drawLocationText)) })
         descText.observe(activity,                      { redraw(arrayOf(::drawDesc)) })
         hasEventDateInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
-        eventDate.observe(activity,                     { redraw(arrayOf(::drawLocationText)) })
+        eventDate.observe(activity,                     { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
         hasEventTimeInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
-        eventTime.observe(activity,                     { redraw(arrayOf(::drawLocationText)) })
+        eventTime.observe(activity,                     { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
         hasEventCityInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
         eventCity.observe(activity,                     { redraw(arrayOf(::drawLocationText)) })
         hasEventCoordinatesInLocation.observe(activity, { redraw(arrayOf(::drawLocationText)) })
@@ -152,10 +157,21 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     }
 
     private fun getRequestBodyStarMap(): RequestBody {
+        val date = Calendar.getInstance()
+        date.time = eventDate.value!!
+
+        val year    = date.get(Calendar.YEAR)
+        val month   = date.get(Calendar.MONTH)
+        val day     = date.get(Calendar.DAY_OF_MONTH)
+        val hours   = eventTime.value!!.split(":")[0].toInt()
+        val minutes = eventTime.value!!.split(":")[1].toInt()
+
+        date.set(year, month, day, hours, minutes)
+
         val jsonString =
             """
                 {
-                    "date": 1626283443816,
+                    "date": ${date.time.time},
                     "location": [25.1, 25.1],
                     "width": 1000,
                     "options": {

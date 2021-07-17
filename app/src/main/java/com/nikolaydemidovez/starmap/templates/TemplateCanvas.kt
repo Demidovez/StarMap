@@ -19,6 +19,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.*
+import java.sql.Time
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -45,7 +46,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val hasEventDateInLocation          = MutableLiveData<Boolean>()    // Добавить ли дату в текст локации
     val eventDate                       = MutableLiveData<Date>()       // Дата события
     val hasEventTimeInLocation          = MutableLiveData<Boolean>()    // Добавить ли время в текст локации
-    val eventTime                       = MutableLiveData<Date>()       // Время события
+    val eventTime                       = MutableLiveData<String>()     // Время события
     val hasEventCityInLocation          = MutableLiveData<Boolean>()    // Добавить ли город в текст локации
     val eventCity                       = MutableLiveData<String>()     // Город события
     val hasEventCoordinatesInLocation   = MutableLiveData<Boolean>()    // Добавить ли широту и долготу в текст локации
@@ -138,7 +139,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             locationText = "$locationText ${SimpleDateFormat("dd MMMM yyyy", Locale("ru")).format(eventDate.value!!)}"
 
         if(hasEventTimeInLocation.value!!)
-            locationText = "$locationText, ${SimpleDateFormat("HH:mm", Locale("ru")).format(eventTime.value!!)}\n"
+            locationText = "$locationText, ${eventTime.value!!}\n"
 
         if(hasEventCityInLocation.value!!)
             locationText = "$locationText г. ${eventCity.value}, Беларусь\n"

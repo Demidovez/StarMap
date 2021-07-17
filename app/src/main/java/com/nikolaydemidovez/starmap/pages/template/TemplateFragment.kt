@@ -50,6 +50,9 @@ class TemplateFragment : Fragment() {
             requireActivity().onBackPressed()
         }
 
+        binding.canvasImage.setOnClickListener {
+            showFullScreenCanvasDialog(templateCanvas)
+        }
         binding.fullScreen.setOnClickListener {
             showFullScreenCanvasDialog(templateCanvas)
         }

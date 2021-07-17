@@ -67,6 +67,8 @@
             android:layout_marginStart="8dp"
             style="@style/edit_text_controller"
             android:layout_marginTop="8dp"
+            android:inputType="none"
+            android:focusable="false"
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/label_time"
             app:layout_constraintEnd_toEndOf="parent"/>
