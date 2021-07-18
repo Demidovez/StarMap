@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.pojo.Controller
+import com.nikolaydemidovez.starmap.pojo.FontText
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import java.io.*
 import java.text.SimpleDateFormat
@@ -32,7 +33,6 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val widthBorderMap                  = MutableLiveData<Float>()      // Ширина рамки карты
     val mapBorderColor                  = MutableLiveData<Int>()        // Цвет рамки карты
     val descTextSize                    = MutableLiveData<Float>()      // Размер основного текста
-    val eventLocationSize               = MutableLiveData<Float>()      // Размер текста локации
     val descText                        = MutableLiveData<String>()     // Основной текст
     val hasEventDateInLocation          = MutableLiveData<Boolean>()    // Добавить ли дату в текст локации
     val eventDate                       = MutableLiveData<Date>()       // Дата события
@@ -40,6 +40,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val eventTime                       = MutableLiveData<String>()     // Время события
     val hasEventCityInLocation          = MutableLiveData<Boolean>()    // Добавить ли город в текст локации
     val eventLocation                   = MutableLiveData<String>()     // Место события
+    val locationFont                    = MutableLiveData<FontText>()   // Место события
     val eventCountry                    = MutableLiveData<String>()     // Страна события
     val hasEventCoordinatesInLocation   = MutableLiveData<Boolean>()    // Добавить ли широту и долготу в текст локации
     val eventLatitude                   = MutableLiveData<Double>()     // Широта места события

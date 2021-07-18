@@ -1,36 +1,39 @@
-package com.nikolaydemidovez.starmap.controllers.event_v1
+package controllers.event_v1
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.EditText
-import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
-import com.nikolaydemidovez.starmap.databinding.FragmentEventV1ControllerBinding
-import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import java.text.DateFormat.*
 import java.util.*
-
-import android.widget.ListView
+import android.view.WindowManager
+import android.view.WindowInsets
+import android.graphics.Insets
+import android.os.Build
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.*
+import androidx.core.view.updatePadding
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.adapters.LocationAdapter
+import com.nikolaydemidovez.starmap.controllers.event_v1.EventV1ControllerViewModel
+import com.nikolaydemidovez.starmap.databinding.FragmentEventV1ControllerBinding
 import com.nikolaydemidovez.starmap.pojo.Location
+import com.nikolaydemidovez.starmap.templates.TemplateCanvas
+import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.isValidLat
+import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.isValidLong
 
 
 class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
@@ -52,7 +55,20 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         }
 
         binding.editLocation.setOnClickListener {
+            binding.editLatitude.clearFocus()
+            binding.editLongitude.clearFocus()
+
             showLocationPicker()
+        }
+
+        binding.editLatitude.setOnClickListener {
+            val value = "%.6f".format(templateCanvas.eventLatitude.value).replace(",", ".")
+            showLatLongDialog("Широта места события", value, LATITUDE)
+        }
+
+        binding.editLongitude.setOnClickListener {
+            val value = "%.6f".format(templateCanvas.eventLongitude.value).replace(",", ".")
+            showLatLongDialog("Долгота места события", value, LONGITUDE)
         }
 
         binding.editDate.setText(getDateInstance(LONG, Locale("ru")).format(templateCanvas.eventDate.value!!))
@@ -67,11 +83,10 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         templateCanvas.eventCountry.observe(requireActivity(), {
             var text = ""
 
-            if(it.isNotEmpty()) {
-                text = "${templateCanvas.eventLocation.value!!}, $it"
-
+            text = if(it.isNotEmpty()) {
+                "${templateCanvas.eventLocation.value!!}, $it"
             } else {
-                text = templateCanvas.eventLocation.value!!
+                templateCanvas.eventLocation.value!!
             }
 
             binding.editLocation.setText(text)
@@ -79,29 +94,116 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         templateCanvas.eventLatitude.observe(requireActivity(), {
             if(!binding.editLatitude.isFocused) {
-                binding.editLatitude.setText(it.toString())
+                val value = "%.6f".format(it).replace(",", ".")
+                binding.editLatitude.setText(value)
             }
         })
 
         templateCanvas.eventLongitude.observe(requireActivity(), {
-            if(!binding.editLongitude.isFocused) {
-                binding.editLongitude.setText(it.toString())
+            if(!binding.editLongitude.isFocused) { // TODO нужна ли уже эта првоерка?
+                val value = "%.6f".format(it).replace(",", ".")
+                binding.editLongitude.setText(value)
             }
         })
 
-        binding.editLatitude.doOnTextChanged { text, _, _, _ ->
-            if(binding.editLatitude.isFocused) {
-                templateCanvas.eventLatitude.value = text.toString().toDouble()
-            }
-        }
-
-        binding.editLongitude.doOnTextChanged { text, _, _, _ ->
-            if(binding.editLongitude.isFocused) {
-                templateCanvas.eventLongitude.value = text.toString().toDouble()
-            }
-        }
-
         return root
+    }
+
+    private fun showLatLongDialog(title: String, value: String, flag: Int) {
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.lat_long_picker_layout, null)
+        layout.findViewById<TextView>(R.id.title).text = title
+
+        val editText      = layout.findViewById<EditText>(R.id.edit_text_lat_long)
+        val imgClearText  = layout.findViewById<ImageView>(R.id.clear_text)
+        val descText      = layout.findViewById<TextView>(R.id.desc_text)
+
+        var descTextValue = ""
+        descTextValue = if(flag == LATITUDE) "Допустимые значения от -90 до +90" else "Допустимые значения от -180 до +180"
+        descText.text = descTextValue
+
+        editText.setText(value)
+        editText.doOnTextChanged { text, _, _, _ ->
+            descText.text = descTextValue
+            descText.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark_gray))
+            imgClearText.visibility = if(text!!.isNotEmpty()) VISIBLE else GONE
+        }
+        imgClearText.setOnClickListener { editText .setText("") }
+
+
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setPositiveButton(android.R.string.ok, null)
+        builder.setNegativeButton(android.R.string.cancel, null)
+        builder.setView(layout)
+
+        val dialog = builder.create()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            dialog.window?.setDecorFitsSystemWindows(false)
+            dialog.window?.decorView!!.setOnApplyWindowInsetsListener { v, insets ->
+                val imeInsets: Insets = insets.getInsets(WindowInsets.Type.ime())
+                val paddingBottom = if(imeInsets.bottom == 0) 40 else imeInsets.bottom
+                v.updatePadding(bottom = paddingBottom)
+                insets
+            }
+        } else {
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
+
+        dialog.setOnShowListener {
+            editText.setSelection(editText.text.length)
+            editText.requestFocus()
+            imgClearText.visibility = if(editText.text.isNotEmpty()) VISIBLE else GONE
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+
+            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+            okButton.setOnClickListener {
+                if(editText.text.isNotEmpty()) {
+                    val editValue = editText.text.toString().toDouble()
+
+                    if(flag == LATITUDE) {
+                        if(isValidLat(editValue)) {
+                            if(templateCanvas.eventLatitude.value != editValue) {
+                                templateCanvas.eventLatitude.value = editValue
+
+                                binding.editLocation.setText("Другое...")
+                            }
+
+                            dialog.dismiss()
+                        } else {
+                            descText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_flat))
+                            descText.text = "Неверная широта!"
+                        }
+                    }
+
+                    if(flag == LONGITUDE) {
+                        if(isValidLong(editValue)) {
+                            if(templateCanvas.eventLongitude.value != editValue) {
+                                templateCanvas.eventLongitude.value = editValue
+
+                                binding.editLocation.setText("Другое...")
+                            }
+
+                            dialog.dismiss()
+                        } else {
+                            descText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_flat))
+                            descText.text = "Неверная долгота!"
+                        }
+                    }
+                } else {
+                    descText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_flat))
+                    descText.text = "Пустое значение недопустимо!"
+                }
+            }
+        }
+
+        dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.9).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
     private fun showLocationPicker() {
@@ -112,9 +214,21 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.location_picker_layout)
         dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
-//        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            dialog.window?.setDecorFitsSystemWindows(false)
+            dialog.window?.decorView!!.setOnApplyWindowInsetsListener { v, insets ->
+                val imeInsets: Insets = insets.getInsets(WindowInsets.Type.ime())
+                val paddingBottom = if(imeInsets.bottom == 0) 20 else imeInsets.bottom
+                v.updatePadding(bottom = paddingBottom)
+                insets
+            }
+        } else {
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
 
         val editText = dialog.findViewById<EditText>(R.id.edit_text_location)
+        val imgClearText = dialog.findViewById<ImageView>(R.id.clear_text)
         val listView = dialog.findViewById<ListView>(R.id.listView)
 
         val searchLocations: ArrayList<Location> = ArrayList()
@@ -122,7 +236,13 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         val adapter = LocationAdapter(activity, placesClient, templateCanvas, dialog, searchLocations)
         listView.adapter = adapter
 
-        editText.doOnTextChanged { text, _, _, _ ->
+        editText.doOnTextChanged { text, _, _, count ->
+            if(count > 0) {
+                imgClearText.visibility = VISIBLE
+            } else {
+                imgClearText.visibility = GONE
+            }
+
             val request = FindAutocompletePredictionsRequest.builder()
                 .setSessionToken(token)
                 .setQuery(text.toString())
@@ -140,8 +260,20 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
                     }
                 }
         }
-        editText.setText(templateCanvas.eventLocation.value)
-        editText.requestFocus()
+
+        imgClearText.setOnClickListener {
+            editText.setText("")
+        }
+
+        val initialLocation = if(binding.editLocation.text.toString() != "Другое...") templateCanvas.eventLocation.value else ""
+        editText.setText(initialLocation)
+
+        dialog.setOnShowListener {
+            editText.setSelection(editText.text.length)
+            editText.requestFocus()
+            imgClearText.visibility = if(editText.text.isNotEmpty()) VISIBLE else GONE
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
 
         dialog.show()
     }
@@ -192,9 +324,15 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         timePickerDialog.setOnShowListener {
             timePickerDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
-            timePickerDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(),R.color.dark))
+            timePickerDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(),
+                R.color.dark))
         }
 
         timePickerDialog.show()
+    }
+
+    companion object {
+        val LATITUDE = 1
+        val LONGITUDE = 2
     }
 }

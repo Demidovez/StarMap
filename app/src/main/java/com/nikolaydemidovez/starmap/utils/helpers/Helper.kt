@@ -81,5 +81,15 @@ class Helper {
         fun dpToPx(dp: Float, context: Context): Int {
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics).toInt()
         }
+
+        // Проверка на валидность широты
+        fun isValidLat(latitude: Double?): Boolean {
+            return latitude?.toInt() in -90 until 90
+        }
+
+        // Проверка на валидность долготы
+        fun isValidLong(longitude: Double?): Boolean {
+            return longitude?.toInt() in -180 until 180
+        }
     }
 }

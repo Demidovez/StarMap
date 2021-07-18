@@ -16,6 +16,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.pojo.Controller
+import com.nikolaydemidovez.starmap.pojo.FontText
 import com.nikolaydemidovez.starmap.retrofit.common.Common
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
 import okhttp3.MediaType
@@ -40,7 +41,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     );
 
     private var isDataInitialized = false
-    private var isLoadedStarMap                         = MutableLiveData<Boolean>()    // Загрузилась ли звездная карта с сервера
+    private var isLoadedStarMap = MutableLiveData<Boolean>()    // Загрузилась ли звездная карта с сервера
 
     private lateinit var bitmapHolst: Bitmap
     private lateinit var bitmapHolstBorder: Bitmap
@@ -70,7 +71,6 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         widthBorderMap.value                            = 15F
         mapBorderColor.value                            = Color.parseColor("#FFFFFF")
         descTextSize.value                              = 160F
-        eventLocationSize.value                         = 60F
         descText.value                                  = "День, когда сошлись\nвсе звезды вселенной..."
         hasEventDateInLocation.value                    = true
         eventDate.value                                 = Calendar.getInstance().time
@@ -79,6 +79,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasEventCityInLocation.value                    = true
         eventLocation.value                             = "Москва"
         eventCountry.value                              = "Россия"
+        locationFont.value                              = FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 60F)
         hasEventCoordinatesInLocation.value             = true
         eventLatitude.value                             = 55.755826
         eventLongitude.value                            = 37.6173
@@ -101,7 +102,6 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         mapBorderColor.observe(activity,                { redraw(arrayOf(::drawMap)) })
         isLoadedStarMap.observe(activity,               { redraw(arrayOf(::drawMap)) })
         descTextSize.observe(activity,                  { redraw(arrayOf(::drawDesc)) })
-        eventLocationSize.observe(activity,             { redraw(arrayOf(::drawLocationText)) })
         descText.observe(activity,                      { redraw(arrayOf(::drawDesc)) })
         hasEventDateInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
         eventDate.observe(activity,                     { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
@@ -109,6 +109,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         eventTime.observe(activity,                     { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
         hasEventCityInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
         eventLocation.observe(activity,                 { redraw(arrayOf(::drawLocationText)) })
+        locationFont.observe(activity,                  { redraw(arrayOf(::drawLocationText)) })
         hasEventCoordinatesInLocation.observe(activity, { redraw(arrayOf(::drawLocationText)) })
         eventLatitude.observe(activity,                 { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
         eventLongitude.observe(activity,                { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
@@ -362,7 +363,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private fun drawLocationText() {
         val eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
-            textSize = eventLocationSize.value!!
+            textSize = locationFont.value!!.size!!
+            color = Color.parseColor(locationFont.value!!.color)
+            typeface = ResourcesCompat.getFont(activity, locationFont.value!!.resId!!)
             isDither = true
             isAntiAlias = true
         }

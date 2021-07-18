@@ -1,0 +1,41 @@
+<resources>
+    <string name="alegreya_regular">Alegreya Regular</string>
+    <string name="caveat_regular">Caveat Regular</string>
+    <string name="lobster_regular">Lobster Regular</string>
+    <string name="pacifico_regular">Pacifico Regular</string>
+    <string name="nunito_regular">Nunito Regular</string>
+    <string name="alice_regular">Alice Regular</string>
+    <string name="amatic_sc_regular">Amatic SC Regular</string>
+    <string name="bad_script_regular">Bad Script Regular</string>
+    <string name="comfortaa_regular">Comfortaa Regular</string>
+    <string name="cormorant_infant_regular">Cormorant Infant Regular</string>
+    <string name="hachi_maru_pop_regular">Hachi Maru Pop Regular</string>
+    <string name="poiret_one_regular">Poiret One Regular</string>
+    <string name="roboto_condensed_regular">Roboto Condensed Regular</string>
+    <string name="rockn_roll_one_regular">Rockn Roll One Regular</string>
+    <string name="russo_one_regular">Russo One Regular</string>
+    <string name="train_one_regular">Train One Regular</string>
+    <string name="under_dog_regular">Under Dog Regular</string>
+    <string name="yanone_kaffeesatz_regular">Yanone Kaffeesatz Regular</string>
+
+    <string-array name="font_in_locations">
+        <item>alegreya_regular</item>
+        <item>alice_regular</item>
+        <item>amatic_sc_regular</item>
+        <item>bad_script_regular</item>
+        <item>caveat_regular</item>
+        <item>comfortaa_regular</item>
+        <item>cormorant_infant_regular</item>
+        <item>hachi_maru_pop_regular</item>
+        <item>lobster_regular</item>
+        <item>pacifico_regular</item>
+        <item>poiret_one_regular</item>
+        <item>nunito_regular</item>
+        <item>roboto_condensed_regular</item>
+        <item>rockn_roll_one_regular</item>
+        <item>russo_one_regular</item>
+        <item>train_one_regular</item>
+        <item>under_dog_regular</item>
+        <item>yanone_kaffeesatz_regular</item>
+    </string-array>
+</resources>
