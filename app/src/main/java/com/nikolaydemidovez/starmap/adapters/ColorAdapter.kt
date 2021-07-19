@@ -1,20 +1,39 @@
-package com.nikolaydemidovez.starmap.adapters
+package adapters
 
-import android.graphics.BlendMode
-import android.graphics.BlendModeColorFilter
-import android.graphics.Color
-import android.graphics.PorterDuff
+import android.app.Dialog
 import android.os.Build
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
+import android.content.DialogInterface
+import android.graphics.*
+import android.view.*
+import android.widget.*
 import com.nikolaydemidovez.starmap.R
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.widget.doOnTextChanged
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
+import com.nikolaydemidovez.starmap.adapters.FontAdapter
 import com.nikolaydemidovez.starmap.databinding.ColorItemBinding
+import com.nikolaydemidovez.starmap.pojo.FontText
+import com.nikolaydemidovez.starmap.pojo.Location
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
+import com.nikolaydemidovez.starmap.utils.extensions.hideKeyboard
+import com.nikolaydemidovez.starmap.utils.helpers.Helper
+import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.dpToPx
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.isValidColor
+import com.skydoves.colorpickerview.ColorEnvelope
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import com.skydoves.colorpickerview.ColorPickerDialog
+import com.skydoves.colorpickerview.flag.FlagMode
+
+import com.skydoves.colorpickerview.ColorPickerView
+import com.skydoves.colorpickerview.flag.BubbleFlag
+
+import com.skydoves.colorpickerview.sliders.BrightnessSlideBar
+import controllers.event_v1.EventV1ControllerFragment
 
 
 class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -26,15 +45,15 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
         fun bind(color: String, templateCanvas: TemplateCanvas) = with(binding) {
 
             val borderColor = if(color == templateCanvas.locationFont.value!!.color) {
-                ContextCompat.getColor(itemView.context, R.color.dark)
+                ContextCompat.getColor(itemView.context, com.nikolaydemidovez.starmap.R.color.dark)
             } else {
                 Color.parseColor("#FFFFFF")
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                labelColor.background.colorFilter = BlendModeColorFilter(borderColor, BlendMode.SRC_ATOP)
+                imageColor.background.colorFilter = BlendModeColorFilter(borderColor, BlendMode.SRC_ATOP)
             } else {
-                labelColor.background.setColorFilter(borderColor, PorterDuff.Mode.SRC_ATOP)
+                imageColor.background.setColorFilter(borderColor, PorterDuff.Mode.SRC_ATOP)
             }
 
             val circleColor = if(color == "#FFFFFF") {
@@ -43,9 +62,9 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
                 Color.parseColor(color)
             }
 
-            labelColor.setColorFilter(circleColor, PorterDuff.Mode.SRC_ATOP)
+            imageColor.setColorFilter(circleColor, PorterDuff.Mode.SRC_ATOP)
 
-            labelColor.setOnClickListener {
+            rootItemColor.setOnClickListener {
                 val newFont = templateCanvas.locationFont.value
                 newFont?.color = color
 
@@ -57,25 +76,130 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
     class PickerHolder(item: View): RecyclerView.ViewHolder(item) {
         private val binding = ColorItemBinding.bind(item)
 
-        fun bind(color: String, templateCanvas: TemplateCanvas) = with(binding) {
+        fun bind(colorList: ArrayList<String>, templateCanvas: TemplateCanvas) = with(binding) {
+            rootItemColor.updatePadding(left = dpToPx(16F, itemView.context))
 
-            labelColor.setOnClickListener {
-                val newFont = templateCanvas.locationFont.value
-                newFont?.color = "#FF0000"
+            val borderColor = if(!colorList.contains(templateCanvas.locationFont.value!!.color)) {
+                ContextCompat.getColor(itemView.context, com.nikolaydemidovez.starmap.R.color.dark)
+            } else {
+                Color.parseColor("#FFFFFF")
+            }
 
-                templateCanvas.locationFont.value = newFont
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                imageColor.background.colorFilter = BlendModeColorFilter(borderColor, BlendMode.SRC_ATOP)
+            } else {
+                imageColor.background.setColorFilter(borderColor, PorterDuff.Mode.SRC_ATOP)
+            }
+
+            imageColor.setImageDrawable(ContextCompat.getDrawable(itemView.context, com.nikolaydemidovez.starmap.R.drawable.ic_color_picker))
+
+            rootItemColor.setOnClickListener {
+                showColorPicker(templateCanvas)
             }
         }
-    }
 
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColorHolder {
-//        val view = LayoutInflater.from(parent.context).inflate(R.layout.color_item, parent, false)
-//        return ColorHolder(view)
-//    }
-//
-//    override fun onBindViewHolder(holder: ColorHolder, position: Int) {
-//        holder.bind(colorList[position], templateCanvas)
-//    }
+        private fun showColorPicker(templateCanvas: TemplateCanvas) {
+            val layoutInflater = LayoutInflater.from(itemView.context)
+            val layout: View = layoutInflater.inflate(R.layout.color_picker_layout, null)
+            layout.findViewById<TextView>(R.id.title).text = "Цвет текста"
+
+            val scrollView         = layout.findViewById<ScrollView>(R.id.scroll_view)
+            val colorPickerView    = layout.findViewById<ColorPickerView>(R.id.colorPickerView)
+            val brightnessSlideBar = layout.findViewById<BrightnessSlideBar>(R.id.brightnessSlide)
+            val colorPreview       = layout.findViewById<ImageView>(R.id.color_preview)
+            val inputColor         = layout.findViewById<EditText>(R.id.input_color)
+            val descText           = layout.findViewById<TextView>(R.id.desc_text)
+            val imgClearText       = layout.findViewById<ImageView>(R.id.clear_text)
+
+            colorPickerView.attachBrightnessSlider(brightnessSlideBar)
+            colorPickerView.setInitialColor(Color.parseColor(templateCanvas.locationFont.value!!.color))
+
+            colorPickerView.setColorListener(ColorEnvelopeListener { envelope, fromUser ->
+                colorPreview.setColorFilter(envelope.color, PorterDuff.Mode.SRC_ATOP)
+
+                if(!inputColor.isFocused) {
+                    val colorText = "#" + envelope.hexCode
+                    inputColor.setText(colorText)
+                }
+
+                if(fromUser) {
+                    inputColor.clearFocus()
+                    inputColor.hideKeyboard()
+                }
+
+            })
+
+            inputColor.doOnTextChanged { text, _, _, count ->
+                if(inputColor.text.isNotEmpty()) {
+                    imgClearText.visibility = View.VISIBLE
+                } else {
+                    imgClearText.visibility = View.GONE
+                }
+
+                if(inputColor.isFocused && isValidColor(inputColor.text.toString())) {
+                    colorPickerView.setInitialColor(Color.parseColor(inputColor.text.toString()))
+                }
+
+                descText.text = ""
+            }
+
+
+            imgClearText.setOnClickListener {
+                inputColor.setText("")
+            }
+
+            val builder = AlertDialog.Builder(itemView.context)
+            builder.setPositiveButton(android.R.string.ok, null)
+            builder.setNegativeButton(android.R.string.cancel, null)
+            builder.setView(layout)
+
+            val dialog = builder.create()
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                dialog.window?.setDecorFitsSystemWindows(false)
+                dialog.window?.decorView!!.setOnApplyWindowInsetsListener { v, insets ->
+                    val imeInsets: Insets = insets.getInsets(WindowInsets.Type.ime())
+                    val paddingBottom = if(imeInsets.bottom == 0) 40 else imeInsets.bottom
+                    v.updatePadding(bottom = paddingBottom)
+                    insets
+                }
+            } else {
+                dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            }
+
+            dialog.setOnShowListener {
+                dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(itemView.context, R.color.dark))
+
+                val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                okButton.setTextColor(ContextCompat.getColor(itemView.context, R.color.dark))
+                okButton.setOnClickListener {
+                    val color = inputColor.text.toString()
+
+                    if(color.isNotEmpty()) {
+                        if(isValidColor(color)) {
+                            val newFont = templateCanvas.locationFont.value
+                            newFont?.color = color
+
+                            templateCanvas.locationFont.value = newFont
+
+                            dialog.dismiss()
+                        } else {
+                            descText.text = "Неверное значение!"
+                        }
+                    } else {
+                        descText.text = "Введите текст!"
+                    }
+                }
+            }
+
+            dialog.show()
+
+            val width = (itemView.resources.displayMetrics.widthPixels * 0.9).toInt()
+            dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        }
+    }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view: View
@@ -93,7 +217,7 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
         if (getItemViewType(position) == COLOR) {
             (viewHolder as ColorHolder).bind(colorList[position], templateCanvas)
         } else {
-            (viewHolder as PickerHolder).bind(colorList[position], templateCanvas)
+            (viewHolder as PickerHolder).bind(colorList, templateCanvas)
         }
     }
 
@@ -102,8 +226,7 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
     }
 
     override fun getItemViewType(position: Int): Int {
-        Log.d("MyLog", isValidColor(colorList[position]).toString())
-        return if (isValidColor(colorList[position])) {
+        return if (colorList[position].isNotEmpty()) {
             COLOR
         } else {
             PICKER
@@ -111,7 +234,9 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
     }
 
     fun addAllColorList(list: ArrayList<String>) {
-        colorList = list
+        colorList.add("")
+        colorList.addAll(list)
+
         notifyDataSetChanged()
     }
 
@@ -119,5 +244,4 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
         const val COLOR = 1
         const val PICKER = 2
     }
-
 }

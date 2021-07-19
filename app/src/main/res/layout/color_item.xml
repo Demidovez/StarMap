@@ -2,17 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_item_color"
     android:layout_marginTop="8dp"
-    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/labelColor"
+        android:id="@+id/image_color"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/ic_circle"
-        android:background="@drawable/ic_circle_border"
+        android:src="@drawable/ic_circle_scaled"
+        android:background="@drawable/ic_circle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

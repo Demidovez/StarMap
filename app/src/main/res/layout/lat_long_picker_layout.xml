@@ -11,7 +11,7 @@
     <TextView
         android:id="@+id/title"
         android:layout_margin="8dp"
-        style="@style/title_lat_lang_dialog"
+        style="@style/title_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -52,7 +52,7 @@
         android:id="@+id/desc_text"
         android:layout_margin="8dp"
         android:layout_marginTop="4dp"
-        style="@style/desc_lat_lang_dialog"
+        style="@style/desc_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

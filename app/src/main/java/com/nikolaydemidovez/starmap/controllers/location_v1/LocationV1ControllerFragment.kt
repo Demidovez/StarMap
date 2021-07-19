@@ -1,5 +1,6 @@
 package com.nikolaydemidovez.starmap.controllers.location_v1
 
+import adapters.ColorAdapter
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,11 +10,9 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.R
-import com.nikolaydemidovez.starmap.adapters.ColorAdapter
 import com.nikolaydemidovez.starmap.adapters.FontAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentLocationV1ControllerBinding
 import com.nikolaydemidovez.starmap.pojo.FontText
@@ -74,8 +73,7 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
             "#C0392B",
             "#BDC3C7",
             "#95A5A6",
-            "#7F8C8D",
-            "picker"
+            "#7F8C8D"
         ))
     }
 

@@ -332,7 +332,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     companion object {
-        val LATITUDE = 1
-        val LONGITUDE = 2
+        const val LATITUDE = 1
+        const val LONGITUDE = 2
     }
 }

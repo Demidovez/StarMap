@@ -7,10 +7,8 @@ import android.graphics.Path
 import android.location.Location
 import kotlin.math.abs
 import android.util.TypedValue
-import com.nikolaydemidovez.starmap.adapters.ColorAdapter
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-
 
 class Helper {
     companion object {
@@ -79,6 +77,7 @@ class Helper {
             return outputBitmap
         }
 
+        // Конверт из dp в px
         fun dpToPx(dp: Float, context: Context): Int {
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics).toInt()
         }
@@ -93,12 +92,12 @@ class Helper {
             return longitude?.toInt() in -180 until 180
         }
 
-        // Проверка на валидность строки как значение цвета
+        // Проверка на валидность цвета
         fun isValidColor(color: String): Boolean {
-            val colorPattern: Pattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})")
+            val colorPattern: Pattern = Pattern.compile("#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})\\b")
             val m: Matcher = colorPattern.matcher(color)
 
-            return m.matches()
+            return m.find()
         }
     }
 }

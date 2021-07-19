@@ -54,6 +54,7 @@ class TemplateFragment : Fragment() {
         binding.canvasImage.setOnClickListener {
             showFullScreenCanvasDialog(templateCanvas)
         }
+
         binding.fullScreen.setOnClickListener {
             showFullScreenCanvasDialog(templateCanvas)
         }
@@ -79,7 +80,7 @@ class TemplateFragment : Fragment() {
         })
 
         binding.tabsViewpager.adapter = ControllerTabAdapter(requireActivity().supportFragmentManager, lifecycle, templateCanvas.getControllerList().size, templateCanvas)
-        binding.tabsViewpager.isUserInputEnabled = true
+        binding.tabsViewpager.isUserInputEnabled = false
 
         TabLayoutMediator(binding.tabLayout, binding.tabsViewpager, false, false) { tab, position ->
             tab.text = templateCanvas.getControllerList()[position].title
