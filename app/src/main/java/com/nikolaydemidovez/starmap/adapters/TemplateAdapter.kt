@@ -1,4 +1,4 @@
-package com.nikolaydemidovez.starmap.pages.templates
+package com.nikolaydemidovez.starmap.adapters
 
 import android.view.LayoutInflater
 import android.view.View

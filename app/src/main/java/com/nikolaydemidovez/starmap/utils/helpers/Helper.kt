@@ -7,8 +7,9 @@ import android.graphics.Path
 import android.location.Location
 import kotlin.math.abs
 import android.util.TypedValue
-
-
+import com.nikolaydemidovez.starmap.adapters.ColorAdapter
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 class Helper {
@@ -90,6 +91,14 @@ class Helper {
         // Проверка на валидность долготы
         fun isValidLong(longitude: Double?): Boolean {
             return longitude?.toInt() in -180 until 180
+        }
+
+        // Проверка на валидность строки как значение цвета
+        fun isValidColor(color: String): Boolean {
+            val colorPattern: Pattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})")
+            val m: Matcher = colorPattern.matcher(color)
+
+            return m.matches()
         }
     }
 }

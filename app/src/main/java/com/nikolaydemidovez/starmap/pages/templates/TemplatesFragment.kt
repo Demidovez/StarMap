@@ -1,6 +1,5 @@
 package com.nikolaydemidovez.starmap.pages.templates
 
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -11,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
+import com.nikolaydemidovez.starmap.adapters.TemplateAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplatesBinding
 
 class TemplatesFragment : Fragment() {
