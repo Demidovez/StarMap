@@ -378,7 +378,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         var totalHeightText = 0F
 
         for(textLine in textLines) {
-            totalHeightText += canvas.drawMultilineText(textLine, eventLocation, (canvasWidth.value!!/2).toInt() , canvasWidth.value!!/2,  totalHeightText)
+            totalHeightText += canvas.drawMultilineText(textLine, eventLocation, canvasWidth.value!!.toInt() , canvasWidth.value!!/2,  totalHeightText)
         }
 
         bitmapLocationText = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), totalHeightText.toInt())

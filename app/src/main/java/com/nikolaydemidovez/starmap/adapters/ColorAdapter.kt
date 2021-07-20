@@ -7,6 +7,7 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import android.content.DialogInterface
 import android.graphics.*
+import android.graphics.drawable.ColorDrawable
 import android.view.*
 import android.widget.*
 import com.nikolaydemidovez.starmap.R
@@ -103,7 +104,6 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
             val layout: View = layoutInflater.inflate(R.layout.color_picker_layout, null)
             layout.findViewById<TextView>(R.id.title).text = "Цвет текста"
 
-            val scrollView         = layout.findViewById<ScrollView>(R.id.scroll_view)
             val colorPickerView    = layout.findViewById<ColorPickerView>(R.id.colorPickerView)
             val brightnessSlideBar = layout.findViewById<BrightnessSlideBar>(R.id.brightnessSlide)
             val colorPreview       = layout.findViewById<ImageView>(R.id.color_preview)
@@ -148,7 +148,7 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
                 inputColor.setText("")
             }
 
-            val builder = AlertDialog.Builder(itemView.context)
+            val builder = AlertDialog.Builder(itemView.context, R.style.dialog_corners)
             builder.setPositiveButton(android.R.string.ok, null)
             builder.setNegativeButton(android.R.string.cancel, null)
             builder.setView(layout)

@@ -131,7 +131,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         imgClearText.setOnClickListener { editText .setText("") }
 
 
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
         builder.setPositiveButton(android.R.string.ok, null)
         builder.setNegativeButton(android.R.string.cancel, null)
         builder.setView(layout)
@@ -313,7 +313,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         val minute = templateCanvas.eventTime.value!!.split(":")[1].toInt()
 
         val timePickerDialog = TimePickerDialog (
-            requireContext(),  { _, hourOfDay, minute ->
+            requireContext(), { _, hourOfDay, minute ->
                 val newTime = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
 
                 templateCanvas.eventTime.value = newTime

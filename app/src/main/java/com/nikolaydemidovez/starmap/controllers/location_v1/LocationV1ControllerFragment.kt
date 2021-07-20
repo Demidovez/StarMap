@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +20,6 @@ import com.nikolaydemidovez.starmap.databinding.FragmentLocationV1ControllerBind
 import com.nikolaydemidovez.starmap.pojo.FontText
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import java.util.*
-
 
 class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
 
@@ -33,7 +34,7 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
         val root: View = binding.root
 
         templateCanvas.locationFont.observe(requireActivity(), {
-            binding.editFont.setText(templateCanvas.locationFont.value?.name)
+            binding.editFont.setText(it.name)
             colorAdapter.notifyDataSetChanged()
         })
 
@@ -42,6 +43,28 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
         }
 
         recyclerColorsInit()
+
+        binding.sliderFontSize.progress = templateCanvas.locationFont.value!!.size!!.toInt()
+        binding.fontSize.text           = templateCanvas.locationFont.value!!.size!!.toInt().toString()
+
+        binding.sliderFontSize.setOnSeekBarChangeListener(
+            object : OnSeekBarChangeListener {
+                override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    val newFont = templateCanvas.locationFont.value
+                    newFont?.size = seekBar.progress.toFloat()
+
+                    templateCanvas.locationFont.value = newFont
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    binding.fontSize.text = progress.toString()
+                }
+            }
+        )
+
+
 
         return root
     }
