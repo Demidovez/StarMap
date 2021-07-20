@@ -38,4 +38,25 @@
         <item>under_dog_regular</item>
         <item>yanone_kaffeesatz_regular</item>
     </string-array>
+
+    <string-array name="font_in_desc">
+        <item>alegreya_regular</item>
+        <item>alice_regular</item>
+        <item>amatic_sc_regular</item>
+        <item>bad_script_regular</item>
+        <item>caveat_regular</item>
+        <item>comfortaa_regular</item>
+        <item>cormorant_infant_regular</item>
+        <item>hachi_maru_pop_regular</item>
+        <item>lobster_regular</item>
+        <item>pacifico_regular</item>
+        <item>poiret_one_regular</item>
+        <item>nunito_regular</item>
+        <item>roboto_condensed_regular</item>
+        <item>rockn_roll_one_regular</item>
+        <item>russo_one_regular</item>
+        <item>train_one_regular</item>
+        <item>under_dog_regular</item>
+        <item>yanone_kaffeesatz_regular</item>
+    </string-array>
 </resources>

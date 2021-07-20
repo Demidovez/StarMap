@@ -45,6 +45,16 @@
         <item name="android:inputType">textNoSuggestions</item>
     </style>
 
+    <style name="text_area" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:padding">8dp</item>
+        <item name="android:background">@drawable/rounded_border_edittext</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/nunito_semi_bold</item>
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:gravity">top</item>
+        <item name="android:minLines">3</item>
+    </style>
+
     <style name="DatePickerStyle" parent="@android:style/Widget.Material.DatePicker" tools:targetApi="lollipop">
         <item name="android:datePickerMode">spinner</item>
     </style>

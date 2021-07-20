@@ -42,6 +42,8 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val eventLocation                   = MutableLiveData<String>()     // Место события
     val locationFont                    = MutableLiveData<FontText>()   // Место события
     val eventCountry                    = MutableLiveData<String>()     // Страна события
+    val hasEditResultLocationText       = MutableLiveData<Boolean>()    // Изменить ли результирующий текст в локации
+    val resultLocationText              = MutableLiveData<String>()     // Результирующий текст локации
     val hasEventCoordinatesInLocation   = MutableLiveData<Boolean>()    // Добавить ли широту и долготу в текст локации
     val eventLatitude                   = MutableLiveData<Double>()     // Широта места события
     val eventLongitude                  = MutableLiveData<Double>()     // Долгота места события
@@ -124,25 +126,6 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             Toast.makeText(activity.applicationContext, "Сохранено", Toast.LENGTH_SHORT).show()
         }
     }
-
-    protected fun getLocationText(): String {
-        var locationText = ""
-
-        if(hasEventDateInLocation.value!!)
-            locationText = "$locationText ${SimpleDateFormat("dd MMMM yyyy", Locale("ru")).format(eventDate.value!!)}"
-
-        if(hasEventTimeInLocation.value!!)
-            locationText = "$locationText, ${eventTime.value!!}\n"
-
-        if(hasEventCityInLocation.value!!)
-            locationText = "$locationText г. ${eventLocation.value}, Беларусь\n"
-
-        if(hasEventCoordinatesInLocation.value!!)
-            locationText = "$locationText ${Helper.convert(eventLatitude.value!!, eventLongitude.value!!)}"
-
-        return locationText.trim()
-    }
-
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun saveToPDF(uri: Uri) {

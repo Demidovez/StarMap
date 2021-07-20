@@ -18,6 +18,7 @@ import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.pojo.Controller
 import com.nikolaydemidovez.starmap.pojo.FontText
 import com.nikolaydemidovez.starmap.retrofit.common.Common
+import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -25,6 +26,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
 
 
@@ -79,6 +81,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasEventCityInLocation.value                    = true
         eventLocation.value                             = "Москва"
         eventCountry.value                              = "Россия"
+        hasEditResultLocationText.value                 = false
+        resultLocationText.value                        = ""
         locationFont.value                              = FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 60F)
         hasEventCoordinatesInLocation.value             = true
         eventLatitude.value                             = 55.755826
@@ -103,16 +107,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         isLoadedStarMap.observe(activity,               { redraw(arrayOf(::drawMap)) })
         descTextSize.observe(activity,                  { redraw(arrayOf(::drawDesc)) })
         descText.observe(activity,                      { redraw(arrayOf(::drawDesc)) })
-        hasEventDateInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
-        eventDate.observe(activity,                     { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
-        hasEventTimeInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
-        eventTime.observe(activity,                     { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
-        hasEventCityInLocation.observe(activity,        { redraw(arrayOf(::drawLocationText)) })
-        eventLocation.observe(activity,                 { redraw(arrayOf(::drawLocationText)) })
+        hasEventDateInLocation.observe(activity,        { correctLocationText(); })
+        eventDate.observe(activity,                     { correctLocationText(); redraw(arrayOf(::requestStarMap, ::drawMap)) })
+        hasEventTimeInLocation.observe(activity,        { correctLocationText(); })
+        eventTime.observe(activity,                     { correctLocationText(); redraw(arrayOf(::requestStarMap, ::drawMap)) })
+        hasEventCityInLocation.observe(activity,        { correctLocationText() })
+        eventLocation.observe(activity,                 { correctLocationText() })
         locationFont.observe(activity,                  { redraw(arrayOf(::drawLocationText)) })
-        hasEventCoordinatesInLocation.observe(activity, { redraw(arrayOf(::drawLocationText)) })
-        eventLatitude.observe(activity,                 { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
-        eventLongitude.observe(activity,                { redraw(arrayOf(::requestStarMap, ::drawMap, ::drawLocationText)) })
+        hasEventCoordinatesInLocation.observe(activity, { correctLocationText() })
+        eventLatitude.observe(activity,                 { correctLocationText(); redraw(arrayOf(::requestStarMap, ::drawMap)) })
+        eventLongitude.observe(activity,                { correctLocationText(); redraw(arrayOf(::requestStarMap, ::drawMap)) })
+        hasEditResultLocationText.observe(activity,     { correctLocationText() })
+        resultLocationText.observe(activity,            { redraw(arrayOf(::drawLocationText)) })
         hasSeparator.observe(activity,                  { redraw(null) })
         separatorColor.observe(activity,                { redraw(arrayOf(::drawSeparator)) })
         separatorWidth.observe(activity,                { redraw(arrayOf(::drawSeparator)) })
@@ -122,6 +128,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     }
 
     private fun firstDraw() {
+        correctLocationText()
+
         Thread {
             requestStarMap()
             drawHolst()
@@ -249,6 +257,37 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonString)
     }
 
+    private fun correctLocationText() {
+        if(!hasEditResultLocationText.value!!) {
+            var locationText = ""
+
+            if(hasEventDateInLocation.value!!)
+                locationText = "$locationText ${SimpleDateFormat("dd MMMM yyyy", Locale("ru")).format(eventDate.value!!)}"
+
+            if(hasEventDateInLocation.value!! && hasEventTimeInLocation.value!!)
+                locationText = "$locationText,"
+
+            if(hasEventTimeInLocation.value!!) {
+                locationText = "${locationText}${eventTime.value!!}\n"
+            } else if(hasEventDateInLocation.value!!) {
+                locationText = "$locationText\n"
+            }
+
+            if(hasEventCityInLocation.value!!) {
+                locationText = if(eventCountry.value!!.isNotEmpty()) {
+                    "${locationText}г. ${eventLocation.value}, ${eventCountry.value}\n"
+                } else {
+                    "${locationText}г. ${eventLocation.value}\n"
+                }
+            }
+
+            if(hasEventCoordinatesInLocation.value!!)
+                locationText = "${locationText}${Helper.convert(eventLatitude.value!!, eventLongitude.value!!)}"
+
+            resultLocationText.value = locationText.trim()
+        }
+    }
+
     private fun redraw(callbacks: Array<() -> Unit?>?) {
         Thread {
             if(isDataInitialized) {
@@ -374,7 +413,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val canvas = Canvas(tempBitmap)
 
-        val textLines = getLocationText().split("\n")
+        val textLines = resultLocationText.value!!.split("\n")
         var totalHeightText = 0F
 
         for(textLine in textLines) {

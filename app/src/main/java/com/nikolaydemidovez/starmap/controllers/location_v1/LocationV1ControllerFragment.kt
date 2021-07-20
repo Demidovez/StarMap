@@ -10,6 +10,8 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -64,7 +66,42 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
             }
         )
 
+        binding.checkboxEnableDateInLocation.setOnCheckedChangeListener { _, isChecked ->
+            templateCanvas.hasEventDateInLocation.value = isChecked
+        }
 
+        binding.checkboxEnableTimeInLocation.setOnCheckedChangeListener { _, isChecked ->
+            templateCanvas.hasEventTimeInLocation.value = isChecked
+        }
+
+        binding.checkboxEnableCityInLocation.setOnCheckedChangeListener { _, isChecked ->
+            templateCanvas.hasEventCityInLocation.value = isChecked
+        }
+
+        binding.checkboxEnableCoordinatesInLocation.setOnCheckedChangeListener { _, isChecked ->
+            templateCanvas.hasEventCoordinatesInLocation.value = isChecked
+        }
+
+        binding.checkboxEditText.setOnCheckedChangeListener { _, isChecked ->
+            templateCanvas.hasEditResultLocationText.value = isChecked
+        }
+
+        templateCanvas.hasEditResultLocationText.observe(requireActivity(), {
+            binding.resultLocationText.isEnabled = it
+            binding.resultLocationText.alpha = if(it) 1F else 0.6F
+        })
+
+        templateCanvas.resultLocationText.observe(requireActivity(), {
+            if(!binding.resultLocationText.isFocused && !templateCanvas.hasEditResultLocationText.value!!) {
+                binding.resultLocationText.setText(it)
+            }
+        })
+
+        binding.resultLocationText.doOnTextChanged { _, _, _, _ ->
+            if(templateCanvas.hasEditResultLocationText.value!!) {
+                templateCanvas.resultLocationText.value = binding.resultLocationText.text.toString()
+            }
+        }
 
         return root
     }

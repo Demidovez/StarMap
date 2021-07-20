@@ -10,12 +10,15 @@
         <entry key="app/src/main/res/drawable/ic_color_picker.xml" value="0.22604166666666667" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.23541666666666666" />
         <entry key="app/src/main/res/drawable/ic_project.xml" value="0.23541666666666666" />
+        <entry key="app/src/main/res/drawable/ic_round_checked.xml" value="0.21388888888888888" />
+        <entry key="app/src/main/res/drawable/ic_round_unchecked.xml" value="0.21388888888888888" />
         <entry key="app/src/main/res/drawable/ic_selector.xml" value="0.2175925925925926" />
         <entry key="app/src/main/res/drawable/ic_setting.xml" value="0.23541666666666666" />
         <entry key="app/src/main/res/drawable/ic_template.xml" value="0.23541666666666666" />
         <entry key="app/src/main/res/drawable/ic_template_selected.xml" value="0.3921875" />
         <entry key="app/src/main/res/drawable/projects_nav_selector.xml" value="0.23541666666666666" />
         <entry key="app/src/main/res/drawable/ripple.xml" value="0.34814814814814815" />
+        <entry key="app/src/main/res/drawable/round_checkbox.xml" value="0.21388888888888888" />
         <entry key="app/src/main/res/drawable/rounded_border_edittext.xml" value="0.3921875" />
         <entry key="app/src/main/res/drawable/rounded_top_background.xml" value="0.3921875" />
         <entry key="app/src/main/res/drawable/settings_nav_selector.xml" value="0.23541666666666666" />
@@ -29,9 +32,9 @@
         <entry key="app/src/main/res/layout/font_item.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/font_picker_layout.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_canvas_v1_controller.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_desc_v1_controller.xml" value="0.3619791666666667" />
+        <entry key="app/src/main/res/layout/fragment_desc_v1_controller.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_event_v1_controller.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_location_v1_controller.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_location_v1_controller.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_map_v1_controller.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_projects.xml" value="0.38697916666666665" />
         <entry key="app/src/main/res/layout/fragment_save_v1_controller.xml" value="0.37604166666666666" />
