@@ -1,52 +1,38 @@
 package adapters
 
-import android.app.Dialog
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
-import android.content.DialogInterface
 import android.graphics.*
-import android.graphics.drawable.ColorDrawable
 import android.view.*
 import android.widget.*
 import com.nikolaydemidovez.starmap.R
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.widget.doOnTextChanged
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
-import com.nikolaydemidovez.starmap.adapters.FontAdapter
+import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.databinding.ColorItemBinding
-import com.nikolaydemidovez.starmap.pojo.FontText
-import com.nikolaydemidovez.starmap.pojo.Location
-import com.nikolaydemidovez.starmap.templates.TemplateCanvas
+import com.nikolaydemidovez.starmap.interfaces.PropertiesHasInterface
 import com.nikolaydemidovez.starmap.utils.extensions.hideKeyboard
-import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.dpToPx
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.isValidColor
-import com.skydoves.colorpickerview.ColorEnvelope
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
-import com.skydoves.colorpickerview.ColorPickerDialog
-import com.skydoves.colorpickerview.flag.FlagMode
-
 import com.skydoves.colorpickerview.ColorPickerView
-import com.skydoves.colorpickerview.flag.BubbleFlag
-
 import com.skydoves.colorpickerview.sliders.BrightnessSlideBar
-import controllers.event_v1.EventV1ControllerFragment
 
-
-class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ColorAdapter(
+    private val templateFont: MutableLiveData<*>,
+    private val listener: (color: String) -> Unit
+): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var colorList = arrayListOf<String>()
 
     class ColorHolder(item: View): RecyclerView.ViewHolder(item) {
         private val binding = ColorItemBinding.bind(item)
 
-        fun bind(color: String, templateCanvas: TemplateCanvas) = with(binding) {
+        fun bind(color: String, templateFont: MutableLiveData<PropertiesHasInterface>, listener: (color: String) -> Unit) = with(binding) {
 
-            val borderColor = if(color == templateCanvas.locationFont.value!!.color) {
-                ContextCompat.getColor(itemView.context, com.nikolaydemidovez.starmap.R.color.dark)
+            val borderColor = if(color == templateFont.value!!.color) {
+                ContextCompat.getColor(itemView.context, R.color.dark)
             } else {
                 Color.parseColor("#FFFFFF")
             }
@@ -66,10 +52,7 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
             imageColor.setColorFilter(circleColor, PorterDuff.Mode.SRC_ATOP)
 
             rootItemColor.setOnClickListener {
-                val newFont = templateCanvas.locationFont.value
-                newFont?.color = color
-
-                templateCanvas.locationFont.value = newFont
+                listener(color)
             }
         }
     }
@@ -77,11 +60,11 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
     class PickerHolder(item: View): RecyclerView.ViewHolder(item) {
         private val binding = ColorItemBinding.bind(item)
 
-        fun bind(colorList: ArrayList<String>, templateCanvas: TemplateCanvas) = with(binding) {
+        fun bind(colorList: ArrayList<String>, templateFont: MutableLiveData<PropertiesHasInterface>, listener: (color: String) -> Unit) = with(binding) {
             rootItemColor.updatePadding(left = dpToPx(16F, itemView.context))
 
-            val borderColor = if(!colorList.contains(templateCanvas.locationFont.value!!.color)) {
-                ContextCompat.getColor(itemView.context, com.nikolaydemidovez.starmap.R.color.dark)
+            val borderColor = if(!colorList.contains(templateFont.value!!.color)) {
+                ContextCompat.getColor(itemView.context, R.color.dark)
             } else {
                 Color.parseColor("#FFFFFF")
             }
@@ -92,14 +75,14 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
                 imageColor.background.setColorFilter(borderColor, PorterDuff.Mode.SRC_ATOP)
             }
 
-            imageColor.setImageDrawable(ContextCompat.getDrawable(itemView.context, com.nikolaydemidovez.starmap.R.drawable.ic_color_picker))
+            imageColor.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.ic_color_picker))
 
             rootItemColor.setOnClickListener {
-                showColorPicker(templateCanvas)
+                showColorPicker(templateFont, listener)
             }
         }
 
-        private fun showColorPicker(templateCanvas: TemplateCanvas) {
+        private fun showColorPicker(templateFont: MutableLiveData<PropertiesHasInterface>, listener: (color: String) -> Unit) {
             val layoutInflater = LayoutInflater.from(itemView.context)
             val layout: View = layoutInflater.inflate(R.layout.color_picker_layout, null)
             layout.findViewById<TextView>(R.id.title).text = "Цвет текста"
@@ -112,7 +95,7 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
             val imgClearText       = layout.findViewById<ImageView>(R.id.clear_text)
 
             colorPickerView.attachBrightnessSlider(brightnessSlideBar)
-            colorPickerView.setInitialColor(Color.parseColor(templateCanvas.locationFont.value!!.color))
+            colorPickerView.setInitialColor(Color.parseColor(templateFont.value!!.color))
 
             colorPickerView.setColorListener(ColorEnvelopeListener { envelope, fromUser ->
                 colorPreview.setColorFilter(envelope.color, PorterDuff.Mode.SRC_ATOP)
@@ -126,7 +109,6 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
                     inputColor.clearFocus()
                     inputColor.hideKeyboard()
                 }
-
             })
 
             inputColor.doOnTextChanged { text, _, _, count ->
@@ -179,10 +161,7 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
 
                     if(color.isNotEmpty()) {
                         if(isValidColor(color)) {
-                            val newFont = templateCanvas.locationFont.value
-                            newFont?.color = color
-
-                            templateCanvas.locationFont.value = newFont
+                            listener(color)
 
                             dialog.dismiss()
                         } else {
@@ -215,9 +194,9 @@ class ColorAdapter(private val templateCanvas: TemplateCanvas): RecyclerView.Ada
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == COLOR) {
-            (viewHolder as ColorHolder).bind(colorList[position], templateCanvas)
+            (viewHolder as ColorHolder).bind(colorList[position], templateFont as MutableLiveData<PropertiesHasInterface>, listener)
         } else {
-            (viewHolder as PickerHolder).bind(colorList, templateCanvas)
+            (viewHolder as PickerHolder).bind(colorList, templateFont as MutableLiveData<PropertiesHasInterface>, listener)
         }
     }
 

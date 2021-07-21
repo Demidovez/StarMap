@@ -45,6 +45,7 @@
     <string name="label_enable_location_in_location">Добавить место</string>
     <string name="label_enable_coordinates_in_location">Добавить координаты</string>
     <string name="label_result_text">Изменить текст</string>
+    <string name="label_width_separator">Длина разделителя</string>
 
 
 

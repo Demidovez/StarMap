@@ -10,7 +10,6 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -27,11 +26,18 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
 
     private lateinit var viewModel: LocationV1ControllerViewModel
     private lateinit var binding: FragmentLocationV1ControllerBinding
-    private val colorAdapter = ColorAdapter(templateCanvas)
+    private lateinit var colorAdapter: ColorAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewModel = ViewModelProvider(this).get(LocationV1ControllerViewModel::class.java)
         binding = FragmentLocationV1ControllerBinding.inflate(inflater, container, false)
+
+        colorAdapter = ColorAdapter(templateCanvas.locationFont) {
+            val newFont = templateCanvas.locationFont.value
+            newFont?.color = it
+
+            templateCanvas.locationFont.value = newFont
+        }
 
         val root: View = binding.root
 
@@ -148,7 +154,14 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
 
         val allFonts: ArrayList<FontText> = getAllFonts()
 
-        val adapter = FontAdapter(activity, templateCanvas, dialog, allFonts)
+        val adapter = FontAdapter(activity, templateCanvas, dialog, allFonts) {
+            val newFont = templateCanvas.locationFont.value
+            newFont?.name = it.name
+            newFont?.resId = it.resId
+
+            templateCanvas.locationFont.value = newFont
+        }
+
         listView.adapter = adapter
 
         dialog.show()

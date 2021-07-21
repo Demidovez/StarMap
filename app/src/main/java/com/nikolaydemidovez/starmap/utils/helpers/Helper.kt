@@ -9,6 +9,11 @@ import kotlin.math.abs
 import android.util.TypedValue
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import android.view.MotionEvent
+
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
+
 
 class Helper {
     companion object {
@@ -98,6 +103,27 @@ class Helper {
             val m: Matcher = colorPattern.matcher(color)
 
             return m.find()
+        }
+
+        // Тусклый цвет, если элемент управления заблокирован
+        fun shadowAlpha(isEnabled: Boolean): Float {
+            return if(isEnabled) 1F else 0.6F
+        }
+
+        // Класс, для отключения recyclerview если элемент управления заблокирован
+        class RecyclerViewDisabler(isEnable: Boolean) : OnItemTouchListener {
+            var isEnable = true
+
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                return !isEnable
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+
+            init {
+                this.isEnable = isEnable
+            }
         }
     }
 }

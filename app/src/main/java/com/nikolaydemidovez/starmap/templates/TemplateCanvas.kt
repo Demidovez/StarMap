@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.pojo.Controller
 import com.nikolaydemidovez.starmap.pojo.FontText
+import com.nikolaydemidovez.starmap.pojo.Separator
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import java.io.*
 import java.text.SimpleDateFormat
@@ -32,7 +33,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val hasBorderMap                    = MutableLiveData<Boolean>()    // Добавлена ли рамка карты
     val widthBorderMap                  = MutableLiveData<Float>()      // Ширина рамки карты
     val mapBorderColor                  = MutableLiveData<Int>()        // Цвет рамки карты
-    val descTextSize                    = MutableLiveData<Float>()      // Размер основного текста
+    val descFont                        = MutableLiveData<FontText>()   // Шрифт текста события
     val descText                        = MutableLiveData<String>()     // Основной текст
     val hasEventDateInLocation          = MutableLiveData<Boolean>()    // Добавить ли дату в текст локации
     val eventDate                       = MutableLiveData<Date>()       // Дата события
@@ -40,7 +41,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val eventTime                       = MutableLiveData<String>()     // Время события
     val hasEventCityInLocation          = MutableLiveData<Boolean>()    // Добавить ли город в текст локации
     val eventLocation                   = MutableLiveData<String>()     // Место события
-    val locationFont                    = MutableLiveData<FontText>()   // Место события
+    val locationFont                    = MutableLiveData<FontText>()   // Шрифт текста локации
     val eventCountry                    = MutableLiveData<String>()     // Страна события
     val hasEditResultLocationText       = MutableLiveData<Boolean>()    // Изменить ли результирующий текст в локации
     val resultLocationText              = MutableLiveData<String>()     // Результирующий текст локации
@@ -48,9 +49,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val eventLatitude                   = MutableLiveData<Double>()     // Широта места события
     val eventLongitude                  = MutableLiveData<Double>()     // Долгота места события
     val hasSeparator                    = MutableLiveData<Boolean>()    // Добавить ли разделитель
-    val separatorColor                  = MutableLiveData<Int>()        // Цвет разделителя
-    val separatorWidth                  = MutableLiveData<Float>()      // Длина разделителя
-    val separatorHeight                 = MutableLiveData<Float>()      // Высота разделителя
+    val separator                       = MutableLiveData<Separator>()  // Разделителя
     // Конец списка свойств
 
     var bitmap: Bitmap = Bitmap.createBitmap(2480, 3508,Bitmap.Config.ARGB_8888)

@@ -26,7 +26,8 @@ class FontAdapter (
     private var applicationContext: Context?,
     private var templateCanvas: TemplateCanvas,
     private var dialog: Dialog,
-    dataList: ArrayList<FontText>
+    dataList: ArrayList<FontText>,
+    private var listener: (font: FontText) -> Unit
 ) : BaseAdapter() {
     private var fontList: ArrayList<FontText> = dataList
 
@@ -50,11 +51,7 @@ class FontAdapter (
         family.typeface = getFont(applicationContext!!, fontList[i].resId!!)
 
         view.setOnClickListener {
-            val newFont = templateCanvas.locationFont.value
-            newFont?.name = fontList[i].name
-            newFont?.resId = fontList[i].resId
-
-            templateCanvas.locationFont.value = newFont
+            listener(fontList[i])
 
             dialog.dismiss()
         }

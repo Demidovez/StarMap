@@ -17,6 +17,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.pojo.Controller
 import com.nikolaydemidovez.starmap.pojo.FontText
+import com.nikolaydemidovez.starmap.pojo.Separator
 import com.nikolaydemidovez.starmap.retrofit.common.Common
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
@@ -72,7 +73,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasBorderMap.value                              = false
         widthBorderMap.value                            = 15F
         mapBorderColor.value                            = Color.parseColor("#FFFFFF")
-        descTextSize.value                              = 160F
+        descFont.value                                  = FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 120F)
         descText.value                                  = "День, когда сошлись\nвсе звезды вселенной..."
         hasEventDateInLocation.value                    = true
         eventDate.value                                 = Calendar.getInstance().time
@@ -88,9 +89,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         eventLatitude.value                             = 55.755826
         eventLongitude.value                            = 37.6173
         hasSeparator.value                              = true
-        separatorColor.value                            = Color.parseColor("#000000")
-        separatorWidth.value                            = 1200F
-        separatorHeight.value                           = 7F
+        separator.value                                 = Separator("#000000", 1000F)
 
         canvasWidth.observe(activity,                   { redraw(arrayOf(::drawHolst, ::drawHolstBorder, ::drawDesc, ::drawLocationText)) })
         canvasHeight.observe(activity,                  { redraw(arrayOf(::drawHolst, ::drawHolstBorder, ::drawDesc, ::drawLocationText)) })
@@ -105,7 +104,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         widthBorderMap.observe(activity,                { redraw(arrayOf(::drawMap)) })
         mapBorderColor.observe(activity,                { redraw(arrayOf(::drawMap)) })
         isLoadedStarMap.observe(activity,               { redraw(arrayOf(::drawMap)) })
-        descTextSize.observe(activity,                  { redraw(arrayOf(::drawDesc)) })
+        descFont.observe(activity,                      { redraw(arrayOf(::drawDesc)) })
         descText.observe(activity,                      { redraw(arrayOf(::drawDesc)) })
         hasEventDateInLocation.observe(activity,        { correctLocationText(); })
         eventDate.observe(activity,                     { correctLocationText(); redraw(arrayOf(::requestStarMap, ::drawMap)) })
@@ -120,9 +119,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasEditResultLocationText.observe(activity,     { correctLocationText() })
         resultLocationText.observe(activity,            { redraw(arrayOf(::drawLocationText)) })
         hasSeparator.observe(activity,                  { redraw(null) })
-        separatorColor.observe(activity,                { redraw(arrayOf(::drawSeparator)) })
-        separatorWidth.observe(activity,                { redraw(arrayOf(::drawSeparator)) })
-        separatorHeight.observe(activity,               { redraw(arrayOf(::drawSeparator)) })
+        separator.observe(activity,                     { redraw(arrayOf(::drawSeparator)) })
 
         firstDraw()
     }
@@ -364,8 +361,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private fun drawDesc() {
         val descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
-            textSize = descTextSize.value!!
-            typeface = ResourcesCompat.getFont(activity.applicationContext, R.font.caveat_regular)
+            textSize = descFont.value!!.size!!
+            typeface = ResourcesCompat.getFont(activity.applicationContext, descFont.value!!.resId!!)
+            color = Color.parseColor(descFont.value!!.color!!)
             isDither = true
             isAntiAlias = true
         }
@@ -378,25 +376,27 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         var totalHeightText = 0F
 
         for(textLine in textLines) {
-            totalHeightText += canvas.drawMultilineText(textLine, descTextPaint, (canvasWidth.value!!/1.5).toInt() , canvasWidth.value!!/2, totalHeightText)
+            totalHeightText += canvas.drawMultilineText(textLine, descTextPaint, (canvasWidth.value!!/1.3).toInt() , canvasWidth.value!!/2, totalHeightText)
         }
 
         bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), totalHeightText.toInt())
     }
 
     private fun drawSeparator() {
-        val separator = Paint(ANTI_ALIAS_FLAG).apply {
+        val separatorHeight = (separator.value!!.width!! * 0.01F).coerceAtLeast(1F)
+
+        val separatorLine = Paint(ANTI_ALIAS_FLAG).apply {
             isDither = true
             isAntiAlias = true
-            strokeWidth = separatorHeight.value!!
-            color = separatorColor.value!!
+            strokeWidth = separatorHeight
+            color = Color.parseColor(separator.value!!.color!!)
         }
 
         val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
 
-        Canvas(tempBitmap).drawLine(0F, 0F, separatorWidth.value!!, 0F, separator)
+        Canvas(tempBitmap).drawLine(0F, 0F, separator.value!!.width!!, 0F, separatorLine)
 
-        bitmapSeparator = Bitmap.createBitmap(tempBitmap, 0, 0, separatorWidth.value!!.toInt(), separatorHeight.value!!.toInt())
+        bitmapSeparator = Bitmap.createBitmap(tempBitmap, 0, 0, separator.value!!.width!!.toInt(), separatorHeight.toInt())
     }
 
     private fun drawLocationText() {
@@ -531,7 +531,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
             // Рисуем разделитель
             if(hasSeparator.value!!) {
-                canvas.drawBitmap(bitmapSeparator, (canvasWidth.value!! - separatorWidth.value!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
+                canvas.drawBitmap(bitmapSeparator, (canvasWidth.value!! - separator.value!!.width!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
             }
 
             // Рисуем текст локации
