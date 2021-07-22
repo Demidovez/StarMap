@@ -22,7 +22,7 @@
     <string name="label_enable_border_map">Добавить рамку</string>
     <string name="label_color_border_map">Цвет рамки</string>
     <string name="label_indent_border">Отступ для рамки</string>
-    <string name="label_width_border">Толщину рамки</string>
+    <string name="label_width_border">Толщина рамки</string>
     <string name="label_enable_web">Добавить сетку</string>
     <string name="label_bright">Яркость звезд</string>
     <string name="label_color_stars">Цвет звезд</string>

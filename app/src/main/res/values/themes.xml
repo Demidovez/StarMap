@@ -91,5 +91,18 @@
         <item name="android:windowBackground">@drawable/dialog_background</item>
     </style>
 
+    <style name="titleHostSize">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="subTitleHostSize">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+    </style>
+
+
 
 </resources>

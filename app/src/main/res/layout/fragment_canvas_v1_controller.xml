@@ -8,302 +8,205 @@
     tools:context=".controllers.canvas_v1.CanvasV1ControllerFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/frameLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/frameLayout"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="8dp" >
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
         <TextView
             android:id="@+id/label_size"
-            android:layout_width="match_parent"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/label_size"
+            android:textAppearance="@style/label_controller"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <RadioGroup
-            android:id="@+id/radio_group_size"
-            android:layout_width="wrap_content"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/colorSizeRecycler"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label_size">
+            app:layout_constraintTop_toBottomOf="@id/label_size"/>
 
-            <RadioButton
-                android:id="@+id/radio_size_a4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="A4" />
-
-            <RadioButton
-                android:id="@+id/radio_size_a3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="A3" />
-
-            <RadioButton
-                android:id="@+id/radio_size_a2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="A2" />
-
-            <RadioButton
-                android:id="@+id/radio_size_a1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="A1" />
-
-        </RadioGroup>
 
         <TextView
             android:id="@+id/label_background"
-            android:layout_width="match_parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textAppearance="@style/label_controller"
             android:text="@string/label_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/radio_group_size" />
+            app:layout_constraintTop_toBottomOf="@id/colorSizeRecycler" />
 
-        <RadioGroup
-            android:id="@+id/radio_group_background"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label_background">
-
-            <RadioButton
-                android:id="@+id/radio_background_white"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="Белый" />
-
-            <RadioButton
-                android:id="@+id/radio_background_black"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="Черный" />
-
-            <RadioButton
-                android:id="@+id/radio_background_green"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="Зеленый" />
-
-            <RadioButton
-                android:id="@+id/radio_background_blue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="Синий" />
-
-        </RadioGroup>
-
-        <TextView
-            android:id="@+id/label_enable_border"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_enable_border"
-            app:layout_constraintBottom_toBottomOf="@+id/checkbox_enable_border"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/checkbox_enable_border" />
-
-        <CheckBox
-            android:id="@+id/checkbox_enable_border"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="16dp"
-            app:layout_constraintStart_toEndOf="@+id/label_enable_border"
-            app:layout_constraintTop_toBottomOf="@id/radio_group_background" />
-
-        <TextView
-            android:id="@+id/label_indent_border"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/colorBackgroundRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_background"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.45" />
+
+        <TextView
+            android:id="@+id/labelEnableBorder"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/label_controller"
+            android:text="@string/label_enable_border"
+            app:layout_constraintBottom_toBottomOf="@+id/checkboxEnableBorder"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/checkboxEnableBorder" />
+
+        <CheckBox
+            android:id="@+id/checkboxEnableBorder"
+            android:button="@drawable/round_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:checked="true"
+            app:layout_constraintTop_toBottomOf="@+id/colorBackgroundRecycler"
+            app:layout_constraintStart_toEndOf="@+id/guideline" />
+
+        <TextView
+            android:id="@+id/labelIndentBorder"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/label_controller"
             android:text="@string/label_indent_border"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkbox_enable_border" />
-
-        <RadioGroup
-            android:id="@+id/radio_group_indent_border"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label_indent_border">
-
-            <RadioButton
-                android:id="@+id/radio_indent_border_10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="10 мм" />
-
-            <RadioButton
-                android:id="@+id/radio_indent_border_15"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="15 мм" />
-
-            <RadioButton
-                android:id="@+id/radio_indent_border_20"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="20 мм" />
-
-            <RadioButton
-                android:id="@+id/radio_indent_border_25"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="25 мм" />
-
-        </RadioGroup>
+            app:layout_constraintTop_toBottomOf="@+id/checkboxEnableBorder" />
 
         <TextView
-            android:id="@+id/label_width_border"
-            android:layout_width="match_parent"
+            android:id="@+id/indentSize"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:textAlignment="center"
+            style="@style/edit_text_controller"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelIndentBorder"
+            />
+
+        <TextView
+            android:id="@+id/sizeIndentUnit"
+            android:text="мм"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/dark_shadow"
+            android:fontFamily="@font/nunito_regular"
+            app:layout_constraintTop_toTopOf="@+id/indentSize"
+            app:layout_constraintStart_toEndOf="@+id/indentSize"
+            app:layout_constraintBottom_toBottomOf="@+id/indentSize"/>
+
+        <SeekBar
+            android:id="@+id/sliderIndentBorder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:progress="20"
+            android:max="300"
+            app:layout_constraintTop_toTopOf="@+id/indentSize"
+            app:layout_constraintBottom_toBottomOf="@+id/indentSize"
+            app:layout_constraintStart_toEndOf="@+id/sizeIndentUnit"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/labelWidthBorder"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/label_controller"
             android:text="@string/label_width_border"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radio_group_indent_border" />
-
-        <RadioGroup
-            android:id="@+id/radio_group_width_border"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label_width_border">
-
-            <RadioButton
-                android:id="@+id/radio_width_border_3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="3 мм" />
-
-            <RadioButton
-                android:id="@+id/radio_width_border_4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="4 мм" />
-
-            <RadioButton
-                android:id="@+id/radio_width_border_5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="5 мм" />
-
-            <RadioButton
-                android:id="@+id/radio_width_border_6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="6 мм" />
-
-        </RadioGroup>
+            app:layout_constraintTop_toBottomOf="@+id/indentSize" />
 
         <TextView
-            android:id="@+id/label_color_border"
-            android:layout_width="match_parent"
+            android:id="@+id/weightBorder"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:textAlignment="center"
+            style="@style/edit_text_controller"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelWidthBorder"
+            />
+
+        <TextView
+            android:id="@+id/sizeUnit"
+            android:text="мм"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/dark_shadow"
+            android:fontFamily="@font/nunito_regular"
+            app:layout_constraintTop_toTopOf="@+id/weightBorder"
+            app:layout_constraintStart_toEndOf="@+id/weightBorder"
+            app:layout_constraintBottom_toBottomOf="@+id/weightBorder"/>
+
+        <SeekBar
+            android:id="@+id/sliderWeightBorder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:progress="20"
+            android:max="300"
+            app:layout_constraintTop_toTopOf="@+id/weightBorder"
+            app:layout_constraintBottom_toBottomOf="@+id/weightBorder"
+            app:layout_constraintStart_toEndOf="@+id/sizeUnit"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/labelColorBorder"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/label_controller"
             android:text="@string/label_color_border"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radio_group_width_border" />
+            app:layout_constraintTop_toBottomOf="@+id/weightBorder" />
 
-        <RadioGroup
-            android:id="@+id/radio_group_color_border"
-            android:layout_width="wrap_content"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/colorRecyclerBorder"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:paddingBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label_color_border">
-
-            <RadioButton
-                android:id="@+id/radio_color_border_black"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="Черный" />
-
-            <RadioButton
-                android:id="@+id/radio_color_border_white"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="Белый" />
-
-            <RadioButton
-                android:id="@+id/radio_color_border_green"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="Зеленый" />
-
-            <RadioButton
-                android:id="@+id/radio_color_border_blue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="Синий" />
-
-        </RadioGroup>
+            app:layout_constraintTop_toBottomOf="@id/labelColorBorder"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

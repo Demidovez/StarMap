@@ -15,9 +15,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
-import com.nikolaydemidovez.starmap.pojo.Controller
-import com.nikolaydemidovez.starmap.pojo.FontText
-import com.nikolaydemidovez.starmap.pojo.Separator
+import com.nikolaydemidovez.starmap.pojo.*
 import com.nikolaydemidovez.starmap.retrofit.common.Common
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
@@ -61,13 +59,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         val hourOfDay = date.get(Calendar.HOUR_OF_DAY)
         val minute    = date.get(Calendar.MINUTE)
 
-        canvasWidth.value                               = 2480F
-        canvasHeight.value                              = 3508F
-        backgroundColorCanvas.value                     = Color.parseColor("#FFFFFF")
-        canvasBorderColor.value                         = Color.parseColor("#000000")
-        hasBorderCanvas.value                           = true
-        indentBorderCanvas.value                        = 100F
-        widthBorderCanvas.value                         = 10F
+        holst.value                                     = Holst("A4", "297 x 210 мм", 2480F, 3508F, "#FFFFFF" )
+        hasBorderHolst.value                            = true
+        borderHolst.value                               = HolstBorder(100F, 10F, "#000000")
         backgroundColorMap.value                        = "#000000"
         radiusMap.value                                 = 1000F
         hasBorderMap.value                              = false
@@ -91,13 +85,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasSeparator.value                              = true
         separator.value                                 = Separator("#000000", 1000F)
 
-        canvasWidth.observe(activity,                   { redraw(arrayOf(::drawHolst, ::drawHolstBorder, ::drawDesc, ::drawLocationText)) })
-        canvasHeight.observe(activity,                  { redraw(arrayOf(::drawHolst, ::drawHolstBorder, ::drawDesc, ::drawLocationText)) })
-        backgroundColorCanvas.observe(activity,         { redraw(arrayOf(::drawHolst)) })
-        canvasBorderColor.observe(activity,             { redraw(arrayOf(::drawHolstBorder)) })
-        hasBorderCanvas.observe(activity,               { redraw(arrayOf(::drawHolstBorder)) })
-        indentBorderCanvas.observe(activity,            { redraw(arrayOf(::drawHolstBorder)) })
-        widthBorderCanvas.observe(activity,             { redraw(arrayOf(::drawHolstBorder)) })
+        holst.observe(activity,                         { redraw(arrayOf(::drawHolst, ::drawHolstBorder, ::drawDesc, ::drawLocationText)) })
+        hasBorderHolst.observe(activity,                { redraw(arrayOf(::drawHolstBorder)) })
+        borderHolst.observe(activity,                   { redraw(arrayOf(::drawHolstBorder)) })
         backgroundColorMap.observe(activity,            { redraw(arrayOf(::requestStarMap)) })
         radiusMap.observe(activity,                     { redraw(arrayOf(::requestStarMap)) })
         hasBorderMap.observe(activity,                  { redraw(arrayOf(::requestStarMap, ::drawMap)) })
@@ -296,34 +286,34 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     }
 
     private fun drawHolst() {
-        val holst = Paint(ANTI_ALIAS_FLAG).apply {
+        val holstPaint = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            color = backgroundColorCanvas.value!!
+            color = Color.parseColor(holst.value!!.color)
             isDither = true
             isAntiAlias = true
         }
 
-        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
-        Canvas(tempBitmap).drawRect(0F, 0F, canvasWidth.value!!, canvasHeight.value!!, holst)
+        Canvas(tempBitmap).drawRect(0F, 0F, holst.value!!.width!!, holst.value!!.height!!, holstPaint)
 
-        bitmapHolst = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt())
+        bitmapHolst = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt())
     }
 
     private fun drawHolstBorder() {
         val border = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.STROKE
-            color = canvasBorderColor.value!!
-            strokeWidth = widthBorderCanvas.value!!  //TODO: Ширина границы не изменяет общую длину отступа от края?
+            color = Color.parseColor(borderHolst.value!!.color)
+            strokeWidth = borderHolst.value!!.width!!  //TODO: Ширина границы не изменяет общую длину отступа от края?
             isDither = true
             isAntiAlias = true
         }
 
-        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
-        Canvas(tempBitmap).drawRect(indentBorderCanvas.value!!, indentBorderCanvas.value!!, canvasWidth.value!! - indentBorderCanvas.value!!, canvasHeight.value!! - indentBorderCanvas.value!!, border)
+        Canvas(tempBitmap).drawRect(borderHolst.value!!.indent!!, borderHolst.value!!.indent!!, holst.value!!.width!!.toInt() - borderHolst.value!!.indent!!, holst.value!!.height!!.toInt() - borderHolst.value!!.indent!!, border)
 
-        bitmapHolstBorder = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt())
+        bitmapHolstBorder = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt())
     }
 
     private fun drawMap() {
@@ -351,7 +341,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             isAntiAlias = true
         }
 
-        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
         Canvas(tempBitmap).drawCircle(radiusMap.value!! + widthBorderMap.value!!, radiusMap.value!! + widthBorderMap.value!!, radiusMap.value!! + widthBorderMap.value!!, mapBorder)
 
@@ -368,7 +358,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             isAntiAlias = true
         }
 
-        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
         val canvas = Canvas(tempBitmap)
 
@@ -376,10 +366,10 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         var totalHeightText = 0F
 
         for(textLine in textLines) {
-            totalHeightText += canvas.drawMultilineText(textLine, descTextPaint, (canvasWidth.value!!/1.3).toInt() , canvasWidth.value!!/2, totalHeightText)
+            totalHeightText += canvas.drawMultilineText(textLine, descTextPaint, (holst.value!!.width!!/1.3).toInt() , holst.value!!.width!!/2, totalHeightText)
         }
 
-        bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), totalHeightText.toInt())
+        bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), totalHeightText.toInt())
     }
 
     private fun drawSeparator() {
@@ -392,7 +382,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             color = Color.parseColor(separator.value!!.color!!)
         }
 
-        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
         Canvas(tempBitmap).drawLine(0F, 0F, separator.value!!.width!!, 0F, separatorLine)
 
@@ -409,7 +399,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             isAntiAlias = true
         }
 
-        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
         val canvas = Canvas(tempBitmap)
 
@@ -417,18 +407,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         var totalHeightText = 0F
 
         for(textLine in textLines) {
-            totalHeightText += canvas.drawMultilineText(textLine, eventLocation, canvasWidth.value!!.toInt() , canvasWidth.value!!/2,  totalHeightText)
+            totalHeightText += canvas.drawMultilineText(textLine, eventLocation, holst.value!!.width!!.toInt() , holst.value!!.width!!/2,  totalHeightText)
         }
 
-        bitmapLocationText = Bitmap.createBitmap(tempBitmap, 0, 0, canvasWidth.value!!.toInt(), totalHeightText.toInt())
+        bitmapLocationText = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), totalHeightText.toInt())
     }
 
     private fun getBottomMarginLocationText(): Int {
         var margin = 0F
 
         margin = margin.plus(
-            if(hasBorderCanvas.value!!) {
-                indentBorderCanvas.value!! + widthBorderCanvas.value!! + (indentBorderCanvas.value!!*0.5).toFloat()
+            if(hasBorderHolst.value!!) {
+                borderHolst.value!!.indent!! + borderHolst.value!!.width!! + (borderHolst.value!!.indent!!*0.5).toFloat()
             } else {
                 (bitmapLocationText.height * 0.5).toFloat()
             }
@@ -443,9 +433,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         var margin = 0F
 
         margin += if(hasBorderMap.value!!) {
-            canvasWidth.value!!/2 + bitmapMapBorder.height / 2
+            holst.value!!.width!!/2 + bitmapMapBorder.height / 2
         } else {
-            canvasWidth.value!!/2 + bitmapMap.height / 2
+            holst.value!!.width!!/2 + bitmapMap.height / 2
         }
 
         return margin
@@ -453,7 +443,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
     private fun getAutoAlignMargin(): Float {
         // Определяем какой отступ нужен для текста, разделителя и текста локации, чтобы они ровно расположились
-        var heightAllObjects = canvasWidth.value!!.toFloat() / 2
+        var heightAllObjects = holst.value!!.width!! / 2
 
         heightAllObjects += if(hasBorderMap.value!!) {
             bitmapMapBorder.height.toFloat() / 2
@@ -473,7 +463,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         countObjectsForSetMargin = if(hasSeparator.value!!) 3  else 2
 
-        return (canvasHeight.value!! - heightAllObjects) / countObjectsForSetMargin
+        return (holst.value!!.height!! - heightAllObjects) / countObjectsForSetMargin
     }
 
     private fun getLoadingBitmap(): Bitmap {
@@ -484,7 +474,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             isAntiAlias = true
         }
 
-        val tempBitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
         val loadingCanvas = Canvas(tempBitmap)
 
@@ -504,7 +494,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
     override fun draw() {
         Thread {
-            bitmap = Bitmap.createBitmap(canvasWidth.value!!.toInt(), canvasHeight.value!!.toInt(), Bitmap.Config.ARGB_8888)
+            bitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
             val canvas = Canvas(bitmap)
 
@@ -512,17 +502,17 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             canvas.drawBitmap(bitmapHolst, 0F, 0F, null)
 
             // Рисуем рамку холста
-            if(hasBorderCanvas.value!!) {
+            if(hasBorderHolst.value!!) {
                 canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, null)
             }
 
             // Рисуем рамку карты
             if(hasBorderMap.value!!) {
-                canvas.drawBitmap(bitmapMapBorder, canvasWidth.value!!/2 - bitmapMapBorder.width / 2, canvasWidth.value!!/2 - bitmapMapBorder.width / 2, null)
+                canvas.drawBitmap(bitmapMapBorder, holst.value!!.width!!/2 - bitmapMapBorder.width / 2, holst.value!!.width!!/2 - bitmapMapBorder.width / 2, null)
             }
 
             // Рисуем карту
-            canvas.drawBitmap(bitmapMap, canvasWidth.value!!/2 - bitmapMap.width / 2, canvasWidth.value!!/2 - bitmapMap.width / 2, null)
+            canvas.drawBitmap(bitmapMap, holst.value!!.width!!/2 - bitmapMap.width / 2, holst.value!!.width!!/2 - bitmapMap.width / 2, null)
 
             val autoMargin = getAutoAlignMargin()
 
@@ -531,11 +521,11 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
             // Рисуем разделитель
             if(hasSeparator.value!!) {
-                canvas.drawBitmap(bitmapSeparator, (canvasWidth.value!! - separator.value!!.width!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
+                canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!! - separator.value!!.width!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
             }
 
             // Рисуем текст локации
-            canvas.drawBitmap(bitmapLocationText, 0F, canvasHeight.value!! - bitmapLocationText.height - getBottomMarginLocationText(), null)
+            canvas.drawBitmap(bitmapLocationText, 0F, holst.value!!.height!! - bitmapLocationText.height - getBottomMarginLocationText(), null)
 
             activity.runOnUiThread {
                 listener?.onDraw()

@@ -9,13 +9,13 @@ import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 
 class HalfV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
     private val STROKE_WIDTH = 12f
-    private var holst: Paint
+    private var holstPaint: Paint
     private var border: Paint
 
     init {
         //backgroundColorCanvas = ResourcesCompat.getColor(activity.applicationContext.resources, R.color.white, null)
 
-        holst = Paint().apply {
+        holstPaint = Paint().apply {
             style = Paint.Style.FILL
         }
 
@@ -29,21 +29,21 @@ class HalfV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(
 
     override fun draw() {
         bitmap = Bitmap.createBitmap(
-            canvasWidth.value!!.toInt(),
-            canvasHeight.value!!.toInt(),
+            holst.value!!.width!!.toInt(),
+            holst.value!!.height!!.toInt(),
             Bitmap.Config.ARGB_8888
         )
 
         val canvas = Canvas(bitmap)
 
         //holst.color = backgroundColorCanvas
-        border.color = canvasBorderColor.value!!
+        border.color = Color.parseColor(borderHolst.value!!.color)
 
         // Рисуем холст
-        canvas.drawRect(0F, 0F, canvasWidth.value!!, canvasHeight.value!!, holst)
+        canvas.drawRect(0F, 0F, holst.value!!.width!!, holst.value!!.height!!, holstPaint)
 
         // Рисуем рамку
-        canvas.drawRect(40F, 40F, canvasWidth.value!! - 40F, canvasHeight.value!! - 40F, border)
+        canvas.drawRect(40F, 40F, holst.value!!.width!! - 40F, holst.value!!.height!! - 40F, border)
 
         listener?.onDraw()
     }

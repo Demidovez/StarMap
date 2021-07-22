@@ -8,12 +8,8 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.MainActivity
-import com.nikolaydemidovez.starmap.pojo.Controller
-import com.nikolaydemidovez.starmap.pojo.FontText
-import com.nikolaydemidovez.starmap.pojo.Separator
-import com.nikolaydemidovez.starmap.utils.helpers.Helper
+import com.nikolaydemidovez.starmap.pojo.*
 import java.io.*
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -21,13 +17,9 @@ import kotlin.collections.ArrayList
 abstract class TemplateCanvas(private val activity: MainActivity) {
 
     // Начало списка основных свойства холста
-    val canvasWidth                     = MutableLiveData<Float>()      // Ширина холста
-    val canvasHeight                    = MutableLiveData<Float>()      // Высота холста
-    val backgroundColorCanvas           = MutableLiveData<Int>()        // Цвет фона холста
-    val canvasBorderColor               = MutableLiveData<Int>()        // Цвет рамки холста
-    val hasBorderCanvas                 = MutableLiveData<Boolean>()    // Добавлена ли рамка холста
-    val indentBorderCanvas              = MutableLiveData<Float>()      // Отступ рамки от края холста
-    val widthBorderCanvas               = MutableLiveData<Float>()      // Ширина рамки холста
+    val holst                           = MutableLiveData<Holst>()      // Холст
+    val hasBorderHolst                  = MutableLiveData<Boolean>()    // Добавлена ли рамка холста
+    val borderHolst                     = MutableLiveData<HolstBorder>()// Рамка холста
     val backgroundColorMap              = MutableLiveData<String>()     // Цвет фона карты
     val radiusMap                       = MutableLiveData<Float>()      // Радиус карты
     val hasBorderMap                    = MutableLiveData<Boolean>()    // Добавлена ли рамка карты
@@ -69,10 +61,10 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     abstract fun getControllerList(): ArrayList<Controller>
 
     fun getShortBitmap(): Bitmap {
-        val maxSize = (canvasWidth.value!!).coerceAtLeast(canvasHeight.value!!)
+        val maxSize = (holst.value!!.width!!).coerceAtLeast(holst.value!!.height!!)
         val scaleFactor: Float = if(maxSize > 3000) maxSize / 3000 else 1F
 
-        return Bitmap.createScaledBitmap(bitmap, (canvasWidth.value!! / scaleFactor).toInt(), (canvasHeight.value!! / scaleFactor).toInt(), false)
+        return Bitmap.createScaledBitmap(bitmap, (holst.value!!.width!! / scaleFactor).toInt(), (holst.value!!.height!! / scaleFactor).toInt(), false)
     }
 
     fun convertToSharingFile(typeFile: String): File {
