@@ -17,7 +17,7 @@
         android:layout_marginStart="16dp">
 
         <TextView
-            android:id="@+id/label_date"
+            android:id="@+id/labelDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/label_date"
@@ -36,7 +36,7 @@
             app:layout_constraintGuide_percent="0.5" />
 
         <EditText
-            android:id="@+id/edit_date"
+            android:id="@+id/editDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -45,12 +45,12 @@
             android:focusable="false"
             style="@style/edit_text_controller"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label_date"
+            app:layout_constraintTop_toBottomOf="@+id/labelDate"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             tools:ignore="TextFields" />
 
         <TextView
-            android:id="@+id/label_time"
+            android:id="@+id/labelTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/label_time"
@@ -71,11 +71,11 @@
             android:inputType="none"
             android:focusable="false"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/label_time"
+            app:layout_constraintTop_toBottomOf="@+id/labelTime"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
-            android:id="@+id/label_location"
+            android:id="@+id/labelLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/label_location"
@@ -83,10 +83,10 @@
             android:textAppearance="@style/label_controller"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_date" />
+            app:layout_constraintTop_toBottomOf="@+id/editDate" />
 
         <EditText
-            android:id="@+id/edit_location"
+            android:id="@+id/editLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             style="@style/edit_text_controller"
@@ -95,10 +95,10 @@
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label_location"/>
+            app:layout_constraintTop_toBottomOf="@+id/labelLocation"/>
 
         <TextView
-            android:id="@+id/label_latitude"
+            android:id="@+id/labelLatitude"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/label_latitude"
@@ -107,10 +107,10 @@
             android:textAppearance="@style/label_controller"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/edit_location"/>
+            app:layout_constraintTop_toBottomOf="@+id/editLocation"/>
 
         <EditText
-            android:id="@+id/edit_latitude"
+            android:id="@+id/editLatitude"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             style="@style/edit_text_controller"
@@ -119,23 +119,23 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label_latitude"
+            app:layout_constraintTop_toBottomOf="@+id/labelLatitude"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             />
 
         <TextView
-            android:id="@+id/label_longitude"
+            android:id="@+id/labelLongitude"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/label_longitude"
             android:layout_marginStart="8dp"
             android:textAppearance="@style/label_controller"
-            app:layout_constraintTop_toTopOf="@+id/label_latitude"
+            app:layout_constraintTop_toTopOf="@+id/labelLatitude"
             app:layout_constraintStart_toEndOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <EditText
-            android:id="@+id/edit_longitude"
+            android:id="@+id/editLongitude"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             style="@style/edit_text_controller"
@@ -145,7 +145,7 @@
             android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/label_longitude"/>
+            app:layout_constraintTop_toBottomOf="@+id/labelLongitude"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

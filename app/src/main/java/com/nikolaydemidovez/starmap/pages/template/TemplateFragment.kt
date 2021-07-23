@@ -65,6 +65,8 @@ class TemplateFragment : Fragment() {
     }
 
     private fun initTabControllers() {
+        val controllerList = templateCanvas.getControllerList()
+
         binding.tabLayout.tabMode = TabLayout.MODE_SCROLLABLE
         binding.tabLayout.isInlineLabel = true
         binding.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
@@ -79,12 +81,12 @@ class TemplateFragment : Fragment() {
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
 
-        binding.tabsViewpager.adapter = ControllerTabAdapter(requireActivity().supportFragmentManager, lifecycle, templateCanvas.getControllerList().size, templateCanvas)
+        binding.tabsViewpager.adapter = ControllerTabAdapter(requireActivity().supportFragmentManager, lifecycle, controllerList.size, templateCanvas)
         binding.tabsViewpager.isUserInputEnabled = false
 
         TabLayoutMediator(binding.tabLayout, binding.tabsViewpager, false, false) { tab, position ->
-            tab.text = templateCanvas.getControllerList()[position].title
-            tab.icon = templateCanvas.getControllerList()[position].drawable
+            tab.text = controllerList[position].title
+            tab.icon = controllerList[position].drawable
             tab.icon?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(ContextCompat.getColor(requireContext(), R.color.dark_gray), BlendModeCompat.SRC_ATOP)
         }.attach()
     }

@@ -40,7 +40,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     private lateinit var viewModel: EventV1ControllerViewModel
     private lateinit var binding: FragmentEventV1ControllerBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         viewModel = ViewModelProvider(this).get(EventV1ControllerViewModel::class.java)
         binding = FragmentEventV1ControllerBinding.inflate(inflater, container, false)
 

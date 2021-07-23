@@ -24,6 +24,7 @@ import android.util.Log
 import android.webkit.*
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.pojo.*
+import com.nikolaydemidovez.starmap.utils.extensions.observe
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
 import java.text.SimpleDateFormat
@@ -40,10 +41,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         Controller("separator_v1", "Разделитель", ContextCompat.getDrawable(activity,R.drawable.ic_separator_v1)),
         Controller("location_v1",  "Локация",     ContextCompat.getDrawable(activity,R.drawable.ic_location_v1)),
         Controller("save_v1",      "Сохранение",  ContextCompat.getDrawable(activity,R.drawable.ic_save_v1)),
-    );
+    )
 
     private var isDataInitialized = false
-    private var isLoadedStarMap = MutableLiveData<Boolean>()    // Загрузилась ли звездная карта с сервера
 
     private lateinit var bitmapHolst: Bitmap
     private lateinit var bitmapHolstBorder: Bitmap
@@ -55,135 +55,359 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private lateinit var bitmapStarMap: Bitmap
     private lateinit var webViewStarMap: WebView
 
+    override val holst =                         MutableLiveData(Holst("A4", "297 x 210 мм", 2480F, 3508F, "#FFFFFF" ))
+    override val hasBorderHolst =                MutableLiveData(true)
+    override val borderHolst =                   MutableLiveData(HolstBorder(100F, 10F, "#000000"))
+    override val backgroundColorMap =            MutableLiveData("#000000")
+    override val radiusMap =                     MutableLiveData(1000F)
+    override val hasBorderMap =                  MutableLiveData(false)
+    override val widthBorderMap =                MutableLiveData(15F)
+    override val mapBorderColor =                MutableLiveData(Color.parseColor("#FFFFFF"))
+    override val descFont =                      MutableLiveData(FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 120F))
+    override val descText =                      MutableLiveData("День, когда сошлись\nвсе звезды вселенной...")
+    override val hasEventDateInLocation =        MutableLiveData(true)
+    override val eventDate =                     MutableLiveData(Calendar.getInstance().time)
+    override val hasEventTimeInLocation =        MutableLiveData(true)
+    override val eventTime =                     MutableLiveData("")
+    override val hasEventCityInLocation =        MutableLiveData(true)
+    override val eventLocation =                 MutableLiveData("Москва")
+    override val eventCountry =                  MutableLiveData("Россия")
+    override val hasEditResultLocationText =     MutableLiveData(false)
+    override val resultLocationText =            MutableLiveData("")
+    override val locationFont =                  MutableLiveData(FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 60F))
+    override val hasEventCoordinatesInLocation = MutableLiveData(true)
+    override val eventLatitude =                 MutableLiveData(55.755826)
+    override val eventLongitude =                MutableLiveData(37.6173)
+    override val hasSeparator =                  MutableLiveData(true)
+    override val separator =                     MutableLiveData(Separator("#000000", 1000F))
+    private  var isLoadedStarMap =               MutableLiveData(false)    // Загрузилась ли звездная карта с сервера
+
     init {
-        initStarMapBitmap()
+        CoroutineScope(Dispatchers.Main).launch  {
+            launch { initStarMapBitmap() }
 
-        val date = Calendar.getInstance()
+            val drawObjects = launch {
+                launch { drawHolst() }
+                launch { drawHolstBorder() }
+                launch { drawMap() }
+                launch { drawMapBorder() }
+                launch { drawDesc() }
+                launch { drawSeparator() }
+                launch { drawLocationText() }
+            }
 
-        val hourOfDay = date.get(Calendar.HOUR_OF_DAY)
-        val minute    = date.get(Calendar.MINUTE)
+            drawObjects.join()
+            drawCanvas()
 
-        holst.value                                     = Holst("A4", "297 x 210 мм", 2480F, 3508F, "#FFFFFF" )
-        hasBorderHolst.value                            = true
-        borderHolst.value                               = HolstBorder(100F, 10F, "#000000")
-        backgroundColorMap.value                        = "#000000"
-        radiusMap.value                                 = 1000F
-        hasBorderMap.value                              = false
-        widthBorderMap.value                            = 15F
-        mapBorderColor.value                            = Color.parseColor("#FFFFFF")
-        descFont.value                                  = FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 120F)
-        descText.value                                  = "День, когда сошлись\nвсе звезды вселенной..."
-        hasEventDateInLocation.value                    = true
-        eventDate.value                                 = Calendar.getInstance().time
-        hasEventTimeInLocation.value                    = true
-        eventTime.value                                 = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
-        hasEventCityInLocation.value                    = true
-        eventLocation.value                             = "Москва"
-        eventCountry.value                              = "Россия"
-        hasEditResultLocationText.value                 = false
-        resultLocationText.value                        = ""
-        locationFont.value                              = FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 60F)
-        hasEventCoordinatesInLocation.value             = true
-        eventLatitude.value                             = 55.755826
-        eventLongitude.value                            = 37.6173
-        hasSeparator.value                              = true
-        separator.value                                 = Separator("#000000", 1000F)
-        isLoadedStarMap.value                           = true
+            isDataInitialized = true
+        }
 
         holst.observe(activity)  {
-            runBlocking  {
-                val drawObjects = launch {
-                    launch { drawHolst() }
-                    launch { drawHolstBorder() }
-                    launch { drawDesc() }
-                    launch { drawLocationText() }
-                }
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { drawHolst() }
+                        launch { drawHolstBorder() }
+                        launch { drawDesc() }
+                        launch { drawLocationText() }
+                    }
 
-                drawObjects.join()
-                drawCanvas()
+                    drawObjects.join()
+                    drawCanvas()
+                }
             }
         }
         hasBorderHolst.observe(activity) {
-            drawHolstBorder()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { drawHolstBorder() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         borderHolst.observe(activity) {
-            drawHolstBorder()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { drawHolstBorder() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         backgroundColorMap.observe(activity) {
-            requestStarMap()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { requestStarMap() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         radiusMap.observe(activity) {
-            requestStarMap()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { requestStarMap() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         hasBorderMap.observe(activity) {
-            requestStarMap()
-            drawMap()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { requestStarMap() }
+                        launch { drawMap() }
+                        launch { drawMapBorder() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         widthBorderMap.observe(activity) {
-            drawMap()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { drawMap() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         mapBorderColor.observe(activity) {
-            drawMap()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { drawMap() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         isLoadedStarMap.observe(activity) {
-            drawMap()
+            if(isDataInitialized) {
+//            CoroutineScope(Dispatchers.Main).launch  {
+//                val drawObjects = launch {
+//                    launch { drawMap() }
+//                }
+//
+//                drawObjects.join()
+//                drawCanvas()
+//            }
+            }
         }
         descFont.observe(activity) {
-            drawDesc()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch {  drawDesc() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         descText.observe(activity) {
-            drawDesc()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { drawDesc() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         hasEventDateInLocation.observe(activity) {
-            correctLocationText()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         eventDate.observe(activity) {
-            correctLocationText()
-            requestStarMap()
-            drawMap()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                        launch { requestStarMap() }
+                        launch { drawMap() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         hasEventTimeInLocation.observe(activity) {
-            correctLocationText()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         eventTime.observe(activity) {
-            correctLocationText()
-            requestStarMap()
-            drawMap()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                        launch { requestStarMap() }
+                        launch { drawMap() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         hasEventCityInLocation.observe(activity) {
-            correctLocationText()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         eventLocation.observe(activity) {
-            correctLocationText()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         locationFont.observe(activity) {
-            drawLocationText()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch {  drawLocationText() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         hasEventCoordinatesInLocation.observe(activity) {
-            correctLocationText()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         eventLatitude.observe(activity) {
-            correctLocationText();
-            requestStarMap()
-            drawMap()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                        launch { requestStarMap() }
+                        launch { drawMap() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         eventLongitude.observe(activity) {
-            correctLocationText();
-            requestStarMap()
-            drawMap()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                        launch { requestStarMap() }
+                        launch { drawMap() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         hasEditResultLocationText.observe(activity) {
-            correctLocationText()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { correctLocationText() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         resultLocationText.observe(activity) {
-            drawLocationText()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { drawLocationText() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
         separator.observe(activity) {
-            drawSeparator()
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    val drawObjects = launch {
+                        launch { drawSeparator() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
         }
     }
 
     private fun initStarMapBitmap() {
+        Log.d("MyLog", "Start initStarMapBitmap")
+
         val webChromeClient = object : WebChromeClient() {
             override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
                 Log.d("MyLog", "${consoleMessage.message()} -- From line ${consoleMessage.lineNumber()} of ${consoleMessage.sourceId()}");
@@ -200,6 +424,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         val handler = Handler(Looper.getMainLooper()) {
             val decodedString: ByteArray = Base64.decode(it.data.getString("png"), Base64.DEFAULT)
             bitmapStarMap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+            isLoadedStarMap.value = true
 
             true
         }
@@ -227,23 +453,30 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
 
         webViewStarMap.loadUrl("file:///android_asset/starmap/templates/classic_v1/index.html")
-        Log.d("MyLog", "initStarMapBitmap")
-    }
 
+        Log.d("MyLog", "Done initStarMapBitmap")
+    }
     private fun requestStarMap() {
-        Log.d("MyLog", "requestStarMap")
+        Log.d("MyLog", "Start requestStarMap")
+        isLoadedStarMap.value = false
         webViewStarMap.loadUrl("""javascript:window.editStartMap(`${getRequestBodyStarMap()}`);""")
-    }
 
+        Log.d("MyLog", "Done requestStarMap")
+    }
     private fun getRequestBodyStarMap(): String {
+        Log.d("MyLog", "Start getRequestBodyStarMap")
+
         val date = Calendar.getInstance()
         date.time = eventDate.value!!
 
         val year    = date.get(Calendar.YEAR)
         val month   = date.get(Calendar.MONTH)
         val day     = date.get(Calendar.DAY_OF_MONTH)
-        val hours   = eventTime.value!!.split(":")[0].toInt()
-        val minutes = eventTime.value!!.split(":")[1].toInt()
+        val hourOfDay = date.get(Calendar.HOUR_OF_DAY)
+        val minute    = date.get(Calendar.MINUTE)
+
+        val hours   = if(eventTime.value!!.isNotEmpty()) eventTime.value!!.split(":")[0].toInt() else hourOfDay
+        val minutes = if(eventTime.value!!.isNotEmpty()) eventTime.value!!.split(":")[1].toInt() else minute
 
         date.set(year, month, day, hours, minutes)
 
@@ -328,10 +561,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }       
             """
 
+        Log.d("MyLog", "Done getRequestBodyStarMap")
         return jsonString
     }
-
     private fun correctLocationText() {
+        Log.d("MyLog", "Start correctLocationText")
+
         if(!hasEditResultLocationText.value!!) {
             var locationText = ""
 
@@ -360,9 +595,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
             resultLocationText.value = locationText.trim()
         }
-    }
 
+        Log.d("MyLog", "Done correctLocationText")
+    }
     private fun drawHolst() {
+        Log.d("MyLog", "Start drawHolst")
+
         val holstPaint = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
             color = Color.parseColor(holst.value!!.color)
@@ -375,9 +613,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         Canvas(tempBitmap).drawRect(0F, 0F, holst.value!!.width!!, holst.value!!.height!!, holstPaint)
 
         bitmapHolst = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt())
-    }
 
+        Log.d("MyLog", "Done drawHolst")
+    }
     private fun drawHolstBorder() {
+        Log.d("MyLog", "Start drawHolstBorder")
+
         val border = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.STROKE
             color = Color.parseColor(borderHolst.value!!.color)
@@ -391,9 +632,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         Canvas(tempBitmap).drawRect(borderHolst.value!!.indent!!, borderHolst.value!!.indent!!, holst.value!!.width!!.toInt() - borderHolst.value!!.indent!!, holst.value!!.height!!.toInt() - borderHolst.value!!.indent!!, border)
 
         bitmapHolstBorder = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt())
-    }
 
+        Log.d("MyLog", "Done drawHolstBorder")
+    }
     private fun drawMap() {
+        Log.d("MyLog", "Start drawMap")
+
         var tempBitmap: Bitmap
 
         if(isLoadedStarMap.value!!) {
@@ -408,9 +652,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         } else {
             bitmapMap = getLoadingBitmap()
         }
-    }
 
+        Log.d("MyLog", "Done drawMap")
+    }
     private fun drawMapBorder() {
+        Log.d("MyLog", "Start drawMapBorder")
+
         val mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
             color = mapBorderColor.value!!
@@ -423,9 +670,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         Canvas(tempBitmap).drawCircle(radiusMap.value!! + widthBorderMap.value!!, radiusMap.value!! + widthBorderMap.value!!, radiusMap.value!! + widthBorderMap.value!!, mapBorder)
 
         bitmapMapBorder = Bitmap.createBitmap(tempBitmap, 0, 0, ((radiusMap.value!! + widthBorderMap.value!!) * 2).toInt(), ((radiusMap.value!! + widthBorderMap.value!!) * 2).toInt())
-    }
 
+        Log.d("MyLog", "Done drawMapBorder")
+    }
     private fun drawDesc() {
+        Log.d("MyLog", "Start drawDesc")
+
         val descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
             textSize = descFont.value!!.size!!
@@ -447,9 +697,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
 
         bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), totalHeightText.toInt())
-    }
 
+        Log.d("MyLog", "Done drawDesc")
+    }
     private fun drawSeparator() {
+        Log.d("MyLog", "Start drawSeparator")
+
         val separatorHeight = (separator.value!!.width!! * 0.01F).coerceAtLeast(1F)
 
         val separatorLine = Paint(ANTI_ALIAS_FLAG).apply {
@@ -464,9 +717,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         Canvas(tempBitmap).drawLine(0F, 0F, separator.value!!.width!!, 0F, separatorLine)
 
         bitmapSeparator = Bitmap.createBitmap(tempBitmap, 0, 0, separator.value!!.width!!.toInt(), separatorHeight.toInt())
-    }
 
+        Log.d("MyLog", "Done drawSeparator")
+    }
     private fun drawLocationText() {
+        Log.d("MyLog", "Start drawLocationText")
+
         val eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
             textSize = locationFont.value!!.size!!
@@ -488,9 +744,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
 
         bitmapLocationText = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), totalHeightText.toInt())
-    }
 
+        Log.d("MyLog", "Done drawLocationText")
+    }
     private fun getBottomMarginLocationText(): Int {
+        Log.d("MyLog", "Start getBottomMarginLocationText")
+
         var margin = 0F
 
         margin = margin.plus(
@@ -501,11 +760,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             }
         )
 
-
+        Log.d("MyLog", "Done getBottomMarginLocationText")
         return margin.toInt()
     }
-
     private fun getAbsoluteHeightMap(): Float {
+        Log.d("MyLog", "Start getAbsoluteHeightMap")
+
         // Определяем высоту карты (с рамкой и без) с ее верхним отступом от края холста
         var margin = 0F
 
@@ -515,10 +775,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             holst.value!!.width!!/2 + bitmapMap.height / 2
         }
 
+        Log.d("MyLog", "Done getAbsoluteHeightMap")
         return margin
     }
-
     private fun getAutoAlignMargin(): Float {
+        Log.d("MyLog", "Start getAutoAlignMargin")
+
         // Определяем какой отступ нужен для текста, разделителя и текста локации, чтобы они ровно расположились
         var heightAllObjects = holst.value!!.width!! / 2
 
@@ -540,10 +802,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         countObjectsForSetMargin = if(hasSeparator.value!!) 3  else 2
 
+        Log.d("MyLog", "Done getAutoAlignMargin")
         return (holst.value!!.height!! - heightAllObjects) / countObjectsForSetMargin
     }
-
     private fun getLoadingBitmap(): Bitmap {
+        Log.d("MyLog", "Start getLoadingBitmap")
+
         val map = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
             color = Color.parseColor(backgroundColorMap.value!!)
@@ -566,11 +830,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         loadingCanvas.drawBitmap(bitmapLoadingIcon, (radiusMap.value!! - widthLoadingIcon / 2).toFloat(), (radiusMap.value!! - heightLoadingIcon / 2).toFloat(), null)
 
+        Log.d("MyLog", "Done getLoadingBitmap")
         return Bitmap.createBitmap(tempBitmap, 0, 0, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt())
     }
-
     override fun drawCanvas() {
-        Thread {
+        Log.d("MyLog", "Start drawCanvas")
+
             bitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
             val canvas = Canvas(bitmap)
@@ -604,14 +869,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             // Рисуем текст локации
             canvas.drawBitmap(bitmapLocationText, 0F, holst.value!!.height!! - bitmapLocationText.height - getBottomMarginLocationText(), null)
 
-            activity.runOnUiThread {
-                listener?.onDraw()
-            }
+            listener?.onDraw() // TODO: replace to MutableLiveData
 
-        }.start()
+        Log.d("MyLog", "Done drawCanvas")
     }
-
     override fun getControllerList(): ArrayList<Controller> {
+        Log.d("MyLog", "Start getControllerList")
         return controllerList
     }
 }
