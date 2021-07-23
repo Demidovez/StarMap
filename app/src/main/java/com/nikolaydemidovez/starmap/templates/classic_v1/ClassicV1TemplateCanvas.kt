@@ -2,6 +2,7 @@ package com.nikolaydemidovez.starmap.templates.classic_v1
 
 import android.graphics.*
 import android.graphics.Paint.*
+import kotlinx.coroutines.*
 import android.text.TextPaint
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -14,17 +15,17 @@ import java.util.*
 import androidx.core.graphics.drawable.DrawableCompat
 
 import android.graphics.Bitmap
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
+import android.util.Base64
+import android.util.Log
+import android.webkit.*
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.pojo.*
-import com.nikolaydemidovez.starmap.retrofit.common.Common
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
-import okhttp3.MediaType
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
 
@@ -51,9 +52,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private lateinit var bitmapDesc: Bitmap
     private lateinit var bitmapSeparator: Bitmap
     private lateinit var bitmapLocationText: Bitmap
-    private var bitmapStarMap: Bitmap? = null
+    private lateinit var bitmapStarMap: Bitmap
+    private lateinit var webViewStarMap: WebView
 
     init {
+        initStarMapBitmap()
+
         val date = Calendar.getInstance()
 
         val hourOfDay = date.get(Calendar.HOUR_OF_DAY)
@@ -84,71 +88,154 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         eventLongitude.value                            = 37.6173
         hasSeparator.value                              = true
         separator.value                                 = Separator("#000000", 1000F)
+        isLoadedStarMap.value                           = true
 
-        holst.observe(activity,                         { redraw(arrayOf(::drawHolst, ::drawHolstBorder, ::drawDesc, ::drawLocationText)) })
-        hasBorderHolst.observe(activity,                { redraw(arrayOf(::drawHolstBorder)) })
-        borderHolst.observe(activity,                   { redraw(arrayOf(::drawHolstBorder)) })
-        backgroundColorMap.observe(activity,            { redraw(arrayOf(::requestStarMap)) })
-        radiusMap.observe(activity,                     { redraw(arrayOf(::requestStarMap)) })
-        hasBorderMap.observe(activity,                  { redraw(arrayOf(::requestStarMap, ::drawMap)) })
-        widthBorderMap.observe(activity,                { redraw(arrayOf(::drawMap)) })
-        mapBorderColor.observe(activity,                { redraw(arrayOf(::drawMap)) })
-        isLoadedStarMap.observe(activity,               { redraw(arrayOf(::drawMap)) })
-        descFont.observe(activity,                      { redraw(arrayOf(::drawDesc)) })
-        descText.observe(activity,                      { redraw(arrayOf(::drawDesc)) })
-        hasEventDateInLocation.observe(activity,        { correctLocationText(); })
-        eventDate.observe(activity,                     { correctLocationText(); redraw(arrayOf(::requestStarMap, ::drawMap)) })
-        hasEventTimeInLocation.observe(activity,        { correctLocationText(); })
-        eventTime.observe(activity,                     { correctLocationText(); redraw(arrayOf(::requestStarMap, ::drawMap)) })
-        hasEventCityInLocation.observe(activity,        { correctLocationText() })
-        eventLocation.observe(activity,                 { correctLocationText() })
-        locationFont.observe(activity,                  { redraw(arrayOf(::drawLocationText)) })
-        hasEventCoordinatesInLocation.observe(activity, { correctLocationText() })
-        eventLatitude.observe(activity,                 { correctLocationText(); redraw(arrayOf(::requestStarMap, ::drawMap)) })
-        eventLongitude.observe(activity,                { correctLocationText(); redraw(arrayOf(::requestStarMap, ::drawMap)) })
-        hasEditResultLocationText.observe(activity,     { correctLocationText() })
-        resultLocationText.observe(activity,            { redraw(arrayOf(::drawLocationText)) })
-        hasSeparator.observe(activity,                  { redraw(null) })
-        separator.observe(activity,                     { redraw(arrayOf(::drawSeparator)) })
+        holst.observe(activity)  {
+            runBlocking  {
+                val drawObjects = launch {
+                    launch { drawHolst() }
+                    launch { drawHolstBorder() }
+                    launch { drawDesc() }
+                    launch { drawLocationText() }
+                }
 
-        firstDraw()
+                drawObjects.join()
+                drawCanvas()
+            }
+        }
+        hasBorderHolst.observe(activity) {
+            drawHolstBorder()
+        }
+        borderHolst.observe(activity) {
+            drawHolstBorder()
+        }
+        backgroundColorMap.observe(activity) {
+            requestStarMap()
+        }
+        radiusMap.observe(activity) {
+            requestStarMap()
+        }
+        hasBorderMap.observe(activity) {
+            requestStarMap()
+            drawMap()
+        }
+        widthBorderMap.observe(activity) {
+            drawMap()
+        }
+        mapBorderColor.observe(activity) {
+            drawMap()
+        }
+        isLoadedStarMap.observe(activity) {
+            drawMap()
+        }
+        descFont.observe(activity) {
+            drawDesc()
+        }
+        descText.observe(activity) {
+            drawDesc()
+        }
+        hasEventDateInLocation.observe(activity) {
+            correctLocationText()
+        }
+        eventDate.observe(activity) {
+            correctLocationText()
+            requestStarMap()
+            drawMap()
+        }
+        hasEventTimeInLocation.observe(activity) {
+            correctLocationText()
+        }
+        eventTime.observe(activity) {
+            correctLocationText()
+            requestStarMap()
+            drawMap()
+        }
+        hasEventCityInLocation.observe(activity) {
+            correctLocationText()
+        }
+        eventLocation.observe(activity) {
+            correctLocationText()
+        }
+        locationFont.observe(activity) {
+            drawLocationText()
+        }
+        hasEventCoordinatesInLocation.observe(activity) {
+            correctLocationText()
+        }
+        eventLatitude.observe(activity) {
+            correctLocationText();
+            requestStarMap()
+            drawMap()
+        }
+        eventLongitude.observe(activity) {
+            correctLocationText();
+            requestStarMap()
+            drawMap()
+        }
+        hasEditResultLocationText.observe(activity) {
+            correctLocationText()
+        }
+        resultLocationText.observe(activity) {
+            drawLocationText()
+        }
+        separator.observe(activity) {
+            drawSeparator()
+        }
     }
 
-    private fun firstDraw() {
-        correctLocationText()
+    private fun initStarMapBitmap() {
+        val webChromeClient = object : WebChromeClient() {
+            override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
+                Log.d("MyLog", "${consoleMessage.message()} -- From line ${consoleMessage.lineNumber()} of ${consoleMessage.sourceId()}");
+                return true
+            }
+        }
 
-        Thread {
-            requestStarMap()
-            drawHolst()
-            drawHolstBorder()
-            drawMap()
-            drawMapBorder()
-            drawDesc()
-            drawSeparator()
-            drawLocationText()
-            draw()
+        val webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                view!!.loadUrl("javascript:Celestial.addCallback(() => Android.callBackUpdateStarMap(document.querySelector('canvas').toDataURL('image/png').replace('data:image/png;base64,', '')));")
+            }
+        }
 
-            isDataInitialized = true
-        }.start()
+        val handler = Handler(Looper.getMainLooper()) {
+            val decodedString: ByteArray = Base64.decode(it.data.getString("png"), Base64.DEFAULT)
+            bitmapStarMap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+            true
+        }
+
+        webViewStarMap = WebView(activity)
+        webViewStarMap.webChromeClient = webChromeClient
+        webViewStarMap.webViewClient = webViewClient
+        webViewStarMap.addJavascriptInterface(object {
+            @JavascriptInterface
+            fun callBackUpdateStarMap(pngString: String) {
+                val bundle = Bundle()
+                bundle.putString("png", pngString)
+
+                val message = Message()
+                message.data = bundle
+
+                handler.sendMessage(message)
+            }
+        }, "Android")
+
+        webViewStarMap.settings.apply {
+            javaScriptEnabled = true
+            allowFileAccess = true
+            allowContentAccess = true
+        }
+
+        webViewStarMap.loadUrl("file:///android_asset/starmap/templates/classic_v1/index.html")
+        Log.d("MyLog", "initStarMapBitmap")
     }
 
     private fun requestStarMap() {
-        bitmapStarMap = null
-
-        Common.retrofitService.getClassicV1Map(getRequestBodyStarMap()).enqueue(object : Callback<ResponseBody> {
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {}
-
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                val bodyBytes = response?.body()!!.bytes()
-
-                bitmapStarMap = BitmapFactory.decodeByteArray(bodyBytes, 0, bodyBytes.size)
-
-                isLoadedStarMap.value = true
-            }
-        })
+        Log.d("MyLog", "requestStarMap")
+        webViewStarMap.loadUrl("""javascript:window.editStartMap(`${getRequestBodyStarMap()}`);""")
     }
 
-    private fun getRequestBodyStarMap(): RequestBody {
+    private fun getRequestBodyStarMap(): String {
         val date = Calendar.getInstance()
         date.time = eventDate.value!!
 
@@ -241,7 +328,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }       
             """
 
-        return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonString)
+        return jsonString
     }
 
     private fun correctLocationText() {
@@ -273,16 +360,6 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
             resultLocationText.value = locationText.trim()
         }
-    }
-
-    private fun redraw(callbacks: Array<() -> Unit?>?) {
-        Thread {
-            if(isDataInitialized) {
-                callbacks?.forEach { it() }
-
-                draw()
-            }
-        }.start()
     }
 
     private fun drawHolst() {
@@ -319,8 +396,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private fun drawMap() {
         var tempBitmap: Bitmap
 
-        if(bitmapStarMap != null) {
-            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap!!, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt(), true)
+        if(isLoadedStarMap.value!!) {
+            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt(), true)
             tempBitmap = getBitmapClippedCircle(tempBitmap)!!
 
             val x = (tempBitmap.width / 2) - radiusMap.value!!
@@ -492,7 +569,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         return Bitmap.createBitmap(tempBitmap, 0, 0, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt())
     }
 
-    override fun draw() {
+    override fun drawCanvas() {
         Thread {
             bitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 

@@ -57,7 +57,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         fun onDraw()
     }
 
-    abstract fun draw()
+    abstract fun drawCanvas()
     abstract fun getControllerList(): ArrayList<Controller>
 
     fun getShortBitmap(): Bitmap {
@@ -133,5 +133,6 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             Toast.makeText(activity.applicationContext, "Сохранено", Toast.LENGTH_SHORT).show()
         }
     }
+
 }
 

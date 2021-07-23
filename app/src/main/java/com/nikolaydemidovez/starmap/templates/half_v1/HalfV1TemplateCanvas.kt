@@ -24,10 +24,10 @@ class HalfV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(
             strokeWidth = STROKE_WIDTH
         }
 
-        draw()
+        drawCanvas()
     }
 
-    override fun draw() {
+    override fun drawCanvas() {
         bitmap = Bitmap.createBitmap(
             holst.value!!.width!!.toInt(),
             holst.value!!.height!!.toInt(),
