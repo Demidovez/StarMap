@@ -1,5 +1,6 @@
 package com.nikolaydemidovez.starmap.controllers.map_v1
 
+import adapters.ColorAdapter
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,13 +8,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import android.widget.SeekBar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.databinding.FragmentMapV1ControllerBinding
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
+import com.nikolaydemidovez.starmap.utils.helpers.Helper
 
 class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
 
     private lateinit var viewModel: MapV1ControllerViewModel
     private lateinit var binding: FragmentMapV1ControllerBinding
+    private lateinit var backgroundColorMapAdapter: ColorAdapter
+    private lateinit var colorMapBorderAdapter: ColorAdapter
+    private val disablerColorRecycler = Helper.Companion.RecyclerViewDisabler(true)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewModel = ViewModelProvider(this).get(MapV1ControllerViewModel::class.java)
@@ -21,27 +29,150 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
 
         val root: View = binding.root
 
-        val radioGroupColorBorder = binding.radioGroupColorBorder
-        val radioGroupWidthBorder = binding.radioGroupWidthBorder
+        binding.sizeMap.text = templateCanvas.starMap.value!!.radius!!.toInt().toString()
+        binding.sliderSizeMap.progress = templateCanvas.starMap.value!!.radius!!.toInt()
+        binding.sliderSizeMap.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    val newStarMap = templateCanvas.starMap.value
+                    newStarMap?.radius = seekBar.progress.toFloat()
 
-        // Добавлеям/убираем рамку карты
-        binding.checkboxEnableBorder.isChecked = templateCanvas.hasBorderMap.value!!
+                    templateCanvas.starMap.value = newStarMap
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    binding.sizeMap.text = progress.toString()
+                }
+            }
+        )
+
+        binding.widthMapBorder.text = templateCanvas.starMapBorder.value!!.width!!.toInt().toString()
+        binding.sliderWidthMapBorder.progress = templateCanvas.starMapBorder.value!!.width!!.toInt()
+        binding.sliderWidthMapBorder.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    val newStarMapBorder = templateCanvas.starMapBorder.value
+                    newStarMapBorder?.width = seekBar.progress.toFloat()
+
+                    templateCanvas.starMapBorder.value = newStarMapBorder
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    binding.widthMapBorder.text = progress.toString()
+                }
+            }
+        )
+
+        recyclerBackgroundMapInit()
+
         binding.checkboxEnableBorder.setOnCheckedChangeListener { _, isChecked ->
             templateCanvas.hasBorderMap.value = isChecked
-
-            binding.labelWidthBorder.alpha = if (isChecked) 1F else 0.6F
-            for (i in 0 until radioGroupColorBorder.childCount) {
-                (radioGroupColorBorder.getChildAt(i) as RadioButton).isEnabled = isChecked
-            }
-
-            binding.labelColorBorderMap.alpha = if (isChecked) 1F else 0.6F
-            for (i in 0 until radioGroupWidthBorder.childCount) {
-                (radioGroupWidthBorder.getChildAt(i) as RadioButton).isEnabled = isChecked
-            }
         }
+
+        templateCanvas.hasBorderMap.observe(requireActivity(),  {
+            binding.labelShape.alpha = Helper.shadowAlpha(it)
+            binding.labelWidthBorder.alpha = Helper.shadowAlpha(it)
+            binding.widthMapBorder.alpha = Helper.shadowAlpha(it)
+            binding.widthUnit.alpha = Helper.shadowAlpha(it)
+            binding.sliderWidthMapBorder.isEnabled = it
+            binding.labelColorBorder.alpha = Helper.shadowAlpha(it)
+            disablerColorRecycler.isEnable = it
+            binding.colorBorderRecycler.alpha = Helper.shadowAlpha(it)
+        })
+
+        recyclerColorMapBorderInit()
 
 
         return root
+    }
+
+    private fun recyclerBackgroundMapInit() {
+        backgroundColorMapAdapter = ColorAdapter(templateCanvas.starMap) {
+            val newStarMap = templateCanvas.starMap.value
+            newStarMap?.color = it
+
+            templateCanvas.starMap.value = newStarMap
+        }
+
+        templateCanvas.starMap.observe(requireActivity(), {
+            backgroundColorMapAdapter.notifyDataSetChanged()
+        })
+
+        val recyclerColors: RecyclerView = binding.colorBackgroundRecycler
+
+        recyclerColors.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        recyclerColors.adapter = backgroundColorMapAdapter
+
+        backgroundColorMapAdapter.addAllColorList(arrayListOf(
+            "#000000",
+            "#FFFFFF",
+            "#1ABC9C",
+            "#16A085",
+            "#2ECC71",
+            "#27AE60",
+            "#3498DB",
+            "#2980B9",
+            "#9B59B6",
+            "#8E44AD",
+            "#34495E",
+            "#2C3E50",
+            "#F1C40F",
+            "#F39C12",
+            "#E67E22",
+            "#D35400",
+            "#E74C3C",
+            "#C0392B",
+            "#BDC3C7",
+            "#95A5A6",
+            "#7F8C8D"
+        ))
+    }
+
+    private fun recyclerColorMapBorderInit() {
+        colorMapBorderAdapter = ColorAdapter(templateCanvas.starMapBorder) {
+            val newStarMapBorder = templateCanvas.starMapBorder.value
+            newStarMapBorder?.color = it
+
+            templateCanvas.starMapBorder.value = newStarMapBorder
+        }
+
+        templateCanvas.starMapBorder.observe(requireActivity(), {
+            colorMapBorderAdapter.notifyDataSetChanged()
+        })
+
+        val recyclerColors: RecyclerView = binding.colorBorderRecycler
+
+        recyclerColors.addOnItemTouchListener(disablerColorRecycler)
+        recyclerColors.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        recyclerColors.adapter = colorMapBorderAdapter
+
+        colorMapBorderAdapter.addAllColorList(arrayListOf(
+            "#000000",
+            "#FFFFFF",
+            "#1ABC9C",
+            "#16A085",
+            "#2ECC71",
+            "#27AE60",
+            "#3498DB",
+            "#2980B9",
+            "#9B59B6",
+            "#8E44AD",
+            "#34495E",
+            "#2C3E50",
+            "#F1C40F",
+            "#F39C12",
+            "#E67E22",
+            "#D35400",
+            "#E74C3C",
+            "#C0392B",
+            "#BDC3C7",
+            "#95A5A6",
+            "#7F8C8D"
+        ))
     }
 
 }

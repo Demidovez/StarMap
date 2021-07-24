@@ -17,31 +17,31 @@ import kotlin.collections.ArrayList
 abstract class TemplateCanvas(private val activity: MainActivity) {
 
     // Начало списка основных свойства холста
-    abstract val holst:                         MutableLiveData<Holst>      // Холст
-    abstract val hasBorderHolst:                MutableLiveData<Boolean>    // Добавлена ли рамка холста
-    abstract val borderHolst:                   MutableLiveData<HolstBorder>// Рамка холста
-    abstract val backgroundColorMap:            MutableLiveData<String>     // Цвет фона карты
-    abstract val radiusMap:                     MutableLiveData<Float>      // Радиус карты
-    abstract val hasBorderMap:                  MutableLiveData<Boolean>    // Добавлена ли рамка карты
-    abstract val widthBorderMap:                MutableLiveData<Float>      // Ширина рамки карты
-    abstract val mapBorderColor:                MutableLiveData<Int>        // Цвет рамки карты
-    abstract val descFont:                      MutableLiveData<FontText>   // Шрифт текста события
-    abstract val descText:                      MutableLiveData<String>     // Основной текст
-    abstract val hasEventDateInLocation:        MutableLiveData<Boolean>    // Добавить ли дату в текст локации
-    abstract val eventDate:                     MutableLiveData<Date>       // Дата события
-    abstract val hasEventTimeInLocation:        MutableLiveData<Boolean>    // Добавить ли время в текст локации
-    abstract val eventTime:                     MutableLiveData<String>     // Время события
-    abstract val hasEventCityInLocation:        MutableLiveData<Boolean>    // Добавить ли город в текст локации
-    abstract val eventLocation:                 MutableLiveData<String>     // Место события
-    abstract val locationFont:                  MutableLiveData<FontText>   // Шрифт текста локации
-    abstract val eventCountry:                  MutableLiveData<String>     // Страна события
-    abstract val hasEditResultLocationText:     MutableLiveData<Boolean>    // Изменить ли результирующий текст в локации
-    abstract val resultLocationText:            MutableLiveData<String>     // Результирующий текст локации
-    abstract val hasEventCoordinatesInLocation: MutableLiveData<Boolean>    // Добавить ли широту и долготу в текст локации
-    abstract val eventLatitude:                 MutableLiveData<Double>     // Широта места события
-    abstract val eventLongitude:                MutableLiveData<Double>     // Долгота места события
-    abstract val hasSeparator:                  MutableLiveData<Boolean>    // Добавить ли разделитель
-    abstract val separator:                     MutableLiveData<Separator>  // Разделителя
+    abstract val holst:                         MutableLiveData<Holst>         // Холст
+    abstract val hasBorderHolst:                MutableLiveData<Boolean>       // Добавлена ли рамка холста
+    abstract val borderHolst:                   MutableLiveData<HolstBorder>   // Рамка холста
+    abstract val starMap:                       MutableLiveData<StarMap>       // Звездная карта
+    abstract val hasBorderMap:                  MutableLiveData<Boolean>       // Добавлена ли рамка карты
+    abstract val starMapBorder:                 MutableLiveData<StarMapBorder> // Рамка звездной карты
+    abstract val descFont:                      MutableLiveData<FontText>      // Шрифт текста события
+    abstract val descText:                      MutableLiveData<String>        // Основной текст
+    abstract val hasEventDateInLocation:        MutableLiveData<Boolean>       // Добавить ли дату в текст локации
+    abstract val eventDate:                     MutableLiveData<Date>          // Дата события
+    abstract val hasEventTimeInLocation:        MutableLiveData<Boolean>       // Добавить ли время в текст локации
+    abstract val eventTime:                     MutableLiveData<String>        // Время события
+    abstract val hasEventCityInLocation:        MutableLiveData<Boolean>       // Добавить ли город в текст локации
+    abstract val eventLocation:                 MutableLiveData<String>        // Место события
+    abstract val locationFont:                  MutableLiveData<FontText>      // Шрифт текста локации
+    abstract val eventCountry:                  MutableLiveData<String>        // Страна события
+    abstract val hasEditResultLocationText:     MutableLiveData<Boolean>       // Изменить ли результирующий текст в локации
+    abstract val resultLocationText:            MutableLiveData<String>        // Результирующий текст локации
+    abstract val hasEventCoordinatesInLocation: MutableLiveData<Boolean>       // Добавить ли широту и долготу в текст локации
+    abstract val eventLatitude:                 MutableLiveData<Double>        // Широта места события
+    abstract val eventLongitude:                MutableLiveData<Double>        // Долгота места события
+    abstract val hasSeparator:                  MutableLiveData<Boolean>       // Добавить ли разделитель
+    abstract val separator:                     MutableLiveData<Separator>     // Разделителя
+    abstract val hasGraticule:                  MutableLiveData<Boolean>       // Добавить ли сеть координат
+    abstract val graticule:                     MutableLiveData<Graticule>     // Сеть координат
     // Конец списка свойств
 
     var bitmap: Bitmap = Bitmap.createBitmap(2480, 3508,Bitmap.Config.ARGB_8888)

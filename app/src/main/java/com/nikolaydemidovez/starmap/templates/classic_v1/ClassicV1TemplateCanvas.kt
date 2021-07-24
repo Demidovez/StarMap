@@ -24,7 +24,7 @@ import android.util.Log
 import android.webkit.*
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.pojo.*
-import com.nikolaydemidovez.starmap.utils.extensions.observe
+import com.nikolaydemidovez.starmap.pojo.Graticule.Companion.LINE
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
 import java.text.SimpleDateFormat
@@ -58,11 +58,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     override val holst =                         MutableLiveData(Holst("A4", "297 x 210 мм", 2480F, 3508F, "#FFFFFF" ))
     override val hasBorderHolst =                MutableLiveData(true)
     override val borderHolst =                   MutableLiveData(HolstBorder(100F, 10F, "#000000"))
-    override val backgroundColorMap =            MutableLiveData("#000000")
-    override val radiusMap =                     MutableLiveData(1000F)
+    override val starMap =                       MutableLiveData(StarMap(1000F, "#000000"))
     override val hasBorderMap =                  MutableLiveData(false)
-    override val widthBorderMap =                MutableLiveData(15F)
-    override val mapBorderColor =                MutableLiveData(Color.parseColor("#FFFFFF"))
+    override val starMapBorder =                 MutableLiveData(StarMapBorder(15F, "#FFFFFF", StarMapBorder.LINE))
     override val descFont =                      MutableLiveData(FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 120F))
     override val descText =                      MutableLiveData("День, когда сошлись\nвсе звезды вселенной...")
     override val hasEventDateInLocation =        MutableLiveData(true)
@@ -80,6 +78,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     override val eventLongitude =                MutableLiveData(37.6173)
     override val hasSeparator =                  MutableLiveData(true)
     override val separator =                     MutableLiveData(Separator("#000000", 1000F))
+    override val hasGraticule =                  MutableLiveData(true)
+    override val graticule =                     MutableLiveData(Graticule(2F, "#FFFFFF", 70, LINE))
     private  var isLoadedStarMap =               MutableLiveData(false)    // Загрузилась ли звездная карта с сервера
 
     init {
@@ -93,6 +93,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 launch { drawMapBorder() }
                 launch { drawDesc() }
                 launch { drawSeparator() }
+                launch { correctLocationText() }
                 launch { drawLocationText() }
             }
 
@@ -141,78 +142,53 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }
             }
         }
-        backgroundColorMap.observe(activity) {
+        starMap.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.Main).launch  {
-                    val drawObjects = launch {
-                        launch { requestStarMap() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    requestStarMap()
                 }
             }
         }
-        radiusMap.observe(activity) {
+        hasGraticule.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.Main).launch  {
-                    val drawObjects = launch {
-                        launch { requestStarMap() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    requestStarMap()
+                }
+            }
+        }
+        graticule.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.Main).launch  {
+                    requestStarMap()
                 }
             }
         }
         hasBorderMap.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.Main).launch  {
-                    val drawObjects = launch {
-                        launch { requestStarMap() }
-                        launch { drawMap() }
-                        launch { drawMapBorder() }
-                    }
-
-                    drawObjects.join()
                     drawCanvas()
                 }
             }
         }
-        widthBorderMap.observe(activity) {
+        starMapBorder.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.Main).launch  {
-                    val drawObjects = launch {
-                        launch { drawMap() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
-                }
-            }
-        }
-        mapBorderColor.observe(activity) {
-            if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
-                    val drawObjects = launch {
-                        launch { drawMap() }
-                    }
-
-                    drawObjects.join()
+                    drawMapBorder()
                     drawCanvas()
                 }
             }
         }
         isLoadedStarMap.observe(activity) {
             if(isDataInitialized) {
-//            CoroutineScope(Dispatchers.Main).launch  {
-//                val drawObjects = launch {
-//                    launch { drawMap() }
-//                }
-//
-//                drawObjects.join()
-//                drawCanvas()
-//            }
+                CoroutineScope(Dispatchers.Main).launch  {
+                    drawMap()
+
+                    if(hasBorderMap.value!!) {
+                        drawMapBorder()
+                    }
+
+                    drawCanvas()
+                }
             }
         }
         descFont.observe(activity) {
@@ -410,14 +386,19 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val webChromeClient = object : WebChromeClient() {
             override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
-                Log.d("MyLog", "${consoleMessage.message()} -- From line ${consoleMessage.lineNumber()} of ${consoleMessage.sourceId()}");
+                Log.d("Console", "${consoleMessage.message()} -- From line ${consoleMessage.lineNumber()} of ${consoleMessage.sourceId()}");
                 return true
             }
         }
 
         val webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
-                view!!.loadUrl("javascript:Celestial.addCallback(() => Android.callBackUpdateStarMap(document.querySelector('canvas').toDataURL('image/png').replace('data:image/png;base64,', '')));")
+                Log.d("Console", "onPageFinished")
+                view!!.loadUrl("""
+                   javascript: window.initStarMap(`${getInitConfigStarMap()}`);  Celestial.addCallback(() => {
+                            Android.callBackUpdateStarMap(document.querySelector('canvas').toDataURL('image/png').replace('data:image/png;base64,', ''))
+                        });
+                """)
             }
         }
 
@@ -430,7 +411,14 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             true
         }
 
+        val handlerInit = Handler(Looper.getMainLooper()) {
+            requestStarMap();
+
+            true
+        }
+
         webViewStarMap = WebView(activity)
+        webViewStarMap.loadUrl("file:///android_asset/starmap/templates/classic_v1/index.html")
         webViewStarMap.webChromeClient = webChromeClient
         webViewStarMap.webViewClient = webViewClient
         webViewStarMap.addJavascriptInterface(object {
@@ -452,18 +440,16 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             allowContentAccess = true
         }
 
-        webViewStarMap.loadUrl("file:///android_asset/starmap/templates/classic_v1/index.html")
-
         Log.d("MyLog", "Done initStarMapBitmap")
     }
     private fun requestStarMap() {
         Log.d("MyLog", "Start requestStarMap")
-        isLoadedStarMap.value = false
-        webViewStarMap.loadUrl("""javascript:window.editStartMap(`${getRequestBodyStarMap()}`);""")
+
+        webViewStarMap.loadUrl("""javascript:window.editStartMap(`${getConfigStarMap()}`);""")
 
         Log.d("MyLog", "Done requestStarMap")
     }
-    private fun getRequestBodyStarMap(): String {
+    private fun getConfigStarMap(): String {
         Log.d("MyLog", "Start getRequestBodyStarMap")
 
         val date = Calendar.getInstance()
@@ -482,86 +468,321 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val jsonString =
             """
-                {
-                    "date": ${date.time.time},
-                    "location": [${eventLatitude.value}, ${eventLongitude.value}],
-                    "width": 1000,
-                    "options": {
-                        "background": {
-                            "fill": "${backgroundColorMap.value}"
-                        },
-                        "stars": {
-                            "propername": false,
-                            "propernameType": "ru",
-                            "propernameStyle": {
-                                "fill": "#ddddbb",
-                                "font": "13px Arial, Times, 'Times Roman', serif",
-                                "align": "right",
-                                "baseline": "bottom"
-                            },
-                            "style": { 
-                                "fill": "#ffffff", 
-                                "opacity": 1 
-                            },
-                            "size": 12
-                        },
-                        "dsos": {
-                            "names": false,
-                            "namesType": "ru",
-                            "nameStyle": {
-                                "fill": "#000000",
-                                "font": "11px Helvetica, Arial, serif",
-                                "align": "left",
-                                "baseline": "top"
-                            }
-                        },
-                        "planets": {
-                            "show": true,
-                            "names": false,
-                            "namesType": "ru",
-                            "nameStyle": {
-                                "fill": "#00ccff",
-                                "font": "14px 'Lucida Sans Unicode', Consolas, sans-serif",
-                                "align": "right",
-                                "baseline": "top"
-                            }
-                        },
-                        "constellations": {
-                            "names": false,
-                            "namesType": "ru",
-                            "nameStyle": {
-                                "fill": "#cccc99",
-                                "align": "center",
-                                "baseline": "middle",
-                                "font": [
+                            {
+                                "date": ${date.time.time},
+                                "location": [${eventLatitude.value}, ${eventLongitude.value}, 0.0],
+                                "width": 1000,
+                                "background": {
+                                    "fill": "${starMap.value!!.color}",
+                                    "stroke": "${starMap.value!!.color}"
+                                },
+                                "stars": {
+                                    "propername": false,
+                                    "propernameType": "ru",
+                                    "propernameStyle": {
+                                        "fill": "#ddddbb",
+                                        "font": "13px Arial, Times, 'Times Roman', serif",
+                                        "align": "right",
+                                        "baseline": "bottom"
+                                    },
+                                    "style": { 
+                                        "fill": "#ffffff", 
+                                        "opacity": 1 
+                                    },
+                                    "size": 12
+                                },
+                                "dsos": {
+                                    "names": false,
+                                    "namesType": "ru",
+                                    "nameStyle": {
+                                        "fill": "#000000",
+                                        "font": "11px Helvetica, Arial, serif",
+                                        "align": "left",
+                                        "baseline": "top"
+                                    }
+                                },
+                                "planets": {
+                                    "show": false,
+                                    "names": false,
+                                    "namesType": "ru",
+                                    "nameStyle": {
+                                        "fill": "#00ccff",
+                                        "font": "14px 'Lucida Sans Unicode', Consolas, sans-serif",
+                                        "align": "right",
+                                        "baseline": "top"
+                                    }
+                                },
+                                "constellations": {
+                                    "names": false,
+                                    "namesType": "ru",
+                                    "nameStyle": {
+                                        "fill": "#cccc99",
+                                        "align": "center",
+                                        "baseline": "middle",
+                                        "font": [
+                                            "14px Helvetica, Arial, sans-serif",
+                                            "12px Helvetica, Arial, sans-serif",
+                                            "11px Helvetica, Arial, sans-serif"
+                                        ]
+                                    },
+                                    "lineStyle": { 
+                                        "stroke": "#FFFFFF", 
+                                        "width": 3, 
+                                        "opacity": 1 
+                                    }
+                                },
+                                "mw": {
+                                    "show": true
+                                },
+                                "lines": {
+                                    "graticule": {
+                                        "show": ${hasGraticule.value},
+                                        "stroke": "${graticule.value!!.color}",
+  ${if(graticule.value!!.shape != LINE) "\"dash\": [${graticule.value!!.width!! * 2}, ${graticule.value!!.width!! * 4}]," else ""}
+                                        "width": ${graticule.value!!.width},
+                                        "opacity": ${graticule.value!!.opacity!!.toFloat() / 100}
+                                    }
+                                }
+                            }       
+            """.trimIndent()
+
+        Log.d("MyLog", "Done getRequestBodyStarMap")
+        return jsonString
+    }
+    private fun getInitConfigStarMap(): String {
+        var jsonString = """
+                            {
+                              "width": 1000, 
+                              "disableAnimations": true,
+                              "projection": "orthographic", 
+                              "projectionRatio": null, 
+                              "transform": "equatorial", 
+                              "center": null, 
+                              "orientationfixed": true, 
+                              "geopos": ["${eventLatitude.value}", "${eventLongitude.value}"], 
+                              "follow": "zenith", 
+                              "zoomlevel": null, 
+                              "zoomextend": 10, 
+                              "adaptable": true, 
+                              "interactive": false, 
+                              "form": false, 
+                              "location": false,
+                              "formFields": {
+                                "location": false, 
+                                "general": false,
+                                "stars": false,
+                                "dsos": false,
+                                "constellations": false,
+                                "lines": false,
+                                "other": false,
+                                "download": false
+                              },
+                              "advanced": false, 
+                              "daterange": [], 
+                              "controls": false, 
+                              "lang": "", 
+                              "culture": "", 
+                              "container": "map", 
+                              "datapath": "http://62.75.195.219:3000/data/", 
+                              "stars": {
+                                "show": true, 
+                                "limit": 6, 
+                                "colors": false,
+                                "style": { "fill": "#ffffff", "opacity": 1 }, 
+                                "designation": false, 
+                                "designationType": "desig", 
+                                "designationStyle": {
+                                  "fill": "#ddddbb",
+                                  "font": "11px 'Palatino Linotype', Georgia, Times, 'Times Roman', serif",
+                                  "align": "left",
+                                  "baseline": "top"
+                                },
+                                "designationLimit": 2.5, 
+                                "propername": false, 
+                                "propernameType": "ru", 
+                                "propernameStyle": {
+                                  "fill": "#ddddbb",
+                                  "font": "13px 'Palatino Linotype', Georgia, Times, 'Times Roman', serif",
+                                  "align": "right",
+                                  "baseline": "bottom"
+                                },
+                                "propernameLimit": 1.5, 
+                                "size": 12, 
+                                "exponent": -0.28, 
+                                "data": "stars.6.json"
+                              },
+                              "dsos": {
+                                "show": true, 
+                                "limit": 6, 
+                                "colors": false, 
+                                "style": { "fill": "#FFFFFF", "stroke": "#FFFFFF", "width": 2, "opacity": 1 }, 
+                                "names": false, 
+                                "namesType": "ru", 
+                                "nameStyle": {
+                                  "fill": "#000000",
+                                  "font": "11px Helvetica, Arial, serif",
+                                  "align": "left",
+                                  "baseline": "top"
+                                }, 
+                                "nameLimit": 6, 
+                                "size": null, 
+                                "exponent": 1.4, 
+                                "data": "dsos.bright.json", 
+                                "symbols": {
+                                  "gg": { "shape": "circle", "fill": "#ff0000" }, 
+                                  "g": { "shape": "circle", "fill": "#ff0000" }, 
+                                  "s": { "shape": "circle", "fill": "#ff0000" }, 
+                                  "s0": { "shape": "circle", "fill": "#ff0000" }, 
+                                  "sd": { "shape": "circle", "fill": "#ff0000" },
+                                  "e": { "shape": "circle", "fill": "#ff0000" },
+                                  "i": { "shape": "circle", "fill": "#ff0000" },
+                                  "oc": { "shape": "circle", "fill": "#ffcc00" }, 
+                                  "gc": { "shape": "circle", "fill": "#ff9900" }, 
+                                  "en": { "shape": "circle", "fill": "#ff00cc" }, 
+                                  "bn": { "shape": "circle", "fill": "#ff00cc" }, 
+                                  "sfr": { "shape": "circle", "fill": "#cc00ff" }, 
+                                  "rn": { "shape": "circle", "fill": "#00ooff" }, 
+                                  "pn": { "shape": "circle", "fill": "#00cccc" }, 
+                                  "snr": { "shape": "circle", "fill": "#ff00cc" }, 
+                                  "dn": { "shape": "circle", "fill": "#999999" }, 
+                                  "pos": { "shape": "circle", "fill": "#cccccc" }
+                                }
+                              },
+                              "planets": {
+                                "show": false,
+                                "which": [
+                                  "sol",
+                                  "mer",
+                                  "ven",
+                                  "ter",
+                                  "lun",
+                                  "mar",
+                                  "jup",
+                                  "sat",
+                                  "ura",
+                                  "nep"
+                                ],
+                                "symbols": {
+                                  "sol": { "symbol": "\u2609", "letter": "Su", "fill": "#ffff00" },
+                                  "mer": { "symbol": "\u263f", "letter": "Me", "fill": "#cccccc" },
+                                  "ven": { "symbol": "\u2640", "letter": "V", "fill": "#eeeecc" },
+                                  "ter": { "symbol": "\u2295", "letter": "T", "fill": "#00ccff" },
+                                  "lun": { "symbol": "\u25cf", "letter": "L", "fill": "#ffffff" }, 
+                                  "mar": { "symbol": "\u2642", "letter": "Ma", "fill": "#ff6600" },
+                                  "cer": { "symbol": "\u26b3", "letter": "C", "fill": "#cccccc" },
+                                  "ves": { "symbol": "\u26b6", "letter": "Ma", "fill": "#cccccc" },
+                                  "jup": { "symbol": "\u2643", "letter": "J", "fill": "#ffaa33" },
+                                  "sat": { "symbol": "\u2644", "letter": "Sa", "fill": "#ffdd66" },
+                                  "ura": { "symbol": "\u2645", "letter": "U", "fill": "#66ccff" },
+                                  "nep": { "symbol": "\u2646", "letter": "N", "fill": "#6666ff" },
+                                  "plu": { "symbol": "\u2647", "letter": "P", "fill": "#aaaaaa" },
+                                  "eri": { "symbol": "\u26aa", "letter": "E", "fill": "#eeeeee" }
+                                },
+                                "symbolStyle": {
+                                  "fill": "#00ccff",
+                                  "font": "bold 17px 'Lucida Sans Unicode', Consolas, sans-serif",
+                                  "align": "center",
+                                  "baseline": "middle"
+                                },
+                                "symbolType": "disk", 
+                                "names": false,
+                                "nameStyle": {
+                                  "fill": "#00ccff",
+                                  "font": "14px 'Lucida Sans Unicode', Consolas, sans-serif",
+                                  "align": "right",
+                                  "baseline": "top"
+                                },
+                                "namesType": "ru"
+                              },
+                              "constellations": {
+                                "names": false, 
+                                "namesType": "ru",
+                                "nameStyle": {
+                                  "fill": "#cccc99",
+                                  "align": "center",
+                                  "baseline": "middle",
+                                  "font": [
                                     "14px Helvetica, Arial, sans-serif",
                                     "12px Helvetica, Arial, sans-serif",
                                     "11px Helvetica, Arial, sans-serif"
-                                ]
-                            },
-                            "lineStyle": { 
-                                "stroke": "#FFFFFF", 
-                                "width": 3, 
-                                "opacity": 1 
-                            }
-                        },
-                        "mw": {
-                            "show": true
-                        },
-                        "lines": {
-                            "graticule": {
+                                  ]
+                                },
+                                "lines": true,
+                                "lineStyle": { "stroke": "#FFFFFF", "width": 3, "opacity": 1 },
+                                "bounds": false,
+                                "boundStyle": {
+                                  "stroke": "#cccc00",
+                                  "width": 0.5,
+                                  "opacity": 0.8,
+                                  "dash": [2, 4]
+                                }
+                              },
+                              "mw": {
                                 "show": true,
-                                "stroke": "#cccccc",
-                                "dash": [5, 5],
-                                "width": 0.6,
-                                "opacity": 0.8
-                            }
-                        }
-                    }
-                }       
-            """
+                                "style": { "fill": "#ffffff", "opacity": 0.15 } 
+                              },
+                              "lines": {
+                                "graticule": {
+                                  "show": ${hasGraticule.value},
+                                  "stroke": "${graticule.value!!.color}",
+           ${if(graticule.value!!.shape != LINE) "\"dash\": [${graticule.value!!.width!! * 2}, ${graticule.value!!.width!! * 4}]," else ""}                       
+                                  "width": ${graticule.value!!.width},
+                                  "opacity": ${graticule.value!!.opacity!!.toFloat() / 100},
+                                  "lon": {
+                                    "pos": [""],
+                                    "fill": "#eee",
+                                    "font": "10px Helvetica, Arial, sans-serif"
+                                  },
+                                  "lat": {
+                                    "pos": [""],
+                                    "fill": "#eee",
+                                    "font": "10px Helvetica, Arial, sans-serif"
+                                  }
+                                },
+                                "equatorial": {
+                                  "show": false,
+                                  "stroke": "#aaaaaa",
+                                  "width": 1.3,
+                                  "opacity": 0.7
+                                },
+                                "ecliptic": {
+                                  "show": false,
+                                  "stroke": "#66cc66",
+                                  "width": 1.3,
+                                  "opacity": 0.7
+                                },
+                                "galactic": {
+                                  "show": false,
+                                  "stroke": "#cc6666",
+                                  "width": 1.3,
+                                  "opacity": 0.7
+                                },
+                                "supergalactic": {
+                                  "show": false,
+                                  "stroke": "#cc66cc",
+                                  "width": 1.3,
+                                  "opacity": 0.7
+                                }
+                              },
+                              "background": {
+                                "fill": "${starMap.value!!.color}", 
+                                "opacity": 1,
+                                "stroke": "${starMap.value!!.color}",
+                                "width": 1.5
+                              },
+                              "horizon": {
+                                "show": false,
+                                "stroke": "#cccccc", 
+                                "width": 1.0,
+                                "fill": "#000000", 
+                                "opacity": 0.5
+                              },
+                              "daylight": {
+                                "show": false
+                              }
+                            }       
+            """.trimIndent()
 
-        Log.d("MyLog", "Done getRequestBodyStarMap")
         return jsonString
     }
     private fun correctLocationText() {
@@ -608,11 +829,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             isAntiAlias = true
         }
 
-        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
+        bitmapHolst = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
-        Canvas(tempBitmap).drawRect(0F, 0F, holst.value!!.width!!, holst.value!!.height!!, holstPaint)
-
-        bitmapHolst = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt())
+        Canvas(bitmapHolst).drawRect(0F, 0F, holst.value!!.width!!, holst.value!!.height!!, holstPaint)
 
         Log.d("MyLog", "Done drawHolst")
     }
@@ -641,12 +860,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         var tempBitmap: Bitmap
 
         if(isLoadedStarMap.value!!) {
-            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt(), true)
+            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap, (starMap.value!!.radius!! * 2).toInt(), (starMap.value!!.radius!! * 2).toInt(), true)
             tempBitmap = getBitmapClippedCircle(tempBitmap)!!
 
-            val x = (tempBitmap.width / 2) - radiusMap.value!!
-            val y = (tempBitmap.height / 2) - radiusMap.value!!
-            val width = (radiusMap.value!! * 2).toInt()
+            val x = (tempBitmap.width / 2) - starMap.value!!.radius!!
+            val y = (tempBitmap.height / 2) - starMap.value!!.radius!!
+            val width = (starMap.value!!.radius!! * 2).toInt()
 
             bitmapMap = Bitmap.createBitmap(tempBitmap, x.toInt(), y.toInt(), width, width)
         } else {
@@ -660,16 +879,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            color = mapBorderColor.value!!
+            color = Color.parseColor(starMapBorder.value!!.color)
             isDither = true
             isAntiAlias = true
         }
 
-        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
+        val tempSize = (starMap.value!!.radius!! + starMapBorder.value!!.width!!) * 2
 
-        Canvas(tempBitmap).drawCircle(radiusMap.value!! + widthBorderMap.value!!, radiusMap.value!! + widthBorderMap.value!!, radiusMap.value!! + widthBorderMap.value!!, mapBorder)
+        val tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
 
-        bitmapMapBorder = Bitmap.createBitmap(tempBitmap, 0, 0, ((radiusMap.value!! + widthBorderMap.value!!) * 2).toInt(), ((radiusMap.value!! + widthBorderMap.value!!) * 2).toInt())
+        Canvas(tempBitmap).drawCircle(starMap.value!!.radius!! + starMapBorder.value!!.width!!, starMap.value!!.radius!! + starMapBorder.value!!.width!!, starMap.value!!.radius!! + starMapBorder.value!!.width!!, mapBorder)
+
+        bitmapMapBorder = Bitmap.createBitmap(tempBitmap, 0, 0, ((starMap.value!!.radius!! + starMapBorder.value!!.width!!) * 2).toInt(), ((starMap.value!!.radius!! + starMapBorder.value!!.width!!) * 2).toInt())
 
         Log.d("MyLog", "Done drawMapBorder")
     }
@@ -810,7 +1031,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val map = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            color = Color.parseColor(backgroundColorMap.value!!)
+            color = Color.parseColor(starMap.value!!.color!!)
             isDither = true
             isAntiAlias = true
         }
@@ -819,57 +1040,57 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val loadingCanvas = Canvas(tempBitmap)
 
-        loadingCanvas.drawCircle(radiusMap.value!!, radiusMap.value!!, radiusMap.value!!, map)
+        loadingCanvas.drawCircle(starMap.value!!.radius!!, starMap.value!!.radius!!, starMap.value!!.radius!!, map)
 
-        val widthLoadingIcon = radiusMap.value!! * 0.5
-        val heightLoadingIcon = radiusMap.value!! * 0.5
+        val widthLoadingIcon = starMap.value!!.radius!! * 0.5
+        val heightLoadingIcon = starMap.value!!.radius!! * 0.5
         val drawableLoadingIcon = ContextCompat.getDrawable(activity, R.drawable.ic_loading_map)!!
         val wrappedDrawable = DrawableCompat.wrap(drawableLoadingIcon)
-        DrawableCompat.setTint(wrappedDrawable, if (backgroundColorMap.value!! == "#FFFFFF") Color.BLACK else Color.WHITE)
+        DrawableCompat.setTint(wrappedDrawable, if (starMap.value!!.color!! == "#FFFFFF") Color.BLACK else Color.WHITE)
         val bitmapLoadingIcon = wrappedDrawable.toBitmap(widthLoadingIcon.toInt(), heightLoadingIcon.toInt())
 
-        loadingCanvas.drawBitmap(bitmapLoadingIcon, (radiusMap.value!! - widthLoadingIcon / 2).toFloat(), (radiusMap.value!! - heightLoadingIcon / 2).toFloat(), null)
+        loadingCanvas.drawBitmap(bitmapLoadingIcon, (starMap.value!!.radius!! - widthLoadingIcon / 2).toFloat(), (starMap.value!!.radius!! - heightLoadingIcon / 2).toFloat(), null)
 
         Log.d("MyLog", "Done getLoadingBitmap")
-        return Bitmap.createBitmap(tempBitmap, 0, 0, (radiusMap.value!! * 2).toInt(), (radiusMap.value!! * 2).toInt())
+        return Bitmap.createBitmap(tempBitmap, 0, 0, (starMap.value!!.radius!! * 2).toInt(), (starMap.value!!.radius!! * 2).toInt())
     }
     override fun drawCanvas() {
         Log.d("MyLog", "Start drawCanvas")
 
-            bitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
+        bitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
-            val canvas = Canvas(bitmap)
+        val canvas = Canvas(bitmap)
 
-            // Рисуем холст
-            canvas.drawBitmap(bitmapHolst, 0F, 0F, null)
+        // Рисуем холст
+        canvas.drawBitmap(bitmapHolst, 0F, 0F, null)
 
-            // Рисуем рамку холста
-            if(hasBorderHolst.value!!) {
-                canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, null)
-            }
+        // Рисуем рамку холста
+        if(hasBorderHolst.value!!) {
+            canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, null)
+        }
 
-            // Рисуем рамку карты
-            if(hasBorderMap.value!!) {
-                canvas.drawBitmap(bitmapMapBorder, holst.value!!.width!!/2 - bitmapMapBorder.width / 2, holst.value!!.width!!/2 - bitmapMapBorder.width / 2, null)
-            }
+        // Рисуем рамку карты
+        if(hasBorderMap.value!!) {
+            canvas.drawBitmap(bitmapMapBorder, holst.value!!.width!!/2 - bitmapMapBorder.width / 2, holst.value!!.width!!/2 - bitmapMapBorder.width / 2, null)
+        }
 
-            // Рисуем карту
-            canvas.drawBitmap(bitmapMap, holst.value!!.width!!/2 - bitmapMap.width / 2, holst.value!!.width!!/2 - bitmapMap.width / 2, null)
+        // Рисуем карту
+        canvas.drawBitmap(bitmapMap, holst.value!!.width!!/2 - bitmapMap.width / 2, holst.value!!.width!!/2 - bitmapMap.width / 2, null)
 
-            val autoMargin = getAutoAlignMargin()
+        val autoMargin = getAutoAlignMargin()
 
-            // Рисуем текст описание
-            canvas.drawBitmap(bitmapDesc, 0F, getAbsoluteHeightMap() + autoMargin, null)
+        // Рисуем текст описание
+        canvas.drawBitmap(bitmapDesc, 0F, getAbsoluteHeightMap() + autoMargin, null)
 
-            // Рисуем разделитель
-            if(hasSeparator.value!!) {
-                canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!! - separator.value!!.width!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
-            }
+        // Рисуем разделитель
+        if(hasSeparator.value!!) {
+            canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!! - separator.value!!.width!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
+        }
 
-            // Рисуем текст локации
-            canvas.drawBitmap(bitmapLocationText, 0F, holst.value!!.height!! - bitmapLocationText.height - getBottomMarginLocationText(), null)
+        // Рисуем текст локации
+        canvas.drawBitmap(bitmapLocationText, 0F, holst.value!!.height!! - bitmapLocationText.height - getBottomMarginLocationText(), null)
 
-            listener?.onDraw() // TODO: replace to MutableLiveData
+        listener?.onDraw() // TODO: replace to MutableLiveData
 
         Log.d("MyLog", "Done drawCanvas")
     }

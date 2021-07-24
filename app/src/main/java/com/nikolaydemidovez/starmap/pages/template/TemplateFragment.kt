@@ -115,7 +115,7 @@ class TemplateFragment : Fragment() {
 
     private fun getTemplateCanvas(templateName: String): TemplateCanvas = when(templateName) {
         "classic_v1" -> ClassicV1TemplateCanvas(activity as MainActivity)
-        "half_v1" -> HalfV1TemplateCanvas(activity as MainActivity)
+        //"half_v1" -> HalfV1TemplateCanvas(activity as MainActivity)
 
         else -> ClassicV1TemplateCanvas(activity as MainActivity)
     }

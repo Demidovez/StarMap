@@ -72,7 +72,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         }
 
         binding.editDate.setText(getDateInstance(LONG, Locale("ru")).format(templateCanvas.eventDate.value!!))
-        binding.editTime.setText(templateCanvas.eventTime.value!!)
+        binding.editTime.setText(getTime())
         binding.editLocation.setText(templateCanvas.eventLocation.value)
 
         templateCanvas.eventLocation.observe(requireActivity(), {
@@ -107,6 +107,19 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         })
 
         return root
+    }
+
+    private fun getTime(): String {
+        return if (templateCanvas.eventTime.value!!.isNotEmpty()) {
+            templateCanvas.eventTime.value!!
+        } else {
+            val date = Calendar.getInstance()
+
+            val hourOfDay = date.get(Calendar.HOUR_OF_DAY)
+            val minute = date.get(Calendar.MINUTE)
+
+            "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
+        }
     }
 
     private fun showLatLongDialog(title: String, value: String, flag: Int) {

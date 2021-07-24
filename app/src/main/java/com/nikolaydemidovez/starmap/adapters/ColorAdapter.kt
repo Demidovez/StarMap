@@ -101,7 +101,7 @@ class ColorAdapter(
                 colorPreview.setColorFilter(envelope.color, PorterDuff.Mode.SRC_ATOP)
 
                 if(!inputColor.isFocused) {
-                    val colorText = "#" + envelope.hexCode
+                    val colorText = "#" + envelope.hexCode.substring(2)
                     inputColor.setText(colorText)
                 }
 

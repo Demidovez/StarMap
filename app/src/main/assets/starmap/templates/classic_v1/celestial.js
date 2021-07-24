@@ -5,6 +5,9 @@ var Celestial = {
   data: []
 };
 
+var countDraw = 0;
+var idSetTimeout = 0;
+
 var ANIMDISTANCE = 0.035,  // Rotation animation threshold, ~2deg in radians
     ANIMSCALE = 1.4,       // Zoom animation threshold, scale factor
     ANIMINTERVAL_R = 1, // Rotation duration scale in ms
@@ -166,7 +169,9 @@ Celestial.display = function(config) {
          .data(mw_back.features)
          .enter().append("path")
          .attr("class", "mwbg");
-      redraw();
+
+      console.log("Celestial Milky way outline");
+     countDraw++; redraw();
     }); 
 
     //Constellation names or designation
@@ -180,7 +185,9 @@ Celestial.display = function(config) {
          .attr("class", "constname");
          
       Celestial.constellations = getConstellationList(con);
-      redraw();
+
+      console.log("Celestial Constellation names or designation");
+     countDraw++; redraw();
     });
 
     //Constellation boundaries
@@ -194,7 +201,9 @@ Celestial.display = function(config) {
          .data(cb.features)
          .enter().append("path")
          .attr("class", "boundaryline");
-      redraw();
+
+      console.log("Celestial Constellation boundaries");
+     countDraw++; redraw();
     });
 
     //Constellation lines
@@ -209,7 +218,9 @@ Celestial.display = function(config) {
          .attr("class", "constline");
 
       listConstellations();
-      redraw();
+
+      console.log("Celestial Constellation lines");
+     countDraw++; redraw();
     });
     
     //Stars
@@ -222,7 +233,9 @@ Celestial.display = function(config) {
          .data(st.features)
          .enter().append("path")
          .attr("class", "star");
-      redraw();
+
+      console.log("Celestial Stars");
+     countDraw++; redraw();
 
     });
 
@@ -230,7 +243,9 @@ Celestial.display = function(config) {
     d3.json(path + filename("starnames"), function(error, json) {
       if (error) return console.warn(error);
       Object.assign(starnames, json);
-      redraw();
+
+      console.log("Celestial Star names");
+     countDraw++; redraw();
     });
 
     //Deep space objects
@@ -243,14 +258,18 @@ Celestial.display = function(config) {
          .data(ds.features)
          .enter().append("path")
          .attr("class", "dso" );
-      redraw();
+
+      console.log("Celestial Deep space objects");
+     countDraw++; redraw();
     });
 
     //DSO names
     d3.json(path + filename("dsonames"), function(error, json) {
       if (error) return console.warn(error);
       Object.assign(dsonames, json);
-      redraw();
+
+      console.log("Celestial DSO names");
+     countDraw++; redraw();
     });
 
     //Planets, Sun & Moon
@@ -263,7 +282,9 @@ Celestial.display = function(config) {
          .data(pl)
          .enter().append("path")
          .attr("class", "planet");
-      redraw();
+
+      console.log("Celestial Planets, Sun & Moon");   
+     countDraw++; redraw();
     });
 
     if (Celestial.data.length > 0) { 
@@ -274,7 +295,6 @@ Celestial.display = function(config) {
     }
   
     if (cfg.lang && cfg.lang != "") apply(Celestial.setLanguage(cfg.lang));
-    //redraw();
   }
   
   // Zoom by factor; >1 larger <1 smaller 
@@ -290,7 +310,8 @@ Celestial.display = function(config) {
     if (cfg.disableAnimations === true) { 
       mapProjection.scale(sc1); 
       zoom.scale(sc1); 
-      redraw(); 
+      console.log("Celestial Zoom by factor");   
+     countDraw++; redraw(); 
       return 0; 
     }
     var zTween = d3.interpolateNumber(sc0, sc1);
@@ -298,18 +319,21 @@ Celestial.display = function(config) {
         return function(t) {
           var z = zTween(t);
           mapProjection.scale(z); 
-          redraw(); 
+          console.log("Celestial Zoom transition");  
+         countDraw++; redraw(); 
         };
     }).transition().duration(0).tween("scale", function () {
       zoom.scale(sc1); 
-      redraw(); 
+      console.log("Celestial Zoom transition duration");  
+     countDraw++; redraw(); 
     });
     return interval;
   }  
   
   function apply(config) {
     cfg = settings.set(config); 
-    redraw();
+    console.log("Celestial apply"); 
+   countDraw++; redraw();
   }
 
 
@@ -329,7 +353,8 @@ Celestial.display = function(config) {
     if ((d < ANIMDISTANCE && o < ANIMDISTANCE) || cfg.disableAnimations === true) { 
       rotation = getAngles(cfg.center);
       mapProjection.rotate(rotation);
-      redraw();
+      console.log("Celestial rotate"); 
+     countDraw++; redraw();
       return 0; 
     } 
     // Zoom interpolator
@@ -352,13 +377,15 @@ Celestial.display = function(config) {
         if (keep) c[1] = rot[1]; 
         mapProjection.scale(z);
         mapProjection.rotate(c);
-        redraw();
+        console.log("Celestial Rotation interpolator"); 
+       countDraw++; redraw();
       };
     }).transition().duration(0).tween("center", function () {
       cfg.orientationfixed = oof;
       rotation = getAngles(cfg.center);
       mapProjection.rotate(rotation);
-      redraw();
+      console.log("Celestial Rotation interpolator duration"); 
+     countDraw++; redraw();
     });
     return interval;
   }
@@ -377,7 +404,9 @@ Celestial.display = function(config) {
     mapProjection.translate([canvaswidth/2, canvasheight/2]).scale(scale * zoomlevel);
     if (parent) parent.style.height = px(height);
     scale *= zoomlevel;
-    redraw();
+
+    console.log("Celestial resize");
+   countDraw++; redraw();
   }
 
   function reproject(config) {
@@ -425,7 +454,8 @@ Celestial.display = function(config) {
         //canvas.attr("width", width).attr("height", height);
         canvas.style("width", px(canvaswidth)).style("height", px(canvasheight)).attr("width", canvaswidth * pixelRatio).attr("height",  canvasheight * pixelRatio);
         if (parent) parent.style.height = px(canvasheight);
-        redraw();
+        console.log("Celestial projection");
+       countDraw++; redraw();
       };
     }).transition().duration(0).tween("projection", function () {
       projectionSetting = prj;
@@ -443,7 +473,9 @@ Celestial.display = function(config) {
       zoom.projection(mapProjection).scaleExtent([scale, scale * zoomextent]).scale(scale * zoomlevel);
       cfg.adaptable = bAdapt;
       scale *= zoomlevel;
-      redraw();
+
+      console.log("Celestial projection duration");
+     countDraw++; redraw();
     });
     return interval;
   }
@@ -634,7 +666,8 @@ Celestial.display = function(config) {
     
     if (Celestial.data.length > 0) { 
       Celestial.data.forEach( function(d) {
-        d.redraw();
+        console.log("Celestial data");
+        countDraw++; d.redraw();
       });
     }
     
@@ -992,10 +1025,6 @@ Celestial.display = function(config) {
     animate(); 
   };
 
-  /* obsolete
-  if (!has(this, "date"))
-    this.date = function() { console.log("Celestial.date() needs config.location = true to work." ); };
-  */
   load();
 };
  
@@ -1291,9 +1320,12 @@ Celestial.addCallback = function(dat) {
 };
 
 Celestial.runCallback = function(dat) {
-  hasCallback = false; // avoid recursion
-  Celestial.callback();
-  hasCallback = true;
+   // avoid recursion
+    hasCallback = false;
+
+    Celestial.callback();
+
+    hasCallback = true;
 };
 //load data and transform coordinates
 
@@ -1839,7 +1871,7 @@ var projections = {
   "mollweide": {n:"Mollweide", arg:null, scale:180},
   "naturalEarth": {n:"Natural Earth", arg:null, scale:185, ratio:1.85},
   "nellHammer": {n:"Nell Hammer", arg:null, scale:160, ratio:2.6},
-  "orthographic": {n:"Orthographic", arg:null, scale:480, ratio:1.0, clip:true},
+  "orthographic": {n:"Orthographic", arg:null, scale:511, ratio:1.0, clip:true},
   "patterson": {n:"Patterson Cylindrical", arg:null, scale:160, ratio:1.75},
   "polyconic": {n:"Polyconic", arg:null, scale:160, ratio:1.3},
   "quincuncial": {n:"Quincuncial", arg:null, scale:160, ratio:1.3},
@@ -2174,99 +2206,9 @@ Canvas.symbol = function () {
 Celestial.Canvas = Canvas;
 
 
-/*var color = "#fff", angle = 0, align = "center", baseline = "middle", font = "10px sans-serif", padding = [0,0], aPos, sText;
 
-canvas.text = function () {
-
-  function txt(ctx){
-    ctx.fillStyle = color;
-    ctx.textAlign = align;
-    ctx.textBaseline = baseline;
-    
-    //var pt = projection(d.geometry.coordinates);
-    if (angle) {
-      canvas.save();     
-      canvas.translate(aPos[0], aPos[1]);
-      canvas.rotate(angle); 
-      canvas.fillText(sText, 0, 0);
-      canvas.restore();     
-    } else
-      canvas.fillText(sText, aPos[0], aPos[1]);
-  }
-  
-  txt.angle = function(x) {
-    if (!arguments.length) return angle * 180 / Math.PI;
-    color = x  * Math.PI / 180;
-    return txt;
-  };  
-  txt.color = function(s) {
-    if (!arguments.length) return color;
-    color = s;
-    return txt;
-  };  
-  txt.align = function(s) {
-    if (!arguments.length) return align;
-    align = s;
-    return txt;
-  };
-  txt.baseline = function(s) {
-    if (!arguments.length) return baseline;
-    baseline = s;
-    return txt;
-  };
-  txt.padding = function(a) {
-    if (!arguments.length) return padding;
-    padding = a;
-    return txt;
-  };
-  txt.text = function(s) {
-    if (!arguments.length) return sText;
-    sText = s;
-    return txt;
-  };
-  txt.font = function(s) {
-    if (!arguments.length) return font;
-    font = s;
-    return txt;
-  };
-  txt.style = function(o) {
-    if (!arguments.length) return;
-    if (o.fill) color = o.fill;
-    if (o.font) font = o.font;
-    return txt;
-  }; 
-  
-}
-
-  function ctxPath(d) {
-    var pt;
-    //d.map( function(axe, i) {
-    context.beginPath();
-    for (var i = 0; i < d.length; i++) {
-      pt = projection(d[i]);
-      if (i === 0)
-        context.moveTo(pt[0], pt[1]);
-      else
-        context.lineTo(pt[0], pt[1]);
-    }
-    context.fill();
-  }
   
 
-  function ctxText(d, ang) {
-    var pt = projection(d.geometry.coordinates);
-    if (ang) {
-      canvas.save();     
-      canvas.translate(pt[0], pt[1]);
-      canvas.rotate(Math.PI/2); 
-      canvas.fillText(txt, 0, 0);
-      canvas.restore();     
-    } else
-      canvas.fillText(d.properties.txt, pt[0], pt[1]);
-  }
-  
-
-*/
 function $(id) { return document.querySelector(parentElement + " #" + id); }
 function px(n) { return n + "px"; } 
 function Round(x, dg) { return(Math.round(Math.pow(10,dg)*x)/Math.pow(10,dg)); }
@@ -2838,8 +2780,7 @@ function form(cfg) {
       if (z !== 1) {
         anims.push({param:"zoom", value:1/z, duration:0});
       }
-      Celestial.animate(anims, false);    
-      //Celestial.redraw();
+      Celestial.animate(anims, false); 
       return;
     }
     if (!isObject(Celestial.constellations) || !has(Celestial.constellations, id)) return;
@@ -3432,7 +3373,8 @@ function geo(cfg) {
       if (config.follow === "zenith") {
         Celestial.rotate({center:zenith});
       } else {
-        Celestial.redraw();
+        console.log("Celestial go");
+        countDraw++; Celestial.redraw();
       }
     }
   }
@@ -3525,7 +3467,10 @@ function geo(cfg) {
     //Celestial.updateForm();
     if (valid === false) return {"date": date, "location": geopos, "timezone": timeZone};
     if (config.follow === "zenith") go();
-    else Celestial.redraw();
+    else {
+      console.log("Celestial skyview");
+      countDraw++; Celestial.redraw();
+    }
   };  
   Celestial.dtLoc = Celestial.skyview;
   Celestial.zenith = function () { return zenith; };
