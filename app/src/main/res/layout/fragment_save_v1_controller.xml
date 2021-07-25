@@ -8,73 +8,136 @@
     tools:context=".controllers.save_v1.SaveV1ControllerFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/frameLayout2"
+        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp">
+        android:paddingBottom="16dp"
+        android:layout_marginTop="8dp">
 
         <TextView
             android:id="@+id/label_format_extension"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:text="@string/label_format_extension"
+            android:textAppearance="@style/label_controller"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <RadioGroup
-            android:id="@+id/radio_group_format"
-            android:layout_width="wrap_content"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/formatFileRecycler"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:paddingBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label_format_extension">
-
-            <RadioButton
-                android:id="@+id/radio_format_jpg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="JPG" />
-
-            <RadioButton
-                android:id="@+id/radio_format_pdf"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_weight="1"
-                android:text="PDF" />
-
-        </RadioGroup>
+            app:layout_constraintTop_toBottomOf="@id/label_format_extension"/>
 
         <Button
-            android:id="@+id/share_btn"
+            android:id="@+id/shareBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/black"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            app:backgroundTint="@null"
+            android:textAppearance="@style/label_controller"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="@drawable/button_background"
             android:text="Поделиться"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radio_group_format" />
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/formatFileRecycler" />
+
+        <TextView
+            android:id="@+id/labelOr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_or"
+            android:textAppearance="@style/label_controller"
+            app:layout_constraintStart_toEndOf="@+id/shareBtn"
+            app:layout_constraintEnd_toStartOf="@+id/saveBtn"
+            app:layout_constraintTop_toTopOf="@+id/shareBtn"
+            app:layout_constraintBottom_toBottomOf="@+id/shareBtn"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
         <Button
-            android:id="@+id/save_btn"
+            android:id="@+id/saveBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:backgroundTint="@color/black"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="32dp"
             android:text="Сохранить"
+            app:backgroundTint="@null"
+            android:textAppearance="@style/label_controller"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="@drawable/button_background"
             android:layout_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radio_group_format" />
+            app:layout_constraintTop_toBottomOf="@+id/formatFileRecycler" />
+
+        <Button
+            android:id="@+id/downloadBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="24dp"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_background_download"
+            android:text="Скачать"
+            android:textAppearance="@style/label_controller"
+            style="?android:attr/borderlessButtonStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/shareBtn" />
+
+
+
+
+
+
+<!--        <RadioGroup-->
+<!--            android:id="@+id/radio_group_format"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.0"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/formatFileRecycler">-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/radio_format_jpg"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="24dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:checked="true"-->
+<!--                android:text="JPG" />-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/radio_format_pdf"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="24dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="PDF" />-->
+
+<!--        </RadioGroup>-->
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

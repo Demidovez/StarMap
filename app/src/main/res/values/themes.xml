@@ -100,7 +100,7 @@
         <item name="android:windowBackground">@drawable/dialog_background</item>
     </style>
 
-    <style name="titleHostSize">
+    <style name="title_rect_recycler_item">
         <item name="android:textSize">17sp</item>
         <item name="android:textColor">@color/dark</item>
         <item name="android:fontFamily">@font/nunito_regular</item>

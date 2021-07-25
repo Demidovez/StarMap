@@ -1,6 +1,5 @@
 package adapters
 
-import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import android.graphics.*
@@ -9,7 +8,6 @@ import android.widget.*
 import androidx.core.view.updatePadding
 import com.nikolaydemidovez.starmap.R
 import androidx.lifecycle.MutableLiveData
-import com.nikolaydemidovez.starmap.databinding.ColorItemBinding
 import com.nikolaydemidovez.starmap.databinding.HolstSizeItemBinding
 import com.nikolaydemidovez.starmap.pojo.Holst
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
@@ -29,9 +27,9 @@ class HolstSizeAdapter(
             }
 
             val borderResId = if(templateHolst.value!!.width == holst.width) {
-                R.drawable.border_host_size_item_selected
+                R.drawable.border_rect_recycler_item_selected
             } else {
-                R.drawable.border_host_size_item
+                R.drawable.border_rect_recycler_item
             }
 
             backgroundLayout.background = ContextCompat.getDrawable(itemView.context, borderResId)
