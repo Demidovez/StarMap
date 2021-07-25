@@ -42,10 +42,60 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     abstract val separator:                     MutableLiveData<Separator>     // Разделителя
     abstract val hasGraticule:                  MutableLiveData<Boolean>       // Добавить ли сеть координат
     abstract val graticule:                     MutableLiveData<Graticule>     // Сеть координат
+    abstract val hasConstellations:             MutableLiveData<Boolean>       // Добавить ли созвездия
+    abstract val constellations:                MutableLiveData<Constellations>// Созвездия
+    abstract val hasMilkyWay:                   MutableLiveData<Boolean>       // Добавить ли млечный путь
+    abstract val stars:                         MutableLiveData<Stars>         // Добавить ли млечный путь
+    abstract val hasNames:                      MutableLiveData<Boolean>       // Добавить ли названия на звездной карте
+    abstract val namesStars:                    MutableLiveData<NamesStars>    // Названия звезд и созвездий
     // Конец списка свойств
 
     var bitmap: Bitmap = Bitmap.createBitmap(2480, 3508,Bitmap.Config.ARGB_8888)
         protected set
+
+    val colorList = arrayListOf(
+        "#000000",
+        "#FFFFFF",
+        "#1ABC9C",
+        "#16A085",
+        "#2ECC71",
+        "#27AE60",
+        "#3498DB",
+        "#2980B9",
+        "#9B59B6",
+        "#8E44AD",
+        "#34495E",
+        "#2C3E50",
+        "#F1C40F",
+        "#F39C12",
+        "#E67E22",
+        "#D35400",
+        "#E74C3C",
+        "#C0392B",
+        "#BDC3C7",
+        "#95A5A6",
+        "#7F8C8D"
+    )
+    val langList = arrayListOf(
+        Lang("Русский", "ru"),
+        Lang("English", "en"),
+        Lang("Arabic", "ar"),
+        Lang("Chinese", "zh"),
+        Lang("Czech", "cz"),
+        Lang("Estonian", "ee"),
+        Lang("Finnish", "fi"),
+        Lang("French", "fr"),
+        Lang("German", "de"),
+        Lang("Greek", "el"),
+        Lang("Hebrew", "he"),
+        Lang("Italian", "it"),
+        Lang("Japanese", "ja"),
+        Lang("Korean", "ko"),
+        Lang("Hindi", "hi"),
+        Lang("Persian", "fa"),
+        Lang("Spanish", "es"),
+        Lang("Turkish", "tr")
+    )
 
     protected var listener: OnDrawListener? = null
 

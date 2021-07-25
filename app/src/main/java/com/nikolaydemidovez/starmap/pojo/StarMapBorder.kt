@@ -7,7 +7,7 @@ class StarMapBorder (var width: Float?, override var color: String?, var shape: 
     constructor() : this(null, null, null)
 
     companion object {
-        val LINE = 1
-        val KOMPAS = 2
+        const val LINE = 1
+        const val KOMPAS = 2
     }
 }

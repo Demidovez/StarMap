@@ -58,11 +58,12 @@
         <entry key="app/src/main/res/layout/fragment_save_v1_controller.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_separator_v1_controller.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.38697916666666665" />
-        <entry key="app/src/main/res/layout/fragment_stars_v1_controller.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/fragment_stars_v1_controller.xml" value="0.27781523937963587" />
         <entry key="app/src/main/res/layout/fragment_template.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_templates.xml" value="0.38697916666666665" />
         <entry key="app/src/main/res/layout/full_screen_layout.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/holst_size_item.xml" value="0.1398148148148148" />
+        <entry key="app/src/main/res/layout/lang_item.xml" value="0.20520833333333333" />
         <entry key="app/src/main/res/layout/lat_long_picker_layout.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/location_item.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/location_picker_layout.xml" value="0.21197916666666666" />
