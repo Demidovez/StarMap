@@ -29,6 +29,9 @@ import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
 import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
+import android.webkit.WebView
+
+
 
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
@@ -53,43 +56,45 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private lateinit var bitmapSeparator: Bitmap
     private lateinit var bitmapLocationText: Bitmap
     private lateinit var bitmapStarMap: Bitmap
-    private lateinit var webViewStarMap: WebView
-
-    override val holst =                         MutableLiveData(Holst("A4", "297 x 210 мм", 2480F, 3508F, "#FFFFFF" ))
-    override val hasBorderHolst =                MutableLiveData(true)
-    override val borderHolst =                   MutableLiveData(HolstBorder(100F, 10F, "#000000"))
-    override val starMap =                       MutableLiveData(StarMap(1000F, "#000000"))
-    override val hasBorderMap =                  MutableLiveData(false)
-    override val starMapBorder =                 MutableLiveData(StarMapBorder(15F, "#FFFFFF", StarMapBorder.LINE))
-    override val descFont =                      MutableLiveData(FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 120F))
-    override val descText =                      MutableLiveData("День, когда сошлись\nвсе звезды вселенной...")
-    override val hasEventDateInLocation =        MutableLiveData(true)
-    override val eventDate =                     MutableLiveData(Calendar.getInstance().time)
-    override val hasEventTimeInLocation =        MutableLiveData(true)
-    override val eventTime =                     MutableLiveData("")
-    override val hasEventCityInLocation =        MutableLiveData(true)
-    override val eventLocation =                 MutableLiveData("Москва")
-    override val eventCountry =                  MutableLiveData("Россия")
-    override val hasEditResultLocationText =     MutableLiveData(false)
-    override val resultLocationText =            MutableLiveData("")
-    override val locationFont =                  MutableLiveData(FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 60F))
-    override val hasEventCoordinatesInLocation = MutableLiveData(true)
-    override val eventLatitude =                 MutableLiveData(55.755826)
-    override val eventLongitude =                MutableLiveData(37.6173)
-    override val hasSeparator =                  MutableLiveData(true)
-    override val separator =                     MutableLiveData(Separator("#000000", 1000F))
-    override val hasGraticule =                  MutableLiveData(true)
-    override val graticule =                     MutableLiveData(Graticule(2F, "#FFFFFF", 70, LINE))
-    override val hasMilkyWay =                   MutableLiveData(true)
-    override val hasNames =                      MutableLiveData(false)
-    override val namesStars =                    MutableLiveData(NamesStars(12, "#FFFFFF", Lang("Русский", "ru")))
-    override val hasConstellations =             MutableLiveData(true)
-    override val constellations =                MutableLiveData(Constellations(3F, "#FFFFFF", 100))
-    override val stars =                         MutableLiveData(Stars(12F, "#FFFFFF", 100))
-    private  var isLoadedStarMap =               MutableLiveData(false)    // Загрузилась ли звездная карта с сервера
+    private var webViewStarMap = WebView(activity)
+    private  var isLoadedStarMap = MutableLiveData(false)    // Загрузилась ли звездная карта с сервера
 
     init {
-        CoroutineScope(Dispatchers.Main).launch  {
+        holst.value =                           Holst("A4", "297 x 210 мм", 2480F, 3508F, "#FFFFFF" )
+        hasBorderHolst.value =                  true
+        borderHolst.value =                     HolstBorder(100F, 10F, "#000000")
+        starMap.value =                         StarMap(1000F, "#000000")
+        hasBorderMap.value =                    false
+        starMapBorder.value =                   StarMapBorder(15F, "#FFFFFF", StarMapBorder.LINE)
+        descFont.value =                        FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 120F)
+        descText.value =                        "День, когда сошлись\nвсе звезды вселенной..."
+        hasEventDateInLocation.value =          true
+        eventDate.value =                       Calendar.getInstance().time
+        hasEventTimeInLocation.value =          true
+        eventTime.value =                       ""
+        hasEventCityInLocation.value =          true
+        eventLocation.value =                   "Москва"
+        eventCountry.value =                    "Россия"
+        hasEditResultLocationText.value =       false
+        resultLocationText.value =              ""
+        locationFont.value =                    FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 60F)
+        hasEventCoordinatesInLocation.value =   true
+        eventLatitude.value =                   55.755826
+        eventLongitude.value =                  37.6173
+        hasSeparator.value =                    true
+        separator.value =                       Separator("#000000", 1000F)
+        hasGraticule.value =                    true
+        graticule.value =                       Graticule(2F, "#FFFFFF", 70, LINE)
+        hasMilkyWay.value =                     true
+        hasNames.value =                        false
+        namesStars.value =                      NamesStars(12, "#FFFFFF", Lang("Русский", "ru"))
+        hasConstellations.value =               true
+        constellations.value =                  Constellations(3F, "#FFFFFF", 100)
+        stars.value =                           Stars(12F, "#FFFFFF", 100)
+    }
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch  {
             launch { initStarMapBitmap() }
 
             val drawObjects = launch {
@@ -111,7 +116,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         holst.observe(activity)  {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { drawHolst() }
                         launch { drawHolstBorder() }
@@ -126,7 +131,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         hasBorderHolst.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { drawHolstBorder() }
                     }
@@ -138,7 +143,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         borderHolst.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { drawHolstBorder() }
                     }
@@ -150,77 +155,77 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         starMap.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     requestStarMap()
                 }
             }
         }
         hasGraticule.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     requestStarMap()
                 }
             }
         }
         graticule.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     requestStarMap()
                 }
             }
         }
         hasMilkyWay.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     requestStarMap()
                 }
             }
         }
         hasNames.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     requestStarMap()
                 }
             }
         }
         namesStars.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     requestStarMap()
                 }
             }
         }
         hasConstellations.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     requestStarMap()
                 }
             }
         }
         constellations.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     requestStarMap()
                 }
             }
         }
         stars.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     requestStarMap()
                 }
             }
         }
         hasBorderMap.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     drawCanvas()
                 }
             }
         }
         starMapBorder.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     drawMapBorder()
                     drawCanvas()
                 }
@@ -228,7 +233,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         isLoadedStarMap.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     drawMap()
 
                     if(hasBorderMap.value!!) {
@@ -241,7 +246,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         descFont.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch {  drawDesc() }
                     }
@@ -253,7 +258,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         descText.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { drawDesc() }
                     }
@@ -265,7 +270,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         hasEventDateInLocation.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                     }
@@ -277,7 +282,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         eventDate.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                         launch { requestStarMap() }
@@ -291,7 +296,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         hasEventTimeInLocation.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                     }
@@ -303,7 +308,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         eventTime.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                         launch { requestStarMap() }
@@ -317,7 +322,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         hasEventCityInLocation.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                     }
@@ -329,7 +334,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         eventLocation.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                     }
@@ -341,7 +346,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         locationFont.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch {  drawLocationText() }
                     }
@@ -353,7 +358,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         hasEventCoordinatesInLocation.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                     }
@@ -365,7 +370,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         eventLatitude.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                         launch { requestStarMap() }
@@ -379,7 +384,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         eventLongitude.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                         launch { requestStarMap() }
@@ -393,7 +398,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         hasEditResultLocationText.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                     }
@@ -405,7 +410,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         resultLocationText.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { drawLocationText() }
                     }
@@ -417,7 +422,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
         separator.observe(activity) {
             if(isDataInitialized) {
-                CoroutineScope(Dispatchers.Main).launch  {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { drawSeparator() }
                     }
@@ -454,46 +459,44 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             val decodedString: ByteArray = Base64.decode(it.data.getString("png"), Base64.DEFAULT)
             bitmapStarMap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 
-            isLoadedStarMap.value = true
+            isLoadedStarMap.postValue(true)
 
             true
         }
 
-        val handlerInit = Handler(Looper.getMainLooper()) {
-            requestStarMap();
+        activity.runOnUiThread(Runnable {
+            webViewStarMap.loadUrl("file:///android_asset/starmap/templates/classic_v1/index.html")
+            webViewStarMap.webChromeClient = webChromeClient
+            webViewStarMap.webViewClient = webViewClient
+            webViewStarMap.addJavascriptInterface(object {
+                @JavascriptInterface
+                fun callBackUpdateStarMap(pngString: String) {
+                    val bundle = Bundle()
+                    bundle.putString("png", pngString)
 
-            true
-        }
+                    val message = Message()
+                    message.data = bundle
 
-        webViewStarMap = WebView(activity)
-        webViewStarMap.loadUrl("file:///android_asset/starmap/templates/classic_v1/index.html")
-        webViewStarMap.webChromeClient = webChromeClient
-        webViewStarMap.webViewClient = webViewClient
-        webViewStarMap.addJavascriptInterface(object {
-            @JavascriptInterface
-            fun callBackUpdateStarMap(pngString: String) {
-                val bundle = Bundle()
-                bundle.putString("png", pngString)
+                    handler.sendMessage(message)
+                }
+            }, "Android")
 
-                val message = Message()
-                message.data = bundle
-
-                handler.sendMessage(message)
+            webViewStarMap.settings.apply {
+                javaScriptEnabled = true
+                allowFileAccess = true
+                allowContentAccess = true
             }
-        }, "Android")
-
-        webViewStarMap.settings.apply {
-            javaScriptEnabled = true
-            allowFileAccess = true
-            allowContentAccess = true
-        }
-
+        })
+        
         Log.d("MyLog", "Done initStarMapBitmap")
     }
     private fun requestStarMap() {
         Log.d("MyLog", "Start requestStarMap")
 
-        webViewStarMap.loadUrl("""javascript:window.editStartMap(`${getConfigStarMap()}`);""")
+        activity.runOnUiThread(Runnable {
+            webViewStarMap.loadUrl("""javascript:window.editStartMap(`${getConfigStarMap()}`);""")
+        })
+
 
         Log.d("MyLog", "Done requestStarMap")
     }
@@ -863,7 +866,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             if(hasEventCoordinatesInLocation.value!!)
                 locationText = "${locationText}${Helper.convert(eventLatitude.value!!, eventLongitude.value!!)}"
 
-            resultLocationText.value = locationText.trim()
+            resultLocationText.postValue(locationText.trim())
         }
 
         Log.d("MyLog", "Done correctLocationText")
@@ -1139,7 +1142,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         // Рисуем текст локации
         canvas.drawBitmap(bitmapLocationText, 0F, holst.value!!.height!! - bitmapLocationText.height - getBottomMarginLocationText(), null)
 
-        listener?.onDraw() // TODO: replace to MutableLiveData
+        doneRedraw.postValue(true)
 
         Log.d("MyLog", "Done drawCanvas")
     }

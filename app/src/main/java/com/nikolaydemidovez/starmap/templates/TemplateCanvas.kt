@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
@@ -17,38 +18,40 @@ import kotlin.collections.ArrayList
 abstract class TemplateCanvas(private val activity: MainActivity) {
 
     // Начало списка основных свойства холста
-    abstract val holst:                         MutableLiveData<Holst>         // Холст
-    abstract val hasBorderHolst:                MutableLiveData<Boolean>       // Добавлена ли рамка холста
-    abstract val borderHolst:                   MutableLiveData<HolstBorder>   // Рамка холста
-    abstract val starMap:                       MutableLiveData<StarMap>       // Звездная карта
-    abstract val hasBorderMap:                  MutableLiveData<Boolean>       // Добавлена ли рамка карты
-    abstract val starMapBorder:                 MutableLiveData<StarMapBorder> // Рамка звездной карты
-    abstract val descFont:                      MutableLiveData<FontText>      // Шрифт текста события
-    abstract val descText:                      MutableLiveData<String>        // Основной текст
-    abstract val hasEventDateInLocation:        MutableLiveData<Boolean>       // Добавить ли дату в текст локации
-    abstract val eventDate:                     MutableLiveData<Date>          // Дата события
-    abstract val hasEventTimeInLocation:        MutableLiveData<Boolean>       // Добавить ли время в текст локации
-    abstract val eventTime:                     MutableLiveData<String>        // Время события
-    abstract val hasEventCityInLocation:        MutableLiveData<Boolean>       // Добавить ли город в текст локации
-    abstract val eventLocation:                 MutableLiveData<String>        // Место события
-    abstract val locationFont:                  MutableLiveData<FontText>      // Шрифт текста локации
-    abstract val eventCountry:                  MutableLiveData<String>        // Страна события
-    abstract val hasEditResultLocationText:     MutableLiveData<Boolean>       // Изменить ли результирующий текст в локации
-    abstract val resultLocationText:            MutableLiveData<String>        // Результирующий текст локации
-    abstract val hasEventCoordinatesInLocation: MutableLiveData<Boolean>       // Добавить ли широту и долготу в текст локации
-    abstract val eventLatitude:                 MutableLiveData<Double>        // Широта места события
-    abstract val eventLongitude:                MutableLiveData<Double>        // Долгота места события
-    abstract val hasSeparator:                  MutableLiveData<Boolean>       // Добавить ли разделитель
-    abstract val separator:                     MutableLiveData<Separator>     // Разделителя
-    abstract val hasGraticule:                  MutableLiveData<Boolean>       // Добавить ли сеть координат
-    abstract val graticule:                     MutableLiveData<Graticule>     // Сеть координат
-    abstract val hasConstellations:             MutableLiveData<Boolean>       // Добавить ли созвездия
-    abstract val constellations:                MutableLiveData<Constellations>// Созвездия
-    abstract val hasMilkyWay:                   MutableLiveData<Boolean>       // Добавить ли млечный путь
-    abstract val stars:                         MutableLiveData<Stars>         // Добавить ли млечный путь
-    abstract val hasNames:                      MutableLiveData<Boolean>       // Добавить ли названия на звездной карте
-    abstract val namesStars:                    MutableLiveData<NamesStars>    // Названия звезд и созвездий
+    val holst =                         MutableLiveData<Holst>()         // Холст
+    val hasBorderHolst =                MutableLiveData<Boolean>()       // Добавлена ли рамка холста
+    val borderHolst =                   MutableLiveData<HolstBorder>()   // Рамка холста
+    val starMap =                       MutableLiveData<StarMap>()       // Звездная карта
+    val hasBorderMap =                  MutableLiveData<Boolean>()       // Добавлена ли рамка карты
+    val starMapBorder =                 MutableLiveData<StarMapBorder>() // Рамка звездной карты
+    val descFont =                      MutableLiveData<FontText>()      // Шрифт текста события
+    val descText =                      MutableLiveData<String>()        // Основной текст
+    val hasEventDateInLocation =        MutableLiveData<Boolean>()       // Добавить ли дату в текст локации
+    val eventDate =                     MutableLiveData<Date>()          // Дата события
+    val hasEventTimeInLocation =        MutableLiveData<Boolean>()       // Добавить ли время в текст локации
+    val eventTime =                     MutableLiveData<String>()        // Время события
+    val hasEventCityInLocation =        MutableLiveData<Boolean>()       // Добавить ли город в текст локации
+    val eventLocation =                 MutableLiveData<String>()        // Место события
+    val locationFont =                  MutableLiveData<FontText>()      // Шрифт текста локации
+    val eventCountry =                  MutableLiveData<String>()        // Страна события
+    val hasEditResultLocationText =     MutableLiveData<Boolean>()       // Изменить ли результирующий текст в локации
+    val resultLocationText =            MutableLiveData<String>()        // Результирующий текст локации
+    val hasEventCoordinatesInLocation = MutableLiveData<Boolean>()       // Добавить ли широту и долготу в текст локации
+    val eventLatitude =                 MutableLiveData<Double>()        // Широта места события
+    val eventLongitude =                MutableLiveData<Double>()        // Долгота места события
+    val hasSeparator =                  MutableLiveData<Boolean>()       // Добавить ли разделитель
+    val separator =                     MutableLiveData<Separator>()     // Разделителя
+    val hasGraticule =                  MutableLiveData<Boolean>()       // Добавить ли сеть координат
+    val graticule =                     MutableLiveData<Graticule>()     // Сеть координат
+    val hasConstellations =             MutableLiveData<Boolean>()       // Добавить ли созвездия
+    val constellations =                MutableLiveData<Constellations>()// Созвездия
+    val hasMilkyWay =                   MutableLiveData<Boolean>()       // Добавить ли млечный путь
+    val stars =                         MutableLiveData<Stars>()         // Добавить ли млечный путь
+    val hasNames =                      MutableLiveData<Boolean>()       // Добавить ли названия на звездной карте
+    val namesStars =                    MutableLiveData<NamesStars>()    // Названия звезд и созвездий
     // Конец списка свойств
+
+    val doneRedraw = MutableLiveData<Boolean>(false)
 
     var bitmap: Bitmap = Bitmap.createBitmap(2480, 3508,Bitmap.Config.ARGB_8888)
         protected set
@@ -96,16 +99,6 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         Lang("Spanish", "es"),
         Lang("Turkish", "tr")
     )
-
-    protected var listener: OnDrawListener? = null
-
-    fun setOnDrawListener(listener: OnDrawListener) {
-        this.listener = listener
-    }
-
-    interface OnDrawListener {
-        fun onDraw()
-    }
 
     abstract fun drawCanvas()
     abstract fun getControllerList(): ArrayList<Controller>

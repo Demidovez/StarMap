@@ -29,16 +29,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:contentDescription="@string/btn_back" />
-    
-    <ImageView
-        android:id="@+id/full_screen"
-        android:layout_width="57dp"
-        android:layout_height="57dp"
-        android:padding="16dp"
-        android:src="@drawable/ic_fullscreen"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="@string/full_screen" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"

@@ -41,21 +41,17 @@ class TemplateFragment : Fragment() {
 
         binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
 
-        templateCanvas.setOnDrawListener(object: TemplateCanvas.OnDrawListener {
-            override fun onDraw() {
+        templateCanvas.doneRedraw.observe(requireActivity()) {
+            if(it) {
                 binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
             }
-        })
+        }
 
         binding.btnBack.setOnClickListener {
             requireActivity().onBackPressed()
         }
 
         binding.canvasImage.setOnClickListener {
-            showFullScreenCanvasDialog(templateCanvas)
-        }
-
-        binding.fullScreen.setOnClickListener {
             showFullScreenCanvasDialog(templateCanvas)
         }
 
