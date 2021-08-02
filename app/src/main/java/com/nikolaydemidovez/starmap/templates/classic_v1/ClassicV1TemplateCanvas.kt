@@ -21,6 +21,7 @@ import android.os.Looper
 import android.os.Message
 import android.util.Base64
 import android.util.Log
+import android.view.View
 import android.webkit.*
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.pojo.*
@@ -30,9 +31,6 @@ import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClip
 import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
 import android.webkit.WebView
-
-
-
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
     private val controllerList = arrayListOf(
@@ -56,7 +54,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private lateinit var bitmapSeparator: Bitmap
     private lateinit var bitmapLocationText: Bitmap
     private lateinit var bitmapStarMap: Bitmap
-    private var webViewStarMap = WebView(activity)
+    private val webViewStarMap = WebView(activity)
     private  var isLoadedStarMap = MutableLiveData(false)    // Загрузилась ли звездная карта с сервера
 
     init {
@@ -156,14 +154,22 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         starMap.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap()
+//                    requestStarMap()
+
+
+                    val drawObjects = launch {
+                        launch {  drawMap() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
                 }
             }
         }
         hasGraticule.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap()
+                    simpleRequestStarMap("showGraticule", it.toString())
                 }
             }
         }
@@ -448,20 +454,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             override fun onPageFinished(view: WebView?, url: String?) {
                 Log.d("Console", "onPageFinished")
                 view!!.loadUrl("""
-                   javascript: window.initStarMap(`${getInitConfigStarMap()}`);  Celestial.addCallback(() => {
-                            Android.callBackUpdateStarMap(document.querySelector('canvas').toDataURL('image/png').replace('data:image/png;base64,', ''))
-                        });
+                   javascript: initStarMap(`${getConfigStarMap()}`);  androidCallback = (png) => {Android.callBackStarMap(png)};
                 """)
             }
         }
 
         val handler = Handler(Looper.getMainLooper()) {
-            val decodedString: ByteArray = Base64.decode(it.data.getString("png"), Base64.DEFAULT)
-            bitmapStarMap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+           val decodedString: ByteArray = Base64.decode(it.data.getString("png"), Base64.DEFAULT)
+           bitmapStarMap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 
-            isLoadedStarMap.postValue(true)
+           isLoadedStarMap.postValue(true)
 
-            true
+           true
         }
 
         activity.runOnUiThread(Runnable {
@@ -470,9 +474,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             webViewStarMap.webViewClient = webViewClient
             webViewStarMap.addJavascriptInterface(object {
                 @JavascriptInterface
-                fun callBackUpdateStarMap(pngString: String) {
+                fun callBackStarMap(png: String) {
                     val bundle = Bundle()
-                    bundle.putString("png", pngString)
+                    bundle.putString("png", png)
 
                     val message = Message()
                     message.data = bundle
@@ -494,7 +498,21 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         Log.d("MyLog", "Start requestStarMap")
 
         activity.runOnUiThread(Runnable {
-            webViewStarMap.loadUrl("""javascript:window.editStartMap(`${getConfigStarMap()}`);""")
+            webViewStarMap.loadUrl("""
+                   javascript: initStarMap(`${getConfigStarMap()}`);
+                """)
+        })
+
+
+        Log.d("MyLog", "Done requestStarMap")
+    }
+    private fun simpleRequestStarMap(funcName: String, value: String) {
+        Log.d("MyLog", "Start requestStarMap")
+
+        activity.runOnUiThread(Runnable {
+            webViewStarMap.loadUrl("""
+                   javascript: $funcName($value);
+                """)
         })
 
 
@@ -521,79 +539,99 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             """
                             {
                                 "date": ${date.time.time},
-                                "location": [${eventLatitude.value}, ${eventLongitude.value}, 0.0],
+                                "latitude": ${eventLatitude.value}, 
+                                "longtitude" :${eventLongitude.value},
                                 "width": ${starMap.value!!.radius},
-                                "background": {
-                                    "fill": "${starMap.value!!.color}",
-                                    "stroke": "${starMap.value!!.color}"
-                                },
                                 "stars": {
+                                    "size": ${stars.value!!.size!!},
+                                    "exponent": -0.28,
+                                    "dataPath": "http://62.75.195.219:3000/data/stars.6.json",
                                     "propername": ${hasNames.value},
-                                    "propernameType": "${namesStars.value!!.lang!!.name}",
+                                    "propernamePath": "http://62.75.195.219:3000/data/starnames.json",
+                                    "propernameLang": "${namesStars.value!!.lang!!.name}",
                                     "propernameStyle": {
                                         "fill": "${namesStars.value!!.color}",
                                         "font": "${namesStars.value!!.size}px Arial, Times, 'Times Roman', serif",
-                                        "align": "right",
-                                        "baseline": "bottom"
+                                        "align": "right"
                                     },
-                                    "style": { 
-                                        "fill": "${stars.value!!.color}", 
-                                        "opacity": ${stars.value!!.opacity!!.toFloat() / 100} 
-                                    },
-                                    "size": ${stars.value!!.size!!} 
+                                    "propernameLimit": 2.5,
+                                    "fill": "${stars.value!!.color}", 
+                                    "opacity": ${stars.value!!.opacity!!.toFloat() / 100} 
                                 },
                                 "dsos": {
-                                    "style": { "fill": "${stars.value!!.color}", "stroke": "${stars.value!!.color}", "width": 2, "opacity": ${stars.value!!.opacity!!.toFloat() / 100}  }, 
+                                    "show": true,
+                                    "limit": 6,
+                                    "style": { "fill": "${stars.value!!.color}", "width": 2, "opacity": ${stars.value!!.opacity!!.toFloat() / 100}  }, 
                                     "size": ${stars.value!!.size!!},
                                     "names": ${hasNames.value},
-                                    "namesType": "${namesStars.value!!.lang!!.name}",
+                                    "nameLang": "${namesStars.value!!.lang!!.name}",
+                                    "namePath": "http://62.75.195.219:3000/data/dsonames.json",
                                     "nameStyle": {
                                         "fill": "${namesStars.value!!.color}",
                                         "font": "${namesStars.value!!.size}px Helvetica, Arial, serif",
-                                        "align": "left",
-                                        "baseline": "top"
-                                    }
+                                        "align": "left"
+                                    },
+                                    "nameLimit": 4,
+                                    "exponent": -0.28,
+                                    "dataPath": "http://62.75.195.219:3000/data/dsos.bright.json"
                                 },
                                 "planets": {
-                                    "show": false,
+                                    "show": true,
+                                    "which": [ "sol", "mer", "ven", "ter", "lun", "mar", "jup", "sat", "ura", "nep", "cer", "plu"],
+                                    "style": {
+                                      "sol": { "fill": "#ffff00", "size": 12 },
+                                      "mer": { "fill": "#cccccc" },
+                                      "ven": { "fill": "#eeeecc" },
+                                      "ter": { "fill": "#00ccff" },
+                                      "lun": { "fill": "#ffffff", "size": 12 },
+                                      "mar": { "fill": "#ff6600" },
+                                      "cer": { "fill": "#cccccc" },
+                                      "ves": { "fill": "#cccccc" },
+                                      "jup": { "fill": "#ffaa33" },
+                                      "sat": { "fill": "#ffdd66" },
+                                      "ura": { "fill": "#66ccff" },
+                                      "nep": { "fill": "#6666ff" },
+                                      "plu": { "fill": "#aaaaaa" },
+                                      "eri": { "fill": "#eeeeee" }
+                                    },
+                                    "dataPath": "http://62.75.195.219:3000/data/planets.json",
                                     "names": ${hasNames.value},
-                                    "namesType": "${namesStars.value!!.lang!!.name}",
+                                    "nameLang": "${namesStars.value!!.lang!!.name}",
                                     "nameStyle": {
                                         "fill": "${namesStars.value!!.color}",
                                         "font": "${namesStars.value!!.size}px 'Lucida Sans Unicode', Consolas, sans-serif",
-                                        "align": "right",
-                                        "baseline": "top"
+                                        "align": "right"
                                     }
                                 },
                                 "constellations": {
+                                    "show": ${hasConstellations.value},
+                                    "dataPath": "http://62.75.195.219:3000/data/constellations.lines.json",
+                                    "style": {
+                                      "stroke": "${constellations.value!!.color}", 
+                                      "strokeWidth": ${constellations.value!!.width},
+                                      "opacity": ${constellations.value!!.opacity!!.toFloat() / 100} 
+                                    },
                                     "names": ${hasNames.value},
-                                    "namesType": "${namesStars.value!!.lang!!.name}",
+                                    "nameLang": "${namesStars.value!!.lang!!.name}",
+                                    "namePath": "http://62.75.195.219:3000/data/constellations.json",
                                     "nameStyle": {
                                         "fill": "${namesStars.value!!.color}",
                                         "align": "center",
                                         "baseline": "middle",
-                                        "font": [
-                                            "${namesStars.value!!.size}px Helvetica, Arial, sans-serif",
-                                            "${namesStars.value!!.size}px Helvetica, Arial, sans-serif",
-                                            "${namesStars.value!!.size}px Helvetica, Arial, sans-serif"
-                                        ]
-                                    },
-                                    "lines": ${hasConstellations.value},
-                                    "lineStyle": { 
-                                        "stroke": "${constellations.value!!.color}", 
-                                        "width": ${constellations.value!!.width}, 
-                                        "opacity": ${constellations.value!!.opacity!!.toFloat() / 100} 
+                                        "opacity": 0.8,
+                                        "font": "${namesStars.value!!.size}px Helvetica, Arial, sans-serif"
                                     }
                                 },
                                 "mw": {
-                                    "show": ${hasMilkyWay.value}
+                                    "show": ${hasMilkyWay.value},
+                                    "style": { "fill": "#ffffff", "opacity": "0.15" },
+                                    "dataPath": "http://62.75.195.219:3000/data/mw.json"
                                 },
-                                "lines": {
-                                    "graticule": {
-                                        "show": ${hasGraticule.value},
+                                "graticule": {
+                                    "show": ${hasGraticule.value},
+                                    "style": {
                                         "stroke": "${graticule.value!!.color}",
-  ${if(graticule.value!!.shape != LINE) "\"dash\": [${graticule.value!!.width!! * 2}, ${graticule.value!!.width!! * 4}]," else ""}
-                                        "width": ${graticule.value!!.width},
+                                        "strokeWidth": ${graticule.value!!.width},
                                         "opacity": ${graticule.value!!.opacity!!.toFloat() / 100}
                                     }
                                 }
@@ -602,240 +640,6 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         Log.d("MyLog", "Done getRequestBodyStarMap")
         return jsonString
-    }
-    private fun getInitConfigStarMap(): String {
-        return """
-                            {
-                              "width": ${starMap.value!!.radius}, 
-                              "disableAnimations": true,
-                              "projection": "orthographic", 
-                              "projectionRatio": null, 
-                              "transform": "equatorial", 
-                              "center": null, 
-                              "orientationfixed": true, 
-                              "geopos": [${eventLatitude.value}, ${eventLongitude.value}], 
-                              "follow": "zenith", 
-                              "zoomlevel": null, 
-                              "zoomextend": 10, 
-                              "adaptable": true, 
-                              "interactive": false, 
-                              "form": false, 
-                              "location": false,
-                              "formFields": {
-                                "location": false, 
-                                "general": false,
-                                "stars": false,
-                                "dsos": false,
-                                "constellations": false,
-                                "lines": false,
-                                "other": false,
-                                "download": false
-                              },
-                              "advanced": false, 
-                              "daterange": [], 
-                              "controls": false, 
-                              "lang": "", 
-                              "culture": "", 
-                              "container": "map", 
-                              "datapath": "http://62.75.195.219:3000/data/", 
-                              "stars": {
-                                "show": true, 
-                                "limit": 6, 
-                                "colors": false,
-                                "style": { "fill": "${stars.value!!.color}", "opacity": ${stars.value!!.opacity!!.toFloat() / 100}  }, 
-                                "designation": ${hasNames.value}, 
-                                "designationType": "desig", 
-                                "designationStyle": {
-                                  "fill": "${namesStars.value!!.color}",
-                                  "font": "${namesStars.value!!.size}px 'Palatino Linotype', Georgia, Times, 'Times Roman', serif",
-                                  "align": "left",
-                                  "baseline": "top"
-                                },
-                                "designationLimit": 2.5, 
-                                "propername": ${hasNames.value}, 
-                                "propernameType": "${namesStars.value!!.lang!!.name}", 
-                                "propernameStyle": {
-                                  "fill": "${namesStars.value!!.color}",
-                                  "font": "${namesStars.value!!.size}px 'Palatino Linotype', Georgia, Times, 'Times Roman', serif",
-                                  "align": "right",
-                                  "baseline": "bottom"
-                                },
-                                "propernameLimit": 1.5, 
-                                "size": ${stars.value!!.size!!} , 
-                                "exponent": -0.28, 
-                                "data": "stars.6.json"
-                              },
-                              "dsos": {
-                                "show": true, 
-                                "limit": 6, 
-                                "colors": false, 
-                                "style": { "fill": "${stars.value!!.color}", "stroke": "${stars.value!!.color}", "width": 2, "opacity": ${stars.value!!.opacity!!.toFloat() / 100}  }, 
-                                "names": ${hasNames.value}, 
-                                "namesType": "${namesStars.value!!.lang!!.name}", 
-                                "nameStyle": {
-                                  "fill": "${namesStars.value!!.color}",
-                                  "font": "${namesStars.value!!.size}px Helvetica, Arial, serif",
-                                  "align": "left",
-                                  "baseline": "top"
-                                }, 
-                                "nameLimit": 6, 
-                                "size": ${stars.value!!.size!!}, 
-                                "exponent": 1.4, 
-                                "data": "dsos.bright.json", 
-                                "symbols": {
-                                  "gg": { "shape": "circle", "fill": "#ff0000" }, 
-                                  "g": { "shape": "circle", "fill": "#ff0000" }, 
-                                  "s": { "shape": "circle", "fill": "#ff0000" }, 
-                                  "s0": { "shape": "circle", "fill": "#ff0000" }, 
-                                  "sd": { "shape": "circle", "fill": "#ff0000" },
-                                  "e": { "shape": "circle", "fill": "#ff0000" },
-                                  "i": { "shape": "circle", "fill": "#ff0000" },
-                                  "oc": { "shape": "circle", "fill": "#ffcc00" }, 
-                                  "gc": { "shape": "circle", "fill": "#ff9900" }, 
-                                  "en": { "shape": "circle", "fill": "#ff00cc" }, 
-                                  "bn": { "shape": "circle", "fill": "#ff00cc" }, 
-                                  "sfr": { "shape": "circle", "fill": "#cc00ff" }, 
-                                  "rn": { "shape": "circle", "fill": "#00ooff" }, 
-                                  "pn": { "shape": "circle", "fill": "#00cccc" }, 
-                                  "snr": { "shape": "circle", "fill": "#ff00cc" }, 
-                                  "dn": { "shape": "circle", "fill": "#999999" }, 
-                                  "pos": { "shape": "circle", "fill": "#cccccc" }
-                                }
-                              },
-                              "planets": {
-                                "show": false,
-                                "which": [
-                                  "sol",
-                                  "mer",
-                                  "ven",
-                                  "ter",
-                                  "lun",
-                                  "mar",
-                                  "jup",
-                                  "sat",
-                                  "ura",
-                                  "nep"
-                                ],
-                                "symbols": {
-                                  "sol": { "symbol": "\u2609", "letter": "Su", "fill": "#ffff00" },
-                                  "mer": { "symbol": "\u263f", "letter": "Me", "fill": "#cccccc" },
-                                  "ven": { "symbol": "\u2640", "letter": "V", "fill": "#eeeecc" },
-                                  "ter": { "symbol": "\u2295", "letter": "T", "fill": "#00ccff" },
-                                  "lun": { "symbol": "\u25cf", "letter": "L", "fill": "#ffffff" }, 
-                                  "mar": { "symbol": "\u2642", "letter": "Ma", "fill": "#ff6600" },
-                                  "cer": { "symbol": "\u26b3", "letter": "C", "fill": "#cccccc" },
-                                  "ves": { "symbol": "\u26b6", "letter": "Ma", "fill": "#cccccc" },
-                                  "jup": { "symbol": "\u2643", "letter": "J", "fill": "#ffaa33" },
-                                  "sat": { "symbol": "\u2644", "letter": "Sa", "fill": "#ffdd66" },
-                                  "ura": { "symbol": "\u2645", "letter": "U", "fill": "#66ccff" },
-                                  "nep": { "symbol": "\u2646", "letter": "N", "fill": "#6666ff" },
-                                  "plu": { "symbol": "\u2647", "letter": "P", "fill": "#aaaaaa" },
-                                  "eri": { "symbol": "\u26aa", "letter": "E", "fill": "#eeeeee" }
-                                },
-                                "symbolStyle": {
-                                  "fill": "#00ccff",
-                                  "font": "bold 17px 'Lucida Sans Unicode', Consolas, sans-serif",
-                                  "align": "center",
-                                  "baseline": "middle"
-                                },
-                                "symbolType": "disk", 
-                                "names": ${hasNames.value},
-                                "nameStyle": {
-                                  "fill": "${namesStars.value!!.color}",
-                                  "font": "${namesStars.value!!.size}px 'Lucida Sans Unicode', Consolas, sans-serif",
-                                  "align": "right",
-                                  "baseline": "top"
-                                },
-                                "namesType": "${namesStars.value!!.lang!!.name}"
-                              },
-                              "constellations": {
-                                "names": ${hasNames.value}, 
-                                "namesType": "${namesStars.value!!.lang!!.name}",
-                                "nameStyle": {
-                                  "fill": "${namesStars.value!!.color}",
-                                  "align": "center",
-                                  "baseline": "middle",
-                                  "font": [
-                                    "${namesStars.value!!.size}px Helvetica, Arial, sans-serif",
-                                    "${namesStars.value!!.size}px Helvetica, Arial, sans-serif",
-                                    "${namesStars.value!!.size}px Helvetica, Arial, sans-serif"
-                                  ]
-                                },
-                                "lines": ${hasConstellations.value},
-                                "lineStyle": { "stroke": "${constellations.value!!.color}", "width": ${constellations.value!!.width}, "opacity": ${constellations.value!!.opacity!!.toFloat() / 100} },
-                                "bounds": false,
-                                "boundStyle": {
-                                  "stroke": "#cccc00",
-                                  "width": 0.5,
-                                  "opacity": 0.8,
-                                  "dash": [2, 4]
-                                }
-                              },
-                              "mw": {
-                                "show": ${hasMilkyWay.value},
-                                "style": { "fill": "#ffffff", "opacity": 0.15 } 
-                              },
-                              "lines": {
-                                "graticule": {
-                                  "show": ${hasGraticule.value},
-                                  "stroke": "${graticule.value!!.color}",
-           ${if (graticule.value!!.shape != LINE) "\"dash\": [${graticule.value!!.width!! * 2}, ${graticule.value!!.width!! * 4}]," else ""}                       
-                                  "width": ${graticule.value!!.width},
-                                  "opacity": ${graticule.value!!.opacity!!.toFloat() / 100},
-                                  "lon": {
-                                    "pos": [""],
-                                    "fill": "#eee",
-                                    "font": "10px Helvetica, Arial, sans-serif"
-                                  },
-                                  "lat": {
-                                    "pos": [""],
-                                    "fill": "#eee",
-                                    "font": "10px Helvetica, Arial, sans-serif"
-                                  }
-                                },
-                                "equatorial": {
-                                  "show": false,
-                                  "stroke": "#aaaaaa",
-                                  "width": 1.3,
-                                  "opacity": 0.7
-                                },
-                                "ecliptic": {
-                                  "show": false,
-                                  "stroke": "#66cc66",
-                                  "width": 1.3,
-                                  "opacity": 0.7
-                                },
-                                "galactic": {
-                                  "show": false,
-                                  "stroke": "#cc6666",
-                                  "width": 1.3,
-                                  "opacity": 0.7
-                                },
-                                "supergalactic": {
-                                  "show": false,
-                                  "stroke": "#cc66cc",
-                                  "width": 1.3,
-                                  "opacity": 0.7
-                                }
-                              },
-                              "background": {
-                                "fill": "${starMap.value!!.color}", 
-                                "opacity": 1,
-                                "stroke": "${starMap.value!!.color}",
-                                "width": 1.5
-                              },
-                              "horizon": {
-                                "show": false,
-                                "stroke": "#cccccc", 
-                                "width": 1.0,
-                                "fill": "#000000", 
-                                "opacity": 0.5
-                              },
-                              "daylight": {
-                                "show": false
-                              }
-                            }       
-            """.trimIndent()
     }
     private fun correctLocationText() {
         Log.d("MyLog", "Start correctLocationText")
@@ -919,10 +723,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             val y = (tempBitmap.height / 2) - starMap.value!!.radius!!
             val width = (starMap.value!!.radius!! * 2).toInt()
 
-            bitmapMap = Bitmap.createBitmap(tempBitmap, x.toInt(), y.toInt(), width, width)
+            tempBitmap = Bitmap.createBitmap(tempBitmap, x.toInt(), y.toInt(), width, width)
         } else {
-            bitmapMap = getLoadingBitmap()
+            tempBitmap = getLoadingBitmap()
         }
+
+        val newBitmap = Bitmap.createBitmap(tempBitmap.width, tempBitmap.height, tempBitmap.config)
+
+        val canvas = Canvas(newBitmap)
+        canvas.drawColor(Color.parseColor(starMap.value!!.color))
+        canvas.drawBitmap(tempBitmap, 0f, 0f, null)
+
+        bitmapMap = getBitmapClippedCircle(newBitmap)!!
 
         Log.d("MyLog", "Done drawMap")
     }

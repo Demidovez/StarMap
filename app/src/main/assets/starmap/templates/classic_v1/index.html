@@ -1,63 +1,429 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
-    <title>Star Map</title>
-    <script src="../../lib/d3.min.js"></script>
-    <script type="text/javascript" src="../../lib/d3.geo.projection.min.js"></script>
-    <script type="text/javascript" src="celestial.js"></script>
-    <style>
-    
-    </style>
-</head>
-<body>
-    <div style="overflow: hidden; margin: 0 auto">
-    <div id="celestial-map"></div>
-    </div>
-
+    <title>D3 StarMap</title>
+    <link rel="stylesheet" href="../../lib/normalize.min.css" />
+    <script src="../../lib/d3.v3.min.js"></script>
+    <script src="../../lib/d3.geo.projection.v0.min.js"></script>
+    <script src="../../lib/custom_symbols.js"></script>
+    <script src="../../lib/moon.js"></script>
+    <script src="../../lib/kepler.js"></script>
+    <script src="../../lib/scripts.js"></script>
+    <script src="../../lib/edit_objects.js"></script>
+  </head>
+  <body>
     <script>
-      window.initStarMap = (initConfigStr) => {
-        console.log(initConfigStr)
-        const initConfig = JSON.parse(initConfigStr);
+      // Функция обратного вызова из JS в Android
+      var androidCallback = () => {};
 
+      // Объект настроек
+      var cnf = {};
 
-        Celestial.display(initConfig);
-        Celestial.date(initConfig.date ? new Date(initConfig.date) : new Date())
-      }
+      // Названия объектов
+      var starnames = {};
+      var dsonames = {};
+      var palentsnames = {};
+      var constellationnames = {};
 
-      var lastDate = 0;
-      var lastLocation = 0;
-      var lastWidth = 0;
-      var lastOptions = 0;
-      var idSetTimeout = 0;
+      // Счетчик шагов
+      var currentStep = 0;
 
-      window.editStartMap = (config) => {
+      // Планета Земля
+      var origin = null;
 
-        const { date, location, width, ...options } = JSON.parse(config);
+      // Проекция
+      var projection = null;
 
-        if(JSON.stringify(lastDate) !== JSON.stringify(date) || JSON.stringify(lastLocation) !== JSON.stringify(location)) {
-          Celestial.skyview({
-            date: date ? new Date(date) : new Date(), 
-            location
+      const initStarMap = (config) => {
+        currentStep = 0;
+
+        cnf = JSON.parse(config);
+
+        // Ширина и высота будущей карты
+        var width = cnf.width;
+        var height = cnf.width;
+
+        var dtc = new Date(cnf.date);
+        var zenith = transformDeg(
+          getAzimutPoint(dtc, [90, 0], [cnf.latitude, cnf.longtitude]),
+          euler["ecliptic"]
+        );
+
+        var coordinates = [-zenith[0], -zenith[1], 0];
+
+        // Создаём функцию проекции
+        projection = getProjection()
+          .scale(width / 2)
+          .clipAngle(90)
+          .translate([width / 2, height / 2])
+          .rotate(coordinates);
+
+        // Создаем функцию, которая будет преобразовывать географические координаты в формат пути для элемента <path>
+        var path = d3.geo.path().projection(projection);
+
+        // Создаём элемент <svg>, где и будет рисоваться карта
+        d3.select("svg").remove();
+        var svg = d3
+          .select("body")
+          .append("svg")
+          .attr("id", "svg")
+          .attr("width", width)
+          .attr("height", height);
+
+        // Сетка
+        var graticule = d3.geo.graticule().minorStep([15, 10]);
+        svg
+          .append("path")
+          .datum(graticule)
+          .attr("class", "graticule")
+          .attr("d", path)
+          .style(getGraticuleStyle(cnf.graticule.style))
+          .style(
+            "opacity",
+            cnf.graticule.show ? cnf.graticule.style.opacity : 0
+          );
+
+        incrementNumberStep();
+
+        // Создаем элемент группы <g>, в который будут вкладываться все другие элементы
+        var g = svg.append("g");
+
+        // Загружаем названия звезд
+        var starNamesPromise = new Promise((resolve, reject) => {
+          d3.json(cnf.stars.propernamePath, function (error, names) {
+            if (error) {
+              console.log("11: " + error);
+              reject(error);
+              return;
+            }
+
+            starnames = names;
+            resolve();
           });
+        });
 
-          lastDate = date;
-          lastLocation = location;
+        // Загружаем звезды
+        d3.json(cnf.stars.dataPath, function (error, stars) {
+          if (error) {
+            console.log("22: " + error);
+            return;
+          }
+
+          // Получаем массив звезд из файла
+          var stars = getData(stars, "ecliptic").features;
+
+          // Рисуем звезды
+          g.selectAll(".star")
+            .data(
+              stars.filter(
+                (d) => clip(coordinates, d.geometry.coordinates) === 1
+              )
+            )
+            .enter()
+            .append("circle")
+            .style("fill", cnf.stars.fill)
+            .attr("class", "star")
+            .attr("r", (d) => starSize(d))
+            .attr("cx", (d) => projection(d.geometry.coordinates)[0])
+            .attr("cy", (d) => projection(d.geometry.coordinates)[1]);
+
+          incrementNumberStep();
+
+          starNamesPromise.then(() => {
+            g.selectAll(".starNames")
+              .data(
+                stars.filter(
+                  (d) =>
+                    d.properties.mag <= cnf.stars.propernameLimit &&
+                    clip(coordinates, d) === 1
+                )
+              )
+              .enter()
+              .append("text")
+              .attr("transform", function (d) {
+                return point(d.geometry.coordinates);
+              })
+              .text(function (d) {
+                return starPropername(d.id);
+              })
+              .attr({ dy: "-.5em", dx: "-.35em", class: "starNames" })
+              .style(getProperNameStyle(cnf.stars.propernameStyle));
+
+            incrementNumberStep();
+          });
+        });
+
+        // Загружаем названия глубокихи космических объектов
+        var dsoNamesPromise = new Promise((resolve, reject) => {
+          d3.json(cnf.dsos.namePath, function (error, names) {
+            if (error) {
+              console.log("33: " + error);
+              reject(error);
+              return;
+            }
+
+            dsonames = names;
+            resolve();
+          });
+        });
+
+        // Загружаем глубокие космические объекты
+        if (cnf.dsos.show) {
+          d3.json(cnf.dsos.dataPath, function (error, dsos) {
+            if (error) return console.log("44: " + error);
+
+            var dsos = getData(dsos, "ecliptic").features;
+
+            g.selectAll(".dso")
+              .data(
+                dsos.filter(
+                  (d) =>
+                    d.properties.mag <= cnf.dsos.limit &&
+                    clip(coordinates, d.geometry.coordinates) === 1
+                )
+              )
+              .enter()
+              .append("circle")
+              .attr("class", "dso")
+              .attr("r", (d) => dsosSize(d))
+              .attr("cx", (d) => projection(d.geometry.coordinates)[0])
+              .attr("cy", (d) => projection(d.geometry.coordinates)[1])
+              .style(getDsosStyle(cnf.dsos.style));
+
+            incrementNumberStep();
+
+            dsoNamesPromise.then(() => {
+              g.selectAll(".dsoNames")
+                .data(
+                  dsos.filter(
+                    (d) =>
+                      d.properties.mag <= cnf.dsos.nameLimit &&
+                      clip(coordinates, d.geometry.coordinates) === 1
+                  )
+                )
+                .enter()
+                .append("text")
+                .attr("transform", function (d) {
+                  return point(d.geometry.coordinates);
+                })
+                .text(function (d) {
+                  return starDsoname(d.id);
+                })
+                .attr({ dy: "-.5em", dx: "-.35em", class: "dsoNames" })
+                .style(getProperNameStyle(cnf.dsos.nameStyle));
+
+              incrementNumberStep();
+            });
+          });
         }
 
-        if(JSON.stringify(lastWidth) !== JSON.stringify(width)) {
-          Celestial.resize({ width })
+        // Загружаем названия звезд
+        var constellationNamesPromise = new Promise((resolve, reject) => {
+          d3.json(cnf.constellations.namePath, function (error, names) {
+            if (error) {
+              console.log("55: " + error);
+              reject(error);
+              return;
+            }
 
-          lastWidth = width
+            constellationnames = names;
+            resolve();
+          });
+        });
+
+        // Загружаем созвездия
+        if (cnf.constellations.show) {
+          d3.json(cnf.constellations.dataPath, function (error, lines) {
+            if (error) {
+              console.log("66: " + error);
+              return;
+            }
+
+            // Получаем массив созвездий из файла
+            var lines = getData(lines, "ecliptic").features;
+
+            // Рисуем созвездия
+            g.selectAll(".lines")
+              .data(lines)
+              .enter()
+              .append("path")
+              .attr("class", "lines")
+              .attr("d", path)
+              .style(getConstellationStyle(cnf.constellations.style));
+
+            incrementNumberStep();
+
+            constellationNamesPromise.then(() => {
+              var constnames = getData(constellationnames, "ecliptic").features;
+
+              g.selectAll(".constellationnames")
+                .data(
+                  constnames.filter(
+                    (d) => clip(coordinates, d.geometry.coordinates) === 1
+                  )
+                )
+                .enter()
+                .append("text")
+                .attr("transform", function (d) {
+                  return point(d.geometry.coordinates);
+                })
+                .text(function (d) {
+                  return d.properties[cnf.constellations.nameLang];
+                })
+                .style(getProperNameStyle(cnf.constellations.nameStyle));
+
+              incrementNumberStep();
+            });
+          });
         }
 
-        if(JSON.stringify(lastOptions) !== JSON.stringify(options)) {
-          Celestial.apply(options)
+        // Загружаем млечный путь
+        d3.json(cnf.mw.dataPath, function (error, mw) {
+          if (error) {
+            console.log("77: " + error);
+            return;
+          }
 
-          lastOptions = options
+          var mw = getData(mw, "ecliptic").features;
+
+          // Рисуем млечный путь
+          g.selectAll(".mway")
+            .data(mw)
+            .enter()
+            .append("path")
+            .attr("class", "mway")
+            .attr("d", path)
+            .style(getMWStyle(cnf.mw.style));
+
+          incrementNumberStep();
+        });
+
+        // Загружаем планеты
+        if (cnf.planets.show) {
+          d3.json(cnf.planets.dataPath, function (error, planets) {
+            if (error) {
+              console.log("88: " + error);
+              return;
+            }
+
+            // Получаем массив звезд из файла
+            var planets = getPlanets(planets);
+
+            // Рисуем планеты
+            g.selectAll(".planet")
+              .data(planets)
+              .enter()
+              .append("path")
+              .attr("class", "planet");
+
+            var o = origin(new Date(cnf.date)).spherical(),
+              jp = { type: "FeatureCollection", features: [] },
+              jlun = { type: "FeatureCollection", features: [] };
+
+            g.selectAll(".planet").each(function (d) {
+              var id = d.id(),
+                r = 12,
+                p = d(new Date(cnf.date)).equatorial(o);
+
+              p.ephemeris.pos = transformDeg(
+                p.ephemeris.pos,
+                euler["ecliptic"]
+              );
+
+              if (clip(coordinates, p.ephemeris.pos) === 1) {
+                if (id === "lun") jlun.features.push(createEntry(p));
+                else jp.features.push(createEntry(p));
+              }
+            });
+
+            g.selectAll(".planets")
+              .data(jp.features)
+              .enter()
+              .append("circle")
+              .attr("class", "planets")
+              .attr("r", (d) => planetSize(d))
+              .attr("cx", (d) => projection(d.geometry.coordinates)[0])
+              .attr("cy", (d) => projection(d.geometry.coordinates)[1])
+              .style("fill", (d) => getPlanetStyle(d, cnf.planets.style).fill);
+
+            // Отдельно Луна
+            if (jlun.features.length > 0) {
+              var rl = has(cnf.planets.style.lun, "size")
+                ? cnf.planets.style.lun.size - 1
+                : 11;
+              g.selectAll(".dmoon")
+                .data(jlun.features)
+                .enter()
+                .append("path")
+                .style("fill", "#555577")
+                .attr("class", "darkluna")
+                .attr("transform", function (d) {
+                  return point(d.geometry.coordinates);
+                })
+                .attr("d", function (d) {
+                  return d3.svg
+                    .symbol()
+                    .type("circle")
+                    .size(rl * rl)();
+                });
+              g.selectAll(".moon")
+                .data(jlun.features)
+                .enter()
+                .append("path")
+                .style("fill", "#FFFFFF")
+                .attr("class", function (d) {
+                  return "planets " + d.id;
+                })
+                .attr("transform", function (d) {
+                  return point(d.geometry.coordinates);
+                })
+                .attr("d", function (d) {
+                  return moonSymbol(d.properties, rl);
+                });
+            }
+
+            incrementNumberStep();
+
+            // Названия планет
+            g.selectAll(".planetnames")
+              .data(jp.features)
+              .enter()
+              .append("text")
+              .attr("transform", function (d) {
+                return point(d.geometry.coordinates);
+              })
+              .text(function (d) {
+                return d.properties.name;
+              })
+              .attr({ dy: "-.75em" })
+              .attr("class", function (d) {
+                return "planetNames " + d.id;
+              })
+              .style(getProperNameStyle(cnf.planets.nameStyle));
+
+            if (jlun.features.length > 0) {
+              g.selectAll(".moonname")
+                .data(jlun.features)
+                .enter()
+                .append("text")
+                .attr("transform", function (d) {
+                  return point(d.geometry.coordinates);
+                })
+                .text(function (d) {
+                  return d.properties.name;
+                })
+                .attr({ dy: "-.75em" })
+                .attr("class", function (d) {
+                  return "planetNames " + d.id;
+                })
+                .style(getProperNameStyle(cnf.planets.nameStyle));
+            }
+
+            incrementNumberStep();
+          });
         }
-        
       };
     </script>
-</body>
+  </body>
 </html>
