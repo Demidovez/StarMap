@@ -43,18 +43,12 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
             templateCanvas.holst.value = newHolst
         }
 
-        backgroundColorAdapter = ColorAdapter(templateCanvas.holst) {
-            val newHolst = templateCanvas.holst.value
-            newHolst?.color = it
-
-            templateCanvas.holst.value = newHolst
+        backgroundColorAdapter = ColorAdapter(templateCanvas.holstColor) {
+            templateCanvas.holstColor.value = it
         }
 
-        borderColorAdapter = ColorAdapter(templateCanvas.borderHolst) {
-            val newBolderHolst = templateCanvas.borderHolst.value
-            newBolderHolst?.color = it
-
-            templateCanvas.borderHolst.value = newBolderHolst
+        borderColorAdapter = ColorAdapter(templateCanvas.borderHolstColor) {
+            templateCanvas.borderHolstColor.value = it
         }
 
         templateCanvas.holst.observe(requireActivity(), {
@@ -135,16 +129,16 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
     }
 
     private fun recyclerHolstSizeInit() {
-        val recyclerSize: RecyclerView = binding.colorSizeRecycler
+        val recyclerSize: RecyclerView = binding.holstSizeRecycler
 
         recyclerSize.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerSize.adapter = holstSizeAdapter
 
         holstSizeAdapter.addAllSizeList(arrayListOf(
-            Holst("A4", "210 × 297 мм", 2480F, 3508F, null ),
-            Holst("A3", "297 × 420 мм", 3508F, 4961F, null ),
-            Holst("A2", "420 × 594 мм", 4961F, 7016F, null ),
-            Holst("A1", "594 × 841 мм", 7016F, 9933F, null ),
+            Holst("A4", "210 × 297 мм", 2480F, 3508F ),
+            Holst("A3", "297 × 420 мм", 3508F, 4961F ),
+            Holst("A2", "420 × 594 мм", 4961F, 7016F ),
+            Holst("A1", "594 × 841 мм", 7016F, 9933F ),
         ))
     }
 
@@ -154,29 +148,7 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
         recyclerColors.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerColors.adapter = backgroundColorAdapter
 
-        backgroundColorAdapter.addAllColorList(arrayListOf(
-            "#000000",
-            "#FFFFFF",
-            "#1ABC9C",
-            "#16A085",
-            "#2ECC71",
-            "#27AE60",
-            "#3498DB",
-            "#2980B9",
-            "#9B59B6",
-            "#8E44AD",
-            "#34495E",
-            "#2C3E50",
-            "#F1C40F",
-            "#F39C12",
-            "#E67E22",
-            "#D35400",
-            "#E74C3C",
-            "#C0392B",
-            "#BDC3C7",
-            "#95A5A6",
-            "#7F8C8D"
-        ))
+        backgroundColorAdapter.addAllColorList(templateCanvas.colorList)
     }
 
     private fun recyclerBorderColorsInit() {
@@ -186,28 +158,6 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
         recyclerColors.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerColors.adapter = borderColorAdapter
 
-        borderColorAdapter.addAllColorList(arrayListOf(
-            "#000000",
-            "#FFFFFF",
-            "#1ABC9C",
-            "#16A085",
-            "#2ECC71",
-            "#27AE60",
-            "#3498DB",
-            "#2980B9",
-            "#9B59B6",
-            "#8E44AD",
-            "#34495E",
-            "#2C3E50",
-            "#F1C40F",
-            "#F39C12",
-            "#E67E22",
-            "#D35400",
-            "#E74C3C",
-            "#C0392B",
-            "#BDC3C7",
-            "#95A5A6",
-            "#7F8C8D"
-        ))
+        borderColorAdapter.addAllColorList(templateCanvas.colorList)
     }
 }

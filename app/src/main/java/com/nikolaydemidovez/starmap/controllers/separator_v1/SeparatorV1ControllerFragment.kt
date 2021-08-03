@@ -12,7 +12,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.databinding.FragmentSeparatorV1ControllerBinding
-import com.nikolaydemidovez.starmap.interfaces.PropertiesHasInterface
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.shadowAlpha
 import java.lang.Compiler.enable
@@ -33,14 +32,11 @@ class SeparatorV1ControllerFragment(private val templateCanvas: TemplateCanvas) 
         viewModel = ViewModelProvider(this).get(SeparatorV1ControllerViewModel::class.java)
         binding = FragmentSeparatorV1ControllerBinding.inflate(inflater, container, false)
 
-        colorAdapter = ColorAdapter(templateCanvas.separator) {
-            val newSeparator = templateCanvas.separator.value
-            newSeparator?.color = it
-
-            templateCanvas.separator.value = newSeparator
+        colorAdapter = ColorAdapter(templateCanvas.separatorColor) {
+            templateCanvas.separatorColor.value = it
         }
 
-        templateCanvas.separator.observe(requireActivity(), {
+        templateCanvas.separatorColor.observe(requireActivity(), {
             colorAdapter.notifyDataSetChanged()
         })
 
@@ -62,16 +58,13 @@ class SeparatorV1ControllerFragment(private val templateCanvas: TemplateCanvas) 
 
         recyclerColorsInit()
 
-        binding.sliderWidth.progress = templateCanvas.separator.value!!.width!!.toInt()
-        binding.width.text           = templateCanvas.separator.value!!.width!!.toInt().toString()
+        binding.sliderWidth.progress = templateCanvas.separatorWidth.value!!.toInt()
+        binding.width.text           = templateCanvas.separatorWidth.value!!.toInt().toString()
 
         binding.sliderWidth.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    val newSeparator = templateCanvas.separator.value
-                    newSeparator?.width = seekBar.progress.coerceAtLeast(1).toFloat()
-
-                    templateCanvas.separator.value = newSeparator
+                    templateCanvas.separatorWidth.value = seekBar.progress.coerceAtLeast(1).toFloat()
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}

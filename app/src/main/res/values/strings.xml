@@ -38,7 +38,7 @@
     <string name="label_color_stars">Цвет звезд</string>
     <string name="label_size_stars">Размер звезд</string>
     <string name="label_shape_stars">Форма звезд</string>
-    <string name="label_enable_names">Названия звезд</string>
+    <string name="label_enable_names">Названия объектов</string>
     <string name="label_color_names">Цвет названий</string>
     <string name="label_size_names">Размер названий</string>
     <string name="label_lang">Язык названий звезд</string>

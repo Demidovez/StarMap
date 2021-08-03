@@ -32,11 +32,8 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
         viewModel = ViewModelProvider(this).get(LocationV1ControllerViewModel::class.java)
         binding = FragmentLocationV1ControllerBinding.inflate(inflater, container, false)
 
-        colorAdapter = ColorAdapter(templateCanvas.locationFont) {
-            val newFont = templateCanvas.locationFont.value
-            newFont?.color = it
-
-            templateCanvas.locationFont.value = newFont
+        colorAdapter = ColorAdapter(templateCanvas.locationFontColor) {
+            templateCanvas.locationFontColor.value = it
         }
 
         val root: View = binding.root
@@ -155,7 +152,7 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
             val fontName    = requireActivity().resources.getString(stringResID)
 
             try {
-                allFonts.add(FontText(fontName, fontResID, null, null))
+                allFonts.add(FontText(fontName, fontResID, null))
             } catch (e: Exception) {
                 e.printStackTrace()
             }

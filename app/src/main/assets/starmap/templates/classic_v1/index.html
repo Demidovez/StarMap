@@ -23,7 +23,6 @@
       // Названия объектов
       var starnames = {};
       var dsonames = {};
-      var palentsnames = {};
       var constellationnames = {};
 
       // Счетчик шагов
@@ -124,7 +123,7 @@
             .append("circle")
             .style("fill", cnf.stars.fill)
             .attr("class", "star")
-            .attr("r", (d) => starSize(d))
+            .attr("r", (d) => starSize(cnf.stars.size, d))
             .attr("cx", (d) => projection(d.geometry.coordinates)[0])
             .attr("cy", (d) => projection(d.geometry.coordinates)[1]);
 
@@ -145,7 +144,7 @@
                 return point(d.geometry.coordinates);
               })
               .text(function (d) {
-                return starPropername(d.id);
+                return starPropername(cnf.stars.propernameLang, d.id);
               })
               .attr({ dy: "-.5em", dx: "-.35em", class: "starNames" })
               .style(getProperNameStyle(cnf.stars.propernameStyle));
@@ -208,7 +207,7 @@
                   return point(d.geometry.coordinates);
                 })
                 .text(function (d) {
-                  return starDsoname(d.id);
+                  return starDsoname(cnf.dsos.nameLang, d.id);
                 })
                 .attr({ dy: "-.5em", dx: "-.35em", class: "dsoNames" })
                 .style(getProperNameStyle(cnf.dsos.nameStyle));
@@ -218,7 +217,7 @@
           });
         }
 
-        // Загружаем названия звезд
+        // Загружаем названия созвездий
         var constellationNamesPromise = new Promise((resolve, reject) => {
           d3.json(cnf.constellations.namePath, function (error, names) {
             if (error) {
@@ -265,6 +264,7 @@
                 )
                 .enter()
                 .append("text")
+                .attr("class", "constellationnames")
                 .attr("transform", function (d) {
                   return point(d.geometry.coordinates);
                 })
@@ -323,7 +323,6 @@
 
             g.selectAll(".planet").each(function (d) {
               var id = d.id(),
-                r = 12,
                 p = d(new Date(cnf.date)).equatorial(o);
 
               p.ephemeris.pos = transformDeg(
@@ -342,7 +341,7 @@
               .enter()
               .append("circle")
               .attr("class", "planets")
-              .attr("r", (d) => planetSize(d))
+              .attr("r", (d) => planetSize(cnf.stars.size, d))
               .attr("cx", (d) => projection(d.geometry.coordinates)[0])
               .attr("cy", (d) => projection(d.geometry.coordinates)[1])
               .style("fill", (d) => getPlanetStyle(d, cnf.planets.style).fill);
@@ -394,7 +393,7 @@
                 return point(d.geometry.coordinates);
               })
               .text(function (d) {
-                return d.properties.name;
+                return d.properties[cnf.planets.nameLang];
               })
               .attr({ dy: "-.75em" })
               .attr("class", function (d) {
@@ -411,7 +410,7 @@
                   return point(d.geometry.coordinates);
                 })
                 .text(function (d) {
-                  return d.properties.name;
+                  return d.properties[cnf.planets.nameLang];
                 })
                 .attr({ dy: "-.75em" })
                 .attr("class", function (d) {

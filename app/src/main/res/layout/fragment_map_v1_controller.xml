@@ -93,28 +93,6 @@
             app:layout_constraintGuide_percent="0.45" />
 
         <TextView
-            android:id="@+id/labelEnableBorder"
-            android:layout_marginStart="16dp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/label_controller"
-            android:text="@string/label_enable_border"
-            app:layout_constraintBottom_toBottomOf="@+id/checkboxEnableBorder"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/checkboxEnableBorder" />
-
-        <CheckBox
-            android:id="@+id/checkboxEnableBorder"
-            android:button="@drawable/round_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/colorBackgroundRecycler"
-            app:layout_constraintStart_toEndOf="@+id/guideline" />
-
-        <TextView
             android:id="@+id/labelShape"
             android:layout_marginTop="4dp"
             android:layout_marginStart="16dp"
@@ -124,13 +102,12 @@
             android:text="@string/label_shape"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/checkboxEnableBorder" />
+            app:layout_constraintTop_toBottomOf="@id/colorBackgroundRecycler" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/shapeRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/labelShape"/>

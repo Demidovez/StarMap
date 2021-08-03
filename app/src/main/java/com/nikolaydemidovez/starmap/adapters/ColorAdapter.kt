@@ -12,7 +12,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.databinding.ColorItemBinding
-import com.nikolaydemidovez.starmap.interfaces.PropertiesHasInterface
 import com.nikolaydemidovez.starmap.utils.extensions.hideKeyboard
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.dpToPx
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.isValidColor
@@ -21,7 +20,7 @@ import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.sliders.BrightnessSlideBar
 
 class ColorAdapter(
-    private val templateFont: MutableLiveData<*>,
+    private val mutableColor: MutableLiveData<String>,
     private val listener: (color: String) -> Unit
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var colorList = arrayListOf<String>()
@@ -29,9 +28,9 @@ class ColorAdapter(
     class ColorHolder(item: View): RecyclerView.ViewHolder(item) {
         private val binding = ColorItemBinding.bind(item)
 
-        fun bind(color: String, templateFont: MutableLiveData<PropertiesHasInterface>, listener: (color: String) -> Unit) = with(binding) {
+        fun bind(color: String, mutableColor: MutableLiveData<String>, listener: (color: String) -> Unit) = with(binding) {
 
-            val borderColor = if(color == templateFont.value!!.color) {
+            val borderColor = if(color == mutableColor.value!!) {
                 ContextCompat.getColor(itemView.context, R.color.dark)
             } else {
                 Color.parseColor("#FFFFFF")
@@ -60,10 +59,10 @@ class ColorAdapter(
     class PickerHolder(item: View): RecyclerView.ViewHolder(item) {
         private val binding = ColorItemBinding.bind(item)
 
-        fun bind(colorList: ArrayList<String>, templateFont: MutableLiveData<PropertiesHasInterface>, listener: (color: String) -> Unit) = with(binding) {
+        fun bind(colorList: ArrayList<String>, mutableColor: MutableLiveData<String>, listener: (color: String) -> Unit) = with(binding) {
             rootItemColor.updatePadding(left = dpToPx(16F, itemView.context))
 
-            val borderColor = if(!colorList.contains(templateFont.value!!.color)) {
+            val borderColor = if(!colorList.contains(mutableColor.value!!)) {
                 ContextCompat.getColor(itemView.context, R.color.dark)
             } else {
                 Color.parseColor("#FFFFFF")
@@ -78,11 +77,11 @@ class ColorAdapter(
             imageColor.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.ic_color_picker))
 
             rootItemColor.setOnClickListener {
-                showColorPicker(templateFont, listener)
+                showColorPicker(mutableColor, listener)
             }
         }
 
-        private fun showColorPicker(templateFont: MutableLiveData<PropertiesHasInterface>, listener: (color: String) -> Unit) {
+        private fun showColorPicker(mutableColor: MutableLiveData<String>, listener: (color: String) -> Unit) {
             val layoutInflater = LayoutInflater.from(itemView.context)
             val layout: View = layoutInflater.inflate(R.layout.color_picker_layout, null)
             layout.findViewById<TextView>(R.id.title).text = "Цвет текста"
@@ -95,7 +94,7 @@ class ColorAdapter(
             val imgClearText       = layout.findViewById<ImageView>(R.id.clear_text)
 
             colorPickerView.attachBrightnessSlider(brightnessSlideBar)
-            colorPickerView.setInitialColor(Color.parseColor(templateFont.value!!.color))
+            colorPickerView.setInitialColor(Color.parseColor(mutableColor.value!!))
 
             colorPickerView.setColorListener(ColorEnvelopeListener { envelope, fromUser ->
                 colorPreview.setColorFilter(envelope.color, PorterDuff.Mode.SRC_ATOP)
@@ -194,9 +193,9 @@ class ColorAdapter(
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == COLOR) {
-            (viewHolder as ColorHolder).bind(colorList[position], templateFont as MutableLiveData<PropertiesHasInterface>, listener)
+            (viewHolder as ColorHolder).bind(colorList[position], mutableColor, listener)
         } else {
-            (viewHolder as PickerHolder).bind(colorList, templateFont as MutableLiveData<PropertiesHasInterface>, listener)
+            (viewHolder as PickerHolder).bind(colorList, mutableColor, listener)
         }
     }
 

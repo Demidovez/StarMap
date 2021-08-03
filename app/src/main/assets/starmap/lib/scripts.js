@@ -31,10 +31,10 @@ d3.svg.customSymbol = function () {
   return symbol;
 };
 
-function starSize(d) {
+function starSize(size, d) {
   var mag = d.properties.mag;
   if (mag === null) return 0.1;
-  var r = cnf.stars.size * Math.exp(cnf.stars.exponent * (mag + 2));
+  var r = size * Math.exp(cnf.stars.exponent * (mag + 2));
 
   return Math.max(r, 0.1);
 }
@@ -47,10 +47,10 @@ function dsosSize(d) {
   return Math.max(r, 0.1);
 }
 
-function planetSize(d) {
+function planetSize(size, d) {
   var mag = d.properties.mag;
   if (mag === null) return 2;
-  var r = 4 * Math.exp(-0.05 * (mag + 2));
+  var r = size * Math.exp(-0.05 * (mag + 2));
 
   return Math.max(r, 2);
 }
@@ -263,17 +263,13 @@ function point(coords) {
   return "translate(" + projection(coords) + ")";
 }
 
-function starPropername(id) {
-  var lang = cnf.stars.propernameLang;
-
+function starPropername(lang, id) {
   if (!has(starnames, id)) return "";
 
   return has(starnames[id], lang) ? starnames[id][lang] : starnames[id].name;
 }
 
-function starDsoname(id) {
-  var lang = cnf.dsos.nameLang;
-
+function starDsoname(lang, id) {
   if (!has(dsonames, id)) return "";
 
   return has(dsonames[id], lang) ? dsonames[id][lang] : dsonames[id].name;
@@ -290,7 +286,7 @@ function getProperNameStyle(s) {
   res.fill = s.fill || "none";
   res["fill-opacity"] = s.opacity !== null ? s.opacity : 1;
   res["text-anchor"] = svgAlign(s.align);
-  res.font = s.font || null;
+  res.font = `${s.font || 14}px ${cnf.font}`;
 
   return res;
 }
@@ -352,7 +348,7 @@ function dateParse(s) {
 
 function createEntry(o) {
   var res = { type: "Feature", id: o.id, properties: {}, geometry: {} };
-  res.properties.name = o[cnf.planets.nameLang];
+  res.properties = o;
   res.properties.symbol = "\u2609";
   res.properties.mag = o.ephemeris.mag || 10;
   if (res.id === "lun") {

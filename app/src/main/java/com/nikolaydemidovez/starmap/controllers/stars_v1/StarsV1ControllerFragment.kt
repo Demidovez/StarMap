@@ -4,6 +4,7 @@ import adapters.ColorAdapter
 import android.app.Dialog
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,14 +15,11 @@ import android.widget.SeekBar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.R
-import com.nikolaydemidovez.starmap.adapters.FontAdapter
 import com.nikolaydemidovez.starmap.adapters.LangAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentStarsV1ControllerBinding
-import com.nikolaydemidovez.starmap.pojo.FontText
-import com.nikolaydemidovez.starmap.pojo.Graticule.Companion.DASHED
-import com.nikolaydemidovez.starmap.pojo.Graticule.Companion.LINE
-import com.nikolaydemidovez.starmap.pojo.Lang
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
+import com.nikolaydemidovez.starmap.templates.TemplateCanvas.Companion.DASHED_GRATICULE
+import com.nikolaydemidovez.starmap.templates.TemplateCanvas.Companion.LINE_GRATICULE
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 
 class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
@@ -64,23 +62,17 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         recyclerColorGraticuleInit()
 
-        binding.checkboxEnableDashedGraticule.isChecked = templateCanvas.graticule.value!!.shape == DASHED
+        binding.checkboxEnableDashedGraticule.isChecked = templateCanvas.graticuleType.value!! == DASHED_GRATICULE
         binding.checkboxEnableDashedGraticule.setOnCheckedChangeListener { _, isChecked ->
-            val newGraticule = templateCanvas.graticule.value
-            newGraticule?.shape = if(isChecked) DASHED else LINE
-
-            templateCanvas.graticule.value = newGraticule
+            templateCanvas.graticuleType.value = if(isChecked) DASHED_GRATICULE else LINE_GRATICULE
         }
 
-        binding.opacityGraticule.text = templateCanvas.graticule.value!!.opacity!!.toString()
-        binding.sliderOpacityGraticule.progress = templateCanvas.graticule.value!!.opacity!!
+        binding.opacityGraticule.text = templateCanvas.graticuleOpacity.value.toString()
+        binding.sliderOpacityGraticule.progress = templateCanvas.graticuleOpacity.value!!
         binding.sliderOpacityGraticule.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    val newGraticule = templateCanvas.graticule.value
-                    newGraticule?.opacity = seekBar.progress
-
-                    templateCanvas.graticule.value = newGraticule
+                    templateCanvas.graticuleOpacity.value = seekBar.progress
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -91,15 +83,12 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             }
         )
 
-        binding.widthGraticule.text = templateCanvas.graticule.value!!.width!!.toInt().toString()
-        binding.sliderWidthGraticule.progress = templateCanvas.graticule.value!!.width!!.toInt()
+        binding.widthGraticule.text = templateCanvas.graticuleWidth.value!!.toInt().toString()
+        binding.sliderWidthGraticule.progress = templateCanvas.graticuleWidth.value!!.toInt()
         binding.sliderWidthGraticule.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    val newGraticule = templateCanvas.graticule.value
-                    newGraticule?.width = seekBar.progress.toFloat()
-
-                    templateCanvas.graticule.value = newGraticule
+                    templateCanvas.graticuleWidth.value = seekBar.progress.toFloat()
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -117,15 +106,12 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         recyclerColorStarsInit()
 
-        binding.opacityStars.text = templateCanvas.stars.value!!.opacity!!.toString()
-        binding.sliderOpacityStars.progress = templateCanvas.stars.value!!.opacity!!
+        binding.opacityStars.text = templateCanvas.starsOpacity.value!!.toString()
+        binding.sliderOpacityStars.progress = templateCanvas.starsOpacity.value!!
         binding.sliderOpacityStars.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    val newStars = templateCanvas.stars.value
-                    newStars?.opacity = seekBar.progress
-
-                    templateCanvas.stars.value = newStars
+                    templateCanvas.starsOpacity.value = seekBar.progress
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -136,15 +122,12 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             }
         )
 
-        binding.sizeStars.text = templateCanvas.stars.value!!.size!!.toInt().toString()
-        binding.sliderSizeStars.progress = templateCanvas.stars.value!!.size!!.toInt()
+        binding.sizeStars.text = templateCanvas.starsSize.value!!.toInt().toString()
+        binding.sliderSizeStars.progress = templateCanvas.starsSize.value!!.toInt()
         binding.sliderSizeStars.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    val newStars = templateCanvas.stars.value
-                    newStars?.size = seekBar.progress.toFloat()
-
-                    templateCanvas.stars.value = newStars
+                    templateCanvas.starsSize.value = seekBar.progress.toFloat()
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -178,15 +161,12 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         recyclerColorConstellationsInit()
 
-        binding.opacityConstellations.text = templateCanvas.constellations.value!!.opacity!!.toString()
-        binding.sliderOpacityConstellations.progress = templateCanvas.constellations.value!!.opacity!!
+        binding.opacityConstellations.text = templateCanvas.constellationsOpacity.value!!.toString()
+        binding.sliderOpacityConstellations.progress = templateCanvas.constellationsOpacity.value!!
         binding.sliderOpacityConstellations.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    val newConstellations = templateCanvas.constellations.value
-                    newConstellations?.opacity = seekBar.progress
-
-                    templateCanvas.constellations.value = newConstellations
+                    templateCanvas.constellationsOpacity.value = seekBar.progress
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -197,15 +177,12 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             }
         )
 
-        binding.widthConstellations.text = templateCanvas.constellations.value!!.width!!.toInt().toString()
-        binding.sliderWidthConstellations.progress = templateCanvas.constellations.value!!.width!!.toInt()
+        binding.widthConstellations.text = templateCanvas.constellationsWidth.value!!.toInt().toString()
+        binding.sliderWidthConstellations.progress = templateCanvas.constellationsWidth.value!!.toInt()
         binding.sliderWidthConstellations.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    val newConstellations = templateCanvas.constellations.value
-                    newConstellations?.width = seekBar.progress.toFloat()
-
-                    templateCanvas.constellations.value = newConstellations
+                    templateCanvas.constellationsWidth.value = seekBar.progress.toFloat()
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -237,15 +214,12 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         recyclerColorNamesInit()
 
-        binding.sizeNames.text = templateCanvas.namesStars.value!!.size!!.toInt().toString()
-        binding.sliderSizeNames.progress = templateCanvas.namesStars.value!!.size!!.toInt()
+        binding.sizeNames.text = templateCanvas.namesStarsSize.value!!.toInt().toString()
+        binding.sliderSizeNames.progress = templateCanvas.namesStarsSize.value!!.toInt()
         binding.sliderSizeNames.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    val newNamesStars = templateCanvas.namesStars.value
-                    newNamesStars?.size = seekBar.progress
-
-                    templateCanvas.namesStars.value = newNamesStars
+                    templateCanvas.namesStarsSize.value = seekBar.progress
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -256,7 +230,7 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             }
         )
 
-        binding.editLang.setText(templateCanvas.namesStars.value!!.lang!!.label!!)
+        binding.editLang.setText(templateCanvas.namesStarsLang.value!!.label!!)
         binding.editLang.setOnClickListener {
             showLangDialog()
         }
@@ -265,14 +239,11 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     private fun recyclerColorGraticuleInit() {
-        val adapter = ColorAdapter(templateCanvas.graticule) {
-            val newGraticule = templateCanvas.graticule.value
-            newGraticule?.color = it
-
-            templateCanvas.graticule.value = newGraticule
+        val adapter = ColorAdapter(templateCanvas.graticuleColor) {
+            templateCanvas.graticuleColor.value = it
         }
 
-        templateCanvas.graticule.observe(requireActivity(), {
+        templateCanvas.graticuleColor.observe(requireActivity(), {
             adapter.notifyDataSetChanged()
         })
 
@@ -286,14 +257,11 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     private fun recyclerColorStarsInit() {
-        val adapter = ColorAdapter(templateCanvas.stars) {
-            val newStars = templateCanvas.stars.value
-            newStars?.color = it
-
-            templateCanvas.stars.value = newStars
+        val adapter = ColorAdapter(templateCanvas.starsColor) {
+            templateCanvas.starsColor.value = it
         }
 
-        templateCanvas.stars.observe(requireActivity(), {
+        templateCanvas.starsColor.observe(requireActivity(), {
             adapter.notifyDataSetChanged()
         })
 
@@ -307,14 +275,11 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     private fun recyclerColorConstellationsInit() {
-        val adapter = ColorAdapter(templateCanvas.constellations) {
-            val newConstellations = templateCanvas.constellations.value
-            newConstellations?.color = it
-
-            templateCanvas.constellations.value = newConstellations
+        val adapter = ColorAdapter(templateCanvas.constellationsColor) {
+            templateCanvas.constellationsColor.value = it
         }
 
-        templateCanvas.constellations.observe(requireActivity(), {
+        templateCanvas.constellationsColor.observe(requireActivity(), {
             adapter.notifyDataSetChanged()
         })
 
@@ -328,14 +293,11 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     private fun recyclerColorNamesInit() {
-        val adapter = ColorAdapter(templateCanvas.namesStars) {
-            val newNamesStars = templateCanvas.namesStars.value
-            newNamesStars?.color = it
-
-            templateCanvas.namesStars.value = newNamesStars
+        val adapter = ColorAdapter(templateCanvas.namesStarsColor) {
+            templateCanvas.namesStarsColor.value = it
         }
 
-        templateCanvas.namesStars.observe(requireActivity(), {
+        templateCanvas.namesStarsColor.observe(requireActivity(), {
             adapter.notifyDataSetChanged()
         })
 
@@ -359,10 +321,7 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
 
         val adapter = LangAdapter(activity, templateCanvas, dialog) {
-            val newNamesStars = templateCanvas.namesStars.value
-            newNamesStars?.lang = it
-
-            templateCanvas.namesStars.value = newNamesStars
+            templateCanvas.namesStarsLang.value = it
 
             binding.editLang.setText(it.label)
         }

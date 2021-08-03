@@ -21,16 +21,17 @@ import android.os.Looper
 import android.os.Message
 import android.util.Base64
 import android.util.Log
-import android.view.View
 import android.webkit.*
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.pojo.*
-import com.nikolaydemidovez.starmap.pojo.Graticule.Companion.LINE
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getBitmapClippedCircle
 import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
 import android.webkit.WebView
+import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.CIRCLE
+import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.COMPASS
+import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.NONE
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
     private val controllerList = arrayListOf(
@@ -58,13 +59,17 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private  var isLoadedStarMap = MutableLiveData(false)    // Загрузилась ли звездная карта с сервера
 
     init {
-        holst.value =                           Holst("A4", "297 x 210 мм", 2480F, 3508F, "#FFFFFF" )
+        holst.value =                           Holst("A4", "297 x 210 мм", 2480F, 3508F)
+        holstColor.value =                      "#16A085"
         hasBorderHolst.value =                  true
-        borderHolst.value =                     HolstBorder(100F, 10F, "#000000")
-        starMap.value =                         StarMap(1000F, "#000000")
-        hasBorderMap.value =                    false
-        starMapBorder.value =                   StarMapBorder(15F, "#FFFFFF", StarMapBorder.LINE)
-        descFont.value =                        FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 120F)
+        borderHolst.value =                     HolstBorder(100F, 10F)
+        borderHolstColor.value =                "#000000"
+        starMapRadius.value =                   900F
+        starMapColor.value =                    "#000000"
+        starMapBorder.value =                   StarMapBorder(15F, COMPASS)
+        starMapBorderColor.value =              "#FFFFFF"
+        descFont.value =                        FontText("Comfortaa Regular", R.font.comfortaa_regular, 120F)
+        descFontColor.value =                   "#000000"
         descText.value =                        "День, когда сошлись\nвсе звезды вселенной..."
         hasEventDateInLocation.value =          true
         eventDate.value =                       Calendar.getInstance().time
@@ -75,20 +80,31 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         eventCountry.value =                    "Россия"
         hasEditResultLocationText.value =       false
         resultLocationText.value =              ""
-        locationFont.value =                    FontText("Comfortaa Regular", R.font.comfortaa_regular, "#000000", 60F)
+        locationFont.value =                    FontText("Comfortaa Regular", R.font.comfortaa_regular, 60F)
+        locationFontColor.value =               "#000000"
         hasEventCoordinatesInLocation.value =   true
         eventLatitude.value =                   55.755826
         eventLongitude.value =                  37.6173
         hasSeparator.value =                    true
-        separator.value =                       Separator("#000000", 1000F)
+        separatorWidth.value =                  1000F
+        separatorColor.value =                  "#000000"
         hasGraticule.value =                    true
-        graticule.value =                       Graticule(2F, "#FFFFFF", 70, LINE)
+        graticuleWidth.value =                  2F
+        graticuleColor.value =                  "#FFFFFF"
+        graticuleOpacity.value =                70
+        graticuleType.value =                   LINE_GRATICULE
         hasMilkyWay.value =                     true
-        hasNames.value =                        false
-        namesStars.value =                      NamesStars(12, "#FFFFFF", Lang("Русский", "ru"))
+        hasNames.value =                        true
+        namesStarsSize.value =                  12
+        namesStarsColor.value =                 "#FFFFFF"
+        namesStarsLang.value =                  Lang("Русский", "ru")
         hasConstellations.value =               true
-        constellations.value =                  Constellations(3F, "#FFFFFF", 100)
-        stars.value =                           Stars(12F, "#FFFFFF", 100)
+        constellationsWidth.value =             3F
+        constellationsColor.value =             "#FFFFFF"
+        constellationsOpacity.value =           100
+        starsSize.value =                       17F
+        starsColor.value =                      "#FFFFFF"
+        starsOpacity.value =                    100
     }
 
     init {
@@ -127,6 +143,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }
             }
         }
+        holstColor.observe(activity)  {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    val drawObjects = launch {
+                        launch { drawHolst() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
+        }
         hasBorderHolst.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
@@ -151,12 +179,23 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }
             }
         }
-        starMap.observe(activity) {
+        starMapRadius.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-//                    requestStarMap()
+                    initStarMapBitmap()
+                    val drawObjects = launch {
+                        launch {  drawMap() }
+                    }
 
-
+                    drawObjects.join()
+                    drawMapBorder()
+                    drawCanvas()
+                }
+            }
+        }
+        starMapColor.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch {  drawMap() }
                     }
@@ -169,70 +208,130 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasGraticule.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    simpleRequestStarMap("showGraticule", it.toString())
+                    requestStarMap("showGraticule", it.toString())
                 }
             }
         }
-        graticule.observe(activity) {
+        graticuleWidth.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap()
+                    requestStarMap("widthGraticule", it.toString())
+                }
+            }
+        }
+        graticuleColor.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    requestStarMap("colorGraticule", it)
+                }
+            }
+        }
+        graticuleOpacity.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    requestStarMap("opacityGraticule", (it.toFloat() / 100).toString())
+                }
+            }
+        }
+        graticuleType.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    requestStarMap("typeGraticule", it.toString())
                 }
             }
         }
         hasMilkyWay.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap()
+                    requestStarMap("showMilkyWay", it.toString())
                 }
             }
         }
         hasNames.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap()
+                    requestStarMap("showNames", it.toString())
                 }
             }
         }
-        namesStars.observe(activity) {
+        namesStarsSize.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap()
+                    requestStarMap("sizeNames", it.toString())
+                }
+            }
+        }
+        namesStarsColor.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    requestStarMap("colorNames", it)
+                }
+            }
+        }
+        namesStarsLang.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    requestStarMap("langNames", it.name.toString())
                 }
             }
         }
         hasConstellations.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap()
+                    requestStarMap("showConstellations", it.toString())
                 }
             }
         }
-        constellations.observe(activity) {
+        constellationsWidth.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap()
+                    requestStarMap("widthConstellations", it.toString())
                 }
             }
         }
-        stars.observe(activity) {
+        constellationsColor.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap()
+                    requestStarMap("colorConstellations", it)
                 }
             }
         }
-        hasBorderMap.observe(activity) {
+        constellationsOpacity.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    drawCanvas()
+                    requestStarMap("opacityConstellations", (it.toFloat() / 100).toString())
+                }
+            }
+        }
+        starsSize.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    requestStarMap("sizeStars", it.toString())
+                }
+            }
+        }
+        starsColor.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    requestStarMap("colorStars", it)
+                }
+            }
+        }
+        starsOpacity.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    requestStarMap("opacityStars", (it.toFloat() / 100).toString())
                 }
             }
         }
         starMapBorder.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    drawMapBorder()
+                    val drawObjects = launch {
+                        launch { drawMapBorder() }
+                    }
+
+                    drawObjects.join()
                     drawCanvas()
                 }
             }
@@ -242,7 +341,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 CoroutineScope(Dispatchers.IO).launch  {
                     drawMap()
 
-                    if(hasBorderMap.value!!) {
+                    if(starMapBorder.value!!.shapeType != NONE) {
                         drawMapBorder()
                     }
 
@@ -291,7 +390,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
-                        launch { requestStarMap() }
+                        launch { initRequestStarMap() }
                         launch { drawMap() }
                     }
 
@@ -317,7 +416,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
-                        launch { requestStarMap() }
+                        launch { initRequestStarMap() }
                         launch { drawMap() }
                     }
 
@@ -379,7 +478,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
-                        launch { requestStarMap() }
+                        launch { initRequestStarMap() }
                         launch { drawMap() }
                     }
 
@@ -393,7 +492,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
-                        launch { requestStarMap() }
+                        launch { initRequestStarMap() }
                         launch { drawMap() }
                     }
 
@@ -426,7 +525,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }
             }
         }
-        separator.observe(activity) {
+        separatorWidth.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
@@ -454,7 +553,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             override fun onPageFinished(view: WebView?, url: String?) {
                 Log.d("Console", "onPageFinished")
                 view!!.loadUrl("""
-                   javascript: initStarMap(`${getConfigStarMap()}`);  androidCallback = (png) => {Android.callBackStarMap(png)};
+                   javascript: initStarMap(`${initConfigStarMap()}`);  androidCallback = (png) => {Android.callBackStarMap(png)};
                 """)
             }
         }
@@ -494,31 +593,19 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         
         Log.d("MyLog", "Done initStarMapBitmap")
     }
-    private fun requestStarMap() {
+    private fun initRequestStarMap() {
         Log.d("MyLog", "Start requestStarMap")
 
         activity.runOnUiThread(Runnable {
             webViewStarMap.loadUrl("""
-                   javascript: initStarMap(`${getConfigStarMap()}`);
+                   javascript: initStarMap(`${initConfigStarMap()}`);
                 """)
         })
 
 
         Log.d("MyLog", "Done requestStarMap")
     }
-    private fun simpleRequestStarMap(funcName: String, value: String) {
-        Log.d("MyLog", "Start requestStarMap")
-
-        activity.runOnUiThread(Runnable {
-            webViewStarMap.loadUrl("""
-                   javascript: $funcName($value);
-                """)
-        })
-
-
-        Log.d("MyLog", "Done requestStarMap")
-    }
-    private fun getConfigStarMap(): String {
+    private fun initConfigStarMap(): String {
         Log.d("MyLog", "Start getRequestBodyStarMap")
 
         val date = Calendar.getInstance()
@@ -541,35 +628,38 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                 "date": ${date.time.time},
                                 "latitude": ${eventLatitude.value}, 
                                 "longtitude" :${eventLongitude.value},
-                                "width": ${starMap.value!!.radius},
+                                "width": ${starMapRadius.value!! * 2},
+                                "font": "Arial, Times, 'Times Roman', serif",
                                 "stars": {
-                                    "size": ${stars.value!!.size!!},
+                                    "size": ${starsSize.value!!},
                                     "exponent": -0.28,
                                     "dataPath": "http://62.75.195.219:3000/data/stars.6.json",
                                     "propername": ${hasNames.value},
                                     "propernamePath": "http://62.75.195.219:3000/data/starnames.json",
-                                    "propernameLang": "${namesStars.value!!.lang!!.name}",
+                                    "propernameLang": "${namesStarsLang.value!!.name}",
                                     "propernameStyle": {
-                                        "fill": "${namesStars.value!!.color}",
-                                        "font": "${namesStars.value!!.size}px Arial, Times, 'Times Roman', serif",
-                                        "align": "right"
+                                        "fill": "${namesStarsColor.value!!}",
+                                        "font": "${namesStarsSize.value!!}",
+                                        "align": "right",
+                                        "opacity": 1
                                     },
                                     "propernameLimit": 2.5,
-                                    "fill": "${stars.value!!.color}", 
-                                    "opacity": ${stars.value!!.opacity!!.toFloat() / 100} 
+                                    "fill": "${starsColor.value!!}", 
+                                    "opacity": ${starsOpacity.value!!.toFloat() / 100} 
                                 },
                                 "dsos": {
                                     "show": true,
                                     "limit": 6,
-                                    "style": { "fill": "${stars.value!!.color}", "width": 2, "opacity": ${stars.value!!.opacity!!.toFloat() / 100}  }, 
-                                    "size": ${stars.value!!.size!!},
+                                    "style": { "fill": "${starsColor.value!!}", "width": 2, "opacity": ${starsOpacity.value!!.toFloat() / 100}  }, 
+                                    "size": ${starsSize.value!!},
                                     "names": ${hasNames.value},
-                                    "nameLang": "${namesStars.value!!.lang!!.name}",
+                                    "nameLang": "${namesStarsLang.value!!.name}",
                                     "namePath": "http://62.75.195.219:3000/data/dsonames.json",
                                     "nameStyle": {
-                                        "fill": "${namesStars.value!!.color}",
-                                        "font": "${namesStars.value!!.size}px Helvetica, Arial, serif",
-                                        "align": "left"
+                                        "fill": "${namesStarsColor.value!!}",
+                                        "font": "${namesStarsSize.value!!}",
+                                        "align": "left",
+                                        "opacity": 1
                                     },
                                     "nameLimit": 4,
                                     "exponent": -0.28,
@@ -583,7 +673,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                       "mer": { "fill": "#cccccc" },
                                       "ven": { "fill": "#eeeecc" },
                                       "ter": { "fill": "#00ccff" },
-                                      "lun": { "fill": "#ffffff", "size": 12 },
+                                      "lun": { "fill": "#ffffff" },
                                       "mar": { "fill": "#ff6600" },
                                       "cer": { "fill": "#cccccc" },
                                       "ves": { "fill": "#cccccc" },
@@ -596,30 +686,31 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                     },
                                     "dataPath": "http://62.75.195.219:3000/data/planets.json",
                                     "names": ${hasNames.value},
-                                    "nameLang": "${namesStars.value!!.lang!!.name}",
+                                    "nameLang": "${namesStarsLang.value!!.name}",
                                     "nameStyle": {
-                                        "fill": "${namesStars.value!!.color}",
-                                        "font": "${namesStars.value!!.size}px 'Lucida Sans Unicode', Consolas, sans-serif",
-                                        "align": "right"
+                                        "fill": "${namesStarsColor.value!!}",
+                                        "font": "${namesStarsSize.value!!}",
+                                        "align": "right",
+                                        "opacity": 1
                                     }
                                 },
                                 "constellations": {
                                     "show": ${hasConstellations.value},
                                     "dataPath": "http://62.75.195.219:3000/data/constellations.lines.json",
                                     "style": {
-                                      "stroke": "${constellations.value!!.color}", 
-                                      "strokeWidth": ${constellations.value!!.width},
-                                      "opacity": ${constellations.value!!.opacity!!.toFloat() / 100} 
+                                      "stroke": "${constellationsColor.value!!}", 
+                                      "strokeWidth": ${constellationsWidth.value!!},
+                                      "opacity": ${constellationsOpacity.value!!.toFloat() / 100} 
                                     },
                                     "names": ${hasNames.value},
-                                    "nameLang": "${namesStars.value!!.lang!!.name}",
+                                    "nameLang": "${namesStarsLang.value!!.name}",
                                     "namePath": "http://62.75.195.219:3000/data/constellations.json",
                                     "nameStyle": {
-                                        "fill": "${namesStars.value!!.color}",
+                                        "fill": "${namesStarsColor.value!!}",
                                         "align": "center",
                                         "baseline": "middle",
-                                        "opacity": 0.8,
-                                        "font": "${namesStars.value!!.size}px Helvetica, Arial, sans-serif"
+                                        "opacity": 1,
+                                        "font": "${namesStarsSize.value!!}"
                                     }
                                 },
                                 "mw": {
@@ -630,9 +721,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                 "graticule": {
                                     "show": ${hasGraticule.value},
                                     "style": {
-                                        "stroke": "${graticule.value!!.color}",
-                                        "strokeWidth": ${graticule.value!!.width},
-                                        "opacity": ${graticule.value!!.opacity!!.toFloat() / 100}
+                                        "stroke": "${graticuleColor.value!!}",
+                                        "strokeWidth": ${graticuleWidth.value!!},
+                                        "opacity": ${graticuleOpacity.value!!.toFloat() / 100}
                                     }
                                 }
                             }       
@@ -640,6 +731,15 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         Log.d("MyLog", "Done getRequestBodyStarMap")
         return jsonString
+    }
+    private fun requestStarMap(funcName: String, value: String) {
+        Log.d("MyLog", "Start simpleRequestStarMap")
+
+        activity.runOnUiThread(Runnable {
+            webViewStarMap.loadUrl("""javascript: $funcName("$value");""")
+        })
+
+        Log.d("MyLog", "Done simpleRequestStarMap")
     }
     private fun correctLocationText() {
         Log.d("MyLog", "Start correctLocationText")
@@ -680,7 +780,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val holstPaint = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            color = Color.parseColor(holst.value!!.color)
+            color = Color.parseColor(holstColor.value!!)
             isDither = true
             isAntiAlias = true
         }
@@ -696,7 +796,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val border = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.STROKE
-            color = Color.parseColor(borderHolst.value!!.color)
+            color = Color.parseColor(borderHolstColor.value!!)
             strokeWidth = borderHolst.value!!.width!!  //TODO: Ширина границы не изменяет общую длину отступа от края?
             isDither = true
             isAntiAlias = true
@@ -716,12 +816,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         var tempBitmap: Bitmap
 
         if(isLoadedStarMap.value!!) {
-            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap, (starMap.value!!.radius!! * 2).toInt(), (starMap.value!!.radius!! * 2).toInt(), true)
+            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap, (starMapRadius.value!! * 2).toInt(), (starMapRadius.value!! * 2).toInt(), true)
             tempBitmap = getBitmapClippedCircle(tempBitmap)!!
 
-            val x = (tempBitmap.width / 2) - starMap.value!!.radius!!
-            val y = (tempBitmap.height / 2) - starMap.value!!.radius!!
-            val width = (starMap.value!!.radius!! * 2).toInt()
+            val x = (tempBitmap.width / 2) - starMapRadius.value!!
+            val y = (tempBitmap.height / 2) - starMapRadius.value!!
+            val width = (starMapRadius.value!! * 2).toInt()
 
             tempBitmap = Bitmap.createBitmap(tempBitmap, x.toInt(), y.toInt(), width, width)
         } else {
@@ -731,7 +831,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         val newBitmap = Bitmap.createBitmap(tempBitmap.width, tempBitmap.height, tempBitmap.config)
 
         val canvas = Canvas(newBitmap)
-        canvas.drawColor(Color.parseColor(starMap.value!!.color))
+        canvas.drawColor(Color.parseColor(starMapColor.value!!))
         canvas.drawBitmap(tempBitmap, 0f, 0f, null)
 
         bitmapMap = getBitmapClippedCircle(newBitmap)!!
@@ -741,20 +841,14 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private fun drawMapBorder() {
         Log.d("MyLog", "Start drawMapBorder")
 
-        val mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
-            style = Style.FILL
-            color = Color.parseColor(starMapBorder.value!!.color)
-            isDither = true
-            isAntiAlias = true
+        bitmapMapBorder = when (starMapBorder.value!!.shapeType) {
+            CIRCLE -> drawCircleBorder()
+            COMPASS -> drawCompassBorder()
+
+            else -> drawCircleBorder()
         }
 
-        val tempSize = (starMap.value!!.radius!! + starMapBorder.value!!.width!!) * 2
-
-        val tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
-
-        Canvas(tempBitmap).drawCircle(starMap.value!!.radius!! + starMapBorder.value!!.width!!, starMap.value!!.radius!! + starMapBorder.value!!.width!!, starMap.value!!.radius!! + starMapBorder.value!!.width!!, mapBorder)
-
-        bitmapMapBorder = Bitmap.createBitmap(tempBitmap, 0, 0, ((starMap.value!!.radius!! + starMapBorder.value!!.width!!) * 2).toInt(), ((starMap.value!!.radius!! + starMapBorder.value!!.width!!) * 2).toInt())
+        //bitmapMapBorder = Bitmap.createBitmap(tempBitmap, 0, 0, ((starMapRadius.value!! + starMapBorder.value!!.width!!) * 2).toInt(), ((starMapRadius.value!! + starMapBorder.value!!.width!!) * 2).toInt())
 
         Log.d("MyLog", "Done drawMapBorder")
     }
@@ -765,7 +859,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             textAlign = Align.CENTER
             textSize = descFont.value!!.size!!
             typeface = ResourcesCompat.getFont(activity.applicationContext, descFont.value!!.resId!!)
-            color = Color.parseColor(descFont.value!!.color!!)
+            color = Color.parseColor(descFontColor.value!!)
             isDither = true
             isAntiAlias = true
         }
@@ -788,20 +882,20 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private fun drawSeparator() {
         Log.d("MyLog", "Start drawSeparator")
 
-        val separatorHeight = (separator.value!!.width!! * 0.01F).coerceAtLeast(1F)
+        val separatorHeight = (separatorWidth.value!! * 0.01F).coerceAtLeast(1F)
 
         val separatorLine = Paint(ANTI_ALIAS_FLAG).apply {
             isDither = true
             isAntiAlias = true
             strokeWidth = separatorHeight
-            color = Color.parseColor(separator.value!!.color!!)
+            color = Color.parseColor(separatorColor.value!!)
         }
 
         val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
-        Canvas(tempBitmap).drawLine(0F, 0F, separator.value!!.width!!, 0F, separatorLine)
+        Canvas(tempBitmap).drawLine(0F, 0F, separatorWidth.value!!, 0F, separatorLine)
 
-        bitmapSeparator = Bitmap.createBitmap(tempBitmap, 0, 0, separator.value!!.width!!.toInt(), separatorHeight.toInt())
+        bitmapSeparator = Bitmap.createBitmap(tempBitmap, 0, 0, separatorWidth.value!!.toInt(), separatorHeight.toInt())
 
         Log.d("MyLog", "Done drawSeparator")
     }
@@ -811,7 +905,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         val eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
             textSize = locationFont.value!!.size!!
-            color = Color.parseColor(locationFont.value!!.color)
+            color = Color.parseColor(locationFontColor.value!!)
             typeface = ResourcesCompat.getFont(activity, locationFont.value!!.resId!!)
             isDither = true
             isAntiAlias = true
@@ -854,7 +948,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         // Определяем высоту карты (с рамкой и без) с ее верхним отступом от края холста
         var margin = 0F
 
-        margin += if(hasBorderMap.value!!) {
+        margin += if(starMapBorder.value!!.shapeType != NONE) {
             holst.value!!.width!!/2 + bitmapMapBorder.height / 2
         } else {
             holst.value!!.width!!/2 + bitmapMap.height / 2
@@ -869,7 +963,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         // Определяем какой отступ нужен для текста, разделителя и текста локации, чтобы они ровно расположились
         var heightAllObjects = holst.value!!.width!! / 2
 
-        heightAllObjects += if(hasBorderMap.value!!) {
+        heightAllObjects += if(starMapBorder.value!!.shapeType != NONE) {
             bitmapMapBorder.height.toFloat() / 2
         } else {
             bitmapMap.height.toFloat() / 2
@@ -895,7 +989,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val map = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
-            color = Color.parseColor(starMap.value!!.color!!)
+            color = Color.parseColor(starMapColor.value!!)
             isDither = true
             isAntiAlias = true
         }
@@ -904,19 +998,19 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         val loadingCanvas = Canvas(tempBitmap)
 
-        loadingCanvas.drawCircle(starMap.value!!.radius!!, starMap.value!!.radius!!, starMap.value!!.radius!!, map)
+        loadingCanvas.drawCircle(starMapRadius.value!!, starMapRadius.value!!, starMapRadius.value!!, map)
 
-        val widthLoadingIcon = starMap.value!!.radius!! * 0.5
-        val heightLoadingIcon = starMap.value!!.radius!! * 0.5
+        val widthLoadingIcon = starMapRadius.value!! * 0.5
+        val heightLoadingIcon = starMapRadius.value!! * 0.5
         val drawableLoadingIcon = ContextCompat.getDrawable(activity, R.drawable.ic_loading_map)!!
         val wrappedDrawable = DrawableCompat.wrap(drawableLoadingIcon)
-        DrawableCompat.setTint(wrappedDrawable, if (starMap.value!!.color!! == "#FFFFFF") Color.BLACK else Color.WHITE)
+        DrawableCompat.setTint(wrappedDrawable, if (starMapColor.value!! == "#FFFFFF") Color.BLACK else Color.WHITE)
         val bitmapLoadingIcon = wrappedDrawable.toBitmap(widthLoadingIcon.toInt(), heightLoadingIcon.toInt())
 
-        loadingCanvas.drawBitmap(bitmapLoadingIcon, (starMap.value!!.radius!! - widthLoadingIcon / 2).toFloat(), (starMap.value!!.radius!! - heightLoadingIcon / 2).toFloat(), null)
+        loadingCanvas.drawBitmap(bitmapLoadingIcon, (starMapRadius.value!! - widthLoadingIcon / 2).toFloat(), (starMapRadius.value!! - heightLoadingIcon / 2).toFloat(), null)
 
         Log.d("MyLog", "Done getLoadingBitmap")
-        return Bitmap.createBitmap(tempBitmap, 0, 0, (starMap.value!!.radius!! * 2).toInt(), (starMap.value!!.radius!! * 2).toInt())
+        return Bitmap.createBitmap(tempBitmap, 0, 0, (starMapRadius.value!! * 2).toInt(), (starMapRadius.value!! * 2).toInt())
     }
     override fun drawCanvas() {
         Log.d("MyLog", "Start drawCanvas")
@@ -934,7 +1028,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
 
         // Рисуем рамку карты
-        if(hasBorderMap.value!!) {
+        if(starMapBorder.value!!.shapeType != NONE) {
             canvas.drawBitmap(bitmapMapBorder, holst.value!!.width!!/2 - bitmapMapBorder.width / 2, holst.value!!.width!!/2 - bitmapMapBorder.width / 2, null)
         }
 
@@ -948,7 +1042,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         // Рисуем разделитель
         if(hasSeparator.value!!) {
-            canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!! - separator.value!!.width!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
+            canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!! - separatorWidth.value!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
         }
 
         // Рисуем текст локации
@@ -961,5 +1055,68 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     override fun getControllerList(): ArrayList<Controller> {
         Log.d("MyLog", "Start getControllerList")
         return controllerList
+    }
+    private fun drawCircleBorder(): Bitmap {
+        val tempSize = (starMapRadius.value!! + starMapBorder.value!!.width!!) * 2
+
+        var tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(tempBitmap)
+
+        val mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.FILL
+            color = Color.parseColor(starMapBorderColor.value!!)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        canvas.drawCircle(starMapRadius.value!! + starMapBorder.value!!.width!!, starMapRadius.value!! + starMapBorder.value!!.width!!, starMapRadius.value!! + starMapBorder.value!!.width!!, mapBorder)
+
+        return tempBitmap
+    }
+
+    private fun drawCompassBorder(): Bitmap {
+        val compassWidth = starMapBorder.value!!.width!! * 10F
+        val tempSize = (starMapRadius.value!! + compassWidth) * 2F
+
+        var tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(tempBitmap)
+
+        val lineWidth = compassWidth * 0.04F
+
+        val borderPaint = Paint(ANTI_ALIAS_FLAG).apply {
+            style = Style.STROKE
+            strokeWidth = lineWidth
+            color = Color.parseColor(starMapBorderColor.value!!)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        val cx = starMapRadius.value!! + compassWidth
+        val cy = starMapRadius.value!! + compassWidth
+        val radiusSmall = starMapRadius.value!! + lineWidth / 2
+
+        val radiusMiddle = radiusSmall + starMapBorder.value!!.width!! * 2F
+        val radiusBig = radiusMiddle + starMapBorder.value!!.width!! * 3.5F
+
+        canvas.drawCircle(cx, cy, radiusSmall, borderPaint)
+        canvas.drawCircle(cx, cy, radiusMiddle, borderPaint)
+        canvas.drawCircle(cx, cy, radiusBig, borderPaint)
+
+        val textPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
+            textAlign = Align.CENTER
+            textSize = lineWidth * 9
+            color = Color.parseColor(starMapBorderColor.value)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        canvas.drawText("N", radiusSmall + compassWidth, textPaint.textSize, textPaint);
+        canvas.drawText("E", textPaint.textSize / 2, radiusSmall + compassWidth + textPaint.textSize / 2, textPaint);
+        canvas.drawText("W", (radiusSmall + compassWidth) * 2 - textPaint.textSize / 2, radiusSmall + compassWidth + textPaint.textSize / 2, textPaint);
+        canvas.drawText("S", radiusSmall + compassWidth, (radiusSmall + compassWidth) * 2 - textPaint.textSize * 0.5F, textPaint);
+
+        return tempBitmap
     }
 }

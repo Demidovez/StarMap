@@ -1,17 +1,22 @@
 package com.nikolaydemidovez.starmap.controllers.map_v1
 
 import adapters.ColorAdapter
+import adapters.ShapeBorderAdapter
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
 import android.widget.SeekBar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.FragmentMapV1ControllerBinding
+import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder
+import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.CIRCLE
+import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.COMPASS
+import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.NONE
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 
@@ -29,15 +34,12 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
 
         val root: View = binding.root
 
-        binding.sizeMap.text = templateCanvas.starMap.value!!.radius!!.toInt().toString()
-        binding.sliderSizeMap.progress = templateCanvas.starMap.value!!.radius!!.toInt()
+        binding.sizeMap.text = templateCanvas.starMapRadius.value!!.toInt().toString()
+        binding.sliderSizeMap.progress = templateCanvas.starMapRadius.value!!.toInt()
         binding.sliderSizeMap.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    val newStarMap = templateCanvas.starMap.value
-                    newStarMap?.radius = seekBar.progress.toFloat()
-
-                    templateCanvas.starMap.value = newStarMap
+                    templateCanvas.starMapRadius.value = seekBar.progress.toFloat()
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -69,20 +71,20 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
 
         recyclerBackgroundMapInit()
 
-        binding.checkboxEnableBorder.setOnCheckedChangeListener { _, isChecked ->
-            templateCanvas.hasBorderMap.value = isChecked
-        }
+        templateCanvas.starMapBorder.observe(requireActivity(),  {
+            val isEnabled = it.shapeType != NONE
 
-        templateCanvas.hasBorderMap.observe(requireActivity(),  {
-            binding.labelShape.alpha = Helper.shadowAlpha(it)
-            binding.labelWidthBorder.alpha = Helper.shadowAlpha(it)
-            binding.widthMapBorder.alpha = Helper.shadowAlpha(it)
-            binding.widthUnit.alpha = Helper.shadowAlpha(it)
-            binding.sliderWidthMapBorder.isEnabled = it
-            binding.labelColorBorder.alpha = Helper.shadowAlpha(it)
-            disablerColorRecycler.isEnable = it
-            binding.colorBorderRecycler.alpha = Helper.shadowAlpha(it)
+            binding.labelWidthBorder.alpha = Helper.shadowAlpha(isEnabled)
+            binding.widthMapBorder.alpha = Helper.shadowAlpha(isEnabled)
+            binding.widthUnit.alpha = Helper.shadowAlpha(isEnabled)
+            binding.sliderWidthMapBorder.isEnabled = isEnabled
+            binding.labelColorBorder.alpha = Helper.shadowAlpha(isEnabled)
+            disablerColorRecycler.isEnable = isEnabled
+            binding.colorBorderRecycler.alpha = Helper.shadowAlpha(isEnabled)
+
         })
+
+        recyclerShapeMapBorderInit()
 
         recyclerColorMapBorderInit()
 
@@ -91,14 +93,11 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
     }
 
     private fun recyclerBackgroundMapInit() {
-        backgroundColorMapAdapter = ColorAdapter(templateCanvas.starMap) {
-            val newStarMap = templateCanvas.starMap.value
-            newStarMap?.color = it
-
-            templateCanvas.starMap.value = newStarMap
+        backgroundColorMapAdapter = ColorAdapter(templateCanvas.starMapColor) {
+            templateCanvas.starMapColor.value = it
         }
 
-        templateCanvas.starMap.observe(requireActivity(), {
+        templateCanvas.starMapColor.observe(requireActivity(), {
             backgroundColorMapAdapter.notifyDataSetChanged()
         })
 
@@ -111,11 +110,8 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
     }
 
     private fun recyclerColorMapBorderInit() {
-        colorMapBorderAdapter = ColorAdapter(templateCanvas.starMapBorder) {
-            val newStarMapBorder = templateCanvas.starMapBorder.value
-            newStarMapBorder?.color = it
-
-            templateCanvas.starMapBorder.value = newStarMapBorder
+        colorMapBorderAdapter = ColorAdapter(templateCanvas.starMapBorderColor) {
+            templateCanvas.starMapBorderColor.value = it
         }
 
         templateCanvas.starMapBorder.observe(requireActivity(), {
@@ -129,6 +125,30 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
         recyclerColors.adapter = colorMapBorderAdapter
 
         colorMapBorderAdapter.addAllColorList(templateCanvas.colorList)
+    }
+
+    private fun recyclerShapeMapBorderInit() {
+        val shapeBorderAdapter = ShapeBorderAdapter(templateCanvas.starMapBorder) {
+            val newStarMapBorder = templateCanvas.starMapBorder.value
+            newStarMapBorder?.shapeType = it.type
+
+            templateCanvas.starMapBorder.value = newStarMapBorder
+        }
+
+        templateCanvas.starMapBorder.observe(requireActivity(), {
+            shapeBorderAdapter.notifyDataSetChanged()
+        })
+
+        val recyclerSize: RecyclerView = binding.shapeRecycler
+
+        recyclerSize.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        recyclerSize.adapter = shapeBorderAdapter
+
+        shapeBorderAdapter.addAllSizeList(arrayListOf(
+            ShapeMapBorder("Без", R.drawable.ic_none_border_map, NONE ),
+            ShapeMapBorder("Круг", R.drawable.ic_circle_border_map, CIRCLE),
+            ShapeMapBorder("Компас", R.drawable.ic_compass_border_map, COMPASS )
+        ))
     }
 
 }

@@ -106,7 +106,7 @@
         <item name="android:fontFamily">@font/nunito_regular</item>
     </style>
 
-    <style name="subTitleHostSize">
+    <style name="subTitleRecyclerItem">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/dark_gray</item>
         <item name="android:fontFamily">@font/nunito_regular</item>

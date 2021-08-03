@@ -29,11 +29,8 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
         viewModel = ViewModelProvider(this).get(DescV1ControllerViewModel::class.java)
         binding = FragmentDescV1ControllerBinding.inflate(inflater, container, false)
 
-        colorAdapter = ColorAdapter(templateCanvas.descFont) {
-            val newFont = templateCanvas.descFont.value
-            newFont?.color = it
-
-            templateCanvas.descFont.value = newFont
+        colorAdapter = ColorAdapter(templateCanvas.descFontColor) {
+            templateCanvas.descFontColor.value = it
         }
 
         val root: View = binding.root
@@ -144,7 +141,7 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
             val fontName    = requireActivity().resources.getString(stringResID)
 
             try {
-                allFonts.add(FontText(fontName, fontResID, null, null))
+                allFonts.add(FontText(fontName, fontResID, null))
             } catch (e: Exception) {
                 e.printStackTrace()
             }

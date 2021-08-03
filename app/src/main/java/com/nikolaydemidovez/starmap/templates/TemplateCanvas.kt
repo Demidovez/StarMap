@@ -19,12 +19,16 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
 
     // Начало списка основных свойства холста
     val holst =                         MutableLiveData<Holst>()         // Холст
+    val holstColor =                    MutableLiveData<String>()        // Цвет холста
     val hasBorderHolst =                MutableLiveData<Boolean>()       // Добавлена ли рамка холста
     val borderHolst =                   MutableLiveData<HolstBorder>()   // Рамка холста
-    val starMap =                       MutableLiveData<StarMap>()       // Звездная карта
-    val hasBorderMap =                  MutableLiveData<Boolean>()       // Добавлена ли рамка карты
+    val borderHolstColor =              MutableLiveData<String>()        // Цвет рамки холста
+    val starMapRadius =                 MutableLiveData<Float>()         // Радиус звездной карта
+    val starMapColor =                  MutableLiveData<String>()        // Цвет фона звездной карта
     val starMapBorder =                 MutableLiveData<StarMapBorder>() // Рамка звездной карты
+    val starMapBorderColor =            MutableLiveData<String>()        // Цвет рамки звездной карты
     val descFont =                      MutableLiveData<FontText>()      // Шрифт текста события
+    val descFontColor =                 MutableLiveData<String>()        // Цвет шрифта текста события
     val descText =                      MutableLiveData<String>()        // Основной текст
     val hasEventDateInLocation =        MutableLiveData<Boolean>()       // Добавить ли дату в текст локации
     val eventDate =                     MutableLiveData<Date>()          // Дата события
@@ -33,6 +37,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val hasEventCityInLocation =        MutableLiveData<Boolean>()       // Добавить ли город в текст локации
     val eventLocation =                 MutableLiveData<String>()        // Место события
     val locationFont =                  MutableLiveData<FontText>()      // Шрифт текста локации
+    val locationFontColor =             MutableLiveData<String>()        // Цвет шрифта текста локации
     val eventCountry =                  MutableLiveData<String>()        // Страна события
     val hasEditResultLocationText =     MutableLiveData<Boolean>()       // Изменить ли результирующий текст в локации
     val resultLocationText =            MutableLiveData<String>()        // Результирующий текст локации
@@ -40,15 +45,25 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val eventLatitude =                 MutableLiveData<Double>()        // Широта места события
     val eventLongitude =                MutableLiveData<Double>()        // Долгота места события
     val hasSeparator =                  MutableLiveData<Boolean>()       // Добавить ли разделитель
-    val separator =                     MutableLiveData<Separator>()     // Разделителя
+    val separatorWidth =                MutableLiveData<Float>()         // Длина разделителя
+    val separatorColor =                MutableLiveData<String>()        // Цвет разделителя
     val hasGraticule =                  MutableLiveData<Boolean>()       // Добавить ли сеть координат
-    val graticule =                     MutableLiveData<Graticule>()     // Сеть координат
+    val graticuleWidth =                MutableLiveData<Float>()         // Ширина сети координат
+    val graticuleColor =                MutableLiveData<String>()        // Цвет сети координат
+    val graticuleOpacity =              MutableLiveData<Int>()           // Прозрачность сети координат
+    val graticuleType =                 MutableLiveData<Int>()           // Тип сети координат
     val hasConstellations =             MutableLiveData<Boolean>()       // Добавить ли созвездия
-    val constellations =                MutableLiveData<Constellations>()// Созвездия
+    val constellationsWidth =           MutableLiveData<Float>()         // Ширина линий созвездий
+    val constellationsColor =           MutableLiveData<String>()        // Цвет созвездий
+    val constellationsOpacity =         MutableLiveData<Int>()           // Прозрачность созвездий
     val hasMilkyWay =                   MutableLiveData<Boolean>()       // Добавить ли млечный путь
-    val stars =                         MutableLiveData<Stars>()         // Добавить ли млечный путь
+    val starsSize =                     MutableLiveData<Float>()         // Размер звезд
+    val starsColor =                    MutableLiveData<String>()        // Цвет звезд
+    val starsOpacity =                  MutableLiveData<Int>()           // Прозрачность звезд
     val hasNames =                      MutableLiveData<Boolean>()       // Добавить ли названия на звездной карте
-    val namesStars =                    MutableLiveData<NamesStars>()    // Названия звезд и созвездий
+    val namesStarsSize =                MutableLiveData<Int>()           // Размер текста названий звезд и созвездий
+    val namesStarsColor =               MutableLiveData<String>()        // Цвет текста названий звезд и созвездий
+    val namesStarsLang =                MutableLiveData<Lang>()          // Язык текста названий звезд и созвездий
     // Конец списка свойств
 
     val doneRedraw = MutableLiveData<Boolean>(false)
@@ -177,5 +192,9 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         }
     }
 
+    companion object {
+        const val LINE_GRATICULE = 1
+        const val DASHED_GRATICULE = 2
+    }
 }
 
