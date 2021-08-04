@@ -32,6 +32,12 @@ import android.webkit.WebView
 import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.CIRCLE
 import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.COMPASS
 import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.NONE
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.CURVED
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEART
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEARTS
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.LINE
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STAR
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STARS
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
     private val controllerList = arrayListOf(
@@ -60,13 +66,13 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
     init {
         holst.value =                           Holst("A4", "297 x 210 мм", 2480F, 3508F)
-        holstColor.value =                      "#16A085"
+        holstColor.value =                      "#FFFFFF" // #16A085
         hasBorderHolst.value =                  true
         borderHolst.value =                     HolstBorder(100F, 10F)
         borderHolstColor.value =                "#000000"
         starMapRadius.value =                   900F
         starMapColor.value =                    "#000000"
-        starMapBorder.value =                   StarMapBorder(15F, COMPASS)
+        starMapBorder.value =                   StarMapBorder(15F, NONE)
         starMapBorderColor.value =              "#FFFFFF"
         descFont.value =                        FontText("Comfortaa Regular", R.font.comfortaa_regular, 120F)
         descFontColor.value =                   "#000000"
@@ -85,8 +91,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         hasEventCoordinatesInLocation.value =   true
         eventLatitude.value =                   55.755826
         eventLongitude.value =                  37.6173
-        hasSeparator.value =                    true
-        separatorWidth.value =                  1000F
+        separator.value =                       Separator(1000F, CURVED)
         separatorColor.value =                  "#000000"
         hasGraticule.value =                    true
         graticuleWidth.value =                  2F
@@ -168,6 +173,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             }
         }
         borderHolst.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    val drawObjects = launch {
+                        launch { drawHolstBorder() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
+        }
+        borderHolstColor.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
@@ -336,6 +353,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }
             }
         }
+        starMapBorderColor.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    val drawObjects = launch {
+                        launch { drawMapBorder() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
+        }
         isLoadedStarMap.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
@@ -350,6 +379,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             }
         }
         descFont.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    val drawObjects = launch {
+                        launch {  drawDesc() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
+        }
+        descFontColor.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
@@ -461,6 +502,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }
             }
         }
+        locationFontColor.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    val drawObjects = launch {
+                        launch {  drawLocationText() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
+        }
         hasEventCoordinatesInLocation.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
@@ -525,7 +578,19 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }
             }
         }
-        separatorWidth.observe(activity) {
+        separator.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    val drawObjects = launch {
+                        launch { drawSeparator() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
+        }
+        separatorColor.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
@@ -848,8 +913,6 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             else -> drawCircleBorder()
         }
 
-        //bitmapMapBorder = Bitmap.createBitmap(tempBitmap, 0, 0, ((starMapRadius.value!! + starMapBorder.value!!.width!!) * 2).toInt(), ((starMapRadius.value!! + starMapBorder.value!!.width!!) * 2).toInt())
-
         Log.d("MyLog", "Done drawMapBorder")
     }
     private fun drawDesc() {
@@ -882,20 +945,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private fun drawSeparator() {
         Log.d("MyLog", "Start drawSeparator")
 
-        val separatorHeight = (separatorWidth.value!! * 0.01F).coerceAtLeast(1F)
+        val shapeType = separator.value!!.shapeType
 
-        val separatorLine = Paint(ANTI_ALIAS_FLAG).apply {
-            isDither = true
-            isAntiAlias = true
-            strokeWidth = separatorHeight
-            color = Color.parseColor(separatorColor.value!!)
+        bitmapSeparator = when (shapeType) {
+            LINE -> drawLineSeparator()
+            CURVED -> drawDrawableSizedSeparator(shapeType, 1280F, 112F, 1F)
+            STARS -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.3F)
+            HEARTS -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.3F)
+            STAR -> drawDrawableSizedSeparator(shapeType, 1F, 1F, 0.1F)
+            HEART -> drawDrawableSizedSeparator(shapeType, 1F, 1F,0.1F)
+
+            else -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.1F)
         }
-
-        val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
-
-        Canvas(tempBitmap).drawLine(0F, 0F, separatorWidth.value!!, 0F, separatorLine)
-
-        bitmapSeparator = Bitmap.createBitmap(tempBitmap, 0, 0, separatorWidth.value!!.toInt(), separatorHeight.toInt())
 
         Log.d("MyLog", "Done drawSeparator")
     }
@@ -971,7 +1032,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         heightAllObjects += bitmapDesc.height
 
-        if(hasSeparator.value!!) {
+        if(separator.value!!.shapeType != ShapeSeparator.NONE) {
             heightAllObjects += bitmapSeparator.height
         }
 
@@ -979,7 +1040,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
         var countObjectsForSetMargin = 0
 
-        countObjectsForSetMargin = if(hasSeparator.value!!) 3  else 2
+        countObjectsForSetMargin = if(separator.value!!.shapeType != ShapeSeparator.NONE) 3  else 2
 
         Log.d("MyLog", "Done getAutoAlignMargin")
         return (holst.value!!.height!! - heightAllObjects) / countObjectsForSetMargin
@@ -1041,8 +1102,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         canvas.drawBitmap(bitmapDesc, 0F, getAbsoluteHeightMap() + autoMargin, null)
 
         // Рисуем разделитель
-        if(hasSeparator.value!!) {
-            canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!! - separatorWidth.value!!) / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
+        if(separator.value!!.shapeType != ShapeSeparator.NONE) {
+            canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!!) / 2 - bitmapSeparator.width / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
         }
 
         // Рисуем текст локации
@@ -1055,68 +1116,5 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     override fun getControllerList(): ArrayList<Controller> {
         Log.d("MyLog", "Start getControllerList")
         return controllerList
-    }
-    private fun drawCircleBorder(): Bitmap {
-        val tempSize = (starMapRadius.value!! + starMapBorder.value!!.width!!) * 2
-
-        var tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
-
-        val canvas = Canvas(tempBitmap)
-
-        val mapBorder = Paint(ANTI_ALIAS_FLAG).apply {
-            style = Style.FILL
-            color = Color.parseColor(starMapBorderColor.value!!)
-            isDither = true
-            isAntiAlias = true
-        }
-
-        canvas.drawCircle(starMapRadius.value!! + starMapBorder.value!!.width!!, starMapRadius.value!! + starMapBorder.value!!.width!!, starMapRadius.value!! + starMapBorder.value!!.width!!, mapBorder)
-
-        return tempBitmap
-    }
-
-    private fun drawCompassBorder(): Bitmap {
-        val compassWidth = starMapBorder.value!!.width!! * 10F
-        val tempSize = (starMapRadius.value!! + compassWidth) * 2F
-
-        var tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
-
-        val canvas = Canvas(tempBitmap)
-
-        val lineWidth = compassWidth * 0.04F
-
-        val borderPaint = Paint(ANTI_ALIAS_FLAG).apply {
-            style = Style.STROKE
-            strokeWidth = lineWidth
-            color = Color.parseColor(starMapBorderColor.value!!)
-            isDither = true
-            isAntiAlias = true
-        }
-
-        val cx = starMapRadius.value!! + compassWidth
-        val cy = starMapRadius.value!! + compassWidth
-        val radiusSmall = starMapRadius.value!! + lineWidth / 2
-
-        val radiusMiddle = radiusSmall + starMapBorder.value!!.width!! * 2F
-        val radiusBig = radiusMiddle + starMapBorder.value!!.width!! * 3.5F
-
-        canvas.drawCircle(cx, cy, radiusSmall, borderPaint)
-        canvas.drawCircle(cx, cy, radiusMiddle, borderPaint)
-        canvas.drawCircle(cx, cy, radiusBig, borderPaint)
-
-        val textPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
-            textAlign = Align.CENTER
-            textSize = lineWidth * 9
-            color = Color.parseColor(starMapBorderColor.value)
-            isDither = true
-            isAntiAlias = true
-        }
-
-        canvas.drawText("N", radiusSmall + compassWidth, textPaint.textSize, textPaint);
-        canvas.drawText("E", textPaint.textSize / 2, radiusSmall + compassWidth + textPaint.textSize / 2, textPaint);
-        canvas.drawText("W", (radiusSmall + compassWidth) * 2 - textPaint.textSize / 2, radiusSmall + compassWidth + textPaint.textSize / 2, textPaint);
-        canvas.drawText("S", radiusSmall + compassWidth, (radiusSmall + compassWidth) * 2 - textPaint.textSize * 0.5F, textPaint);
-
-        return tempBitmap
     }
 }

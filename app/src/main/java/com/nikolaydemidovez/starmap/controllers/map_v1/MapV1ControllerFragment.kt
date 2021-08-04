@@ -1,7 +1,7 @@
 package com.nikolaydemidovez.starmap.controllers.map_v1
 
 import adapters.ColorAdapter
-import adapters.ShapeBorderAdapter
+import adapters.ShapeAdapter
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,10 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.FragmentMapV1ControllerBinding
+import com.nikolaydemidovez.starmap.interfaces.HasShapeInterface
 import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder
 import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.CIRCLE
 import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder.Companion.COMPASS
@@ -128,7 +130,7 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
     }
 
     private fun recyclerShapeMapBorderInit() {
-        val shapeBorderAdapter = ShapeBorderAdapter(templateCanvas.starMapBorder) {
+        val shapeBorderAdapter = ShapeAdapter(templateCanvas.starMapBorder as MutableLiveData<HasShapeInterface>) {
             val newStarMapBorder = templateCanvas.starMapBorder.value
             newStarMapBorder?.shapeType = it.type
 
@@ -145,9 +147,9 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
         recyclerSize.adapter = shapeBorderAdapter
 
         shapeBorderAdapter.addAllSizeList(arrayListOf(
-            ShapeMapBorder("Без", R.drawable.ic_none_border_map, NONE ),
-            ShapeMapBorder("Круг", R.drawable.ic_circle_border_map, CIRCLE),
-            ShapeMapBorder("Компас", R.drawable.ic_compass_border_map, COMPASS )
+            ShapeMapBorder(R.drawable.ic_none_border_map, NONE ),
+            ShapeMapBorder(R.drawable.ic_circle_border_map, CIRCLE),
+            ShapeMapBorder(R.drawable.ic_compass_border_map, COMPASS )
         ))
     }
 

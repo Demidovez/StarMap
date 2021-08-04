@@ -9,57 +9,42 @@
 
     <LinearLayout
         android:orientation="vertical"
+        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/frameLayout1"
+        <TextView
+            android:id="@+id/labelShape"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAppearance="@style/label_controller"
+            android:text="@string/label_shape_separator"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/shapeRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/labelShape"/>
+
+        <TextView
+            android:id="@+id/label_color_recycler"
             android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp">
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.6" />
-
-            <TextView
-                android:id="@+id/label_enable_separator"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/label_enable_separator"
-                android:textAppearance="@style/label_controller"
-                app:layout_constraintBottom_toBottomOf="@+id/checkbox_enable_separator"
-                app:layout_constraintEnd_toStartOf="@id/guideline"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/checkbox_enable_separator" />
-
-            <CheckBox
-                android:id="@+id/checkbox_enable_separator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:button="@drawable/round_checkbox"
-                android:checked="true"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/guideline" />
-
-            <TextView
-                android:id="@+id/label_color_recycler"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_color_font_location"
-                android:textAppearance="@style/label_controller"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/checkbox_enable_separator" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_marginStart="16dp"
+            android:text="@string/label_color_separator"
+            android:textAppearance="@style/label_controller"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/shapeRecycler" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/color_recycler"

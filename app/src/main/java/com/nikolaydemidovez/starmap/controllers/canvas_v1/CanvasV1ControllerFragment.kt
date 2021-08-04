@@ -53,6 +53,9 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
 
         templateCanvas.holst.observe(requireActivity(), {
             holstSizeAdapter.notifyDataSetChanged()
+        })
+
+        templateCanvas.holstColor.observe(requireActivity(), {
             backgroundColorAdapter.notifyDataSetChanged()
         })
 

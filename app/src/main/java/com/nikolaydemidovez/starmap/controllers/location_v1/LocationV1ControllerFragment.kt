@@ -40,6 +40,9 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
 
         templateCanvas.locationFont.observe(requireActivity(), {
             binding.editFont.setText(it.name)
+        })
+
+        templateCanvas.locationFontColor.observe(requireActivity(), {
             colorAdapter.notifyDataSetChanged()
         })
 

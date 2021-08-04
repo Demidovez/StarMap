@@ -1,18 +1,33 @@
 package com.nikolaydemidovez.starmap.templates
 
-import android.graphics.Bitmap
+import android.R.attr
+import android.graphics.*
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
+import android.text.TextPaint
 import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.MutableLiveData
 import com.nikolaydemidovez.starmap.MainActivity
+import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.pojo.*
 import java.io.*
 import java.util.*
 import kotlin.collections.ArrayList
+import android.R.attr.right
+
+import android.R.attr.left
+
+import android.graphics.drawable.Drawable
+import androidx.core.content.ContextCompat
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.CURVED
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEART
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEARTS
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STAR
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STARS
 
 
 abstract class TemplateCanvas(private val activity: MainActivity) {
@@ -44,8 +59,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val hasEventCoordinatesInLocation = MutableLiveData<Boolean>()       // Добавить ли широту и долготу в текст локации
     val eventLatitude =                 MutableLiveData<Double>()        // Широта места события
     val eventLongitude =                MutableLiveData<Double>()        // Долгота места события
-    val hasSeparator =                  MutableLiveData<Boolean>()       // Добавить ли разделитель
-    val separatorWidth =                MutableLiveData<Float>()         // Длина разделителя
+    val separator =                     MutableLiveData<Separator>()     // Разделителя
     val separatorColor =                MutableLiveData<String>()        // Цвет разделителя
     val hasGraticule =                  MutableLiveData<Boolean>()       // Добавить ли сеть координат
     val graticuleWidth =                MutableLiveData<Float>()         // Ширина сети координат
@@ -190,6 +204,180 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
 
             Toast.makeText(activity.applicationContext, "Сохранено", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    protected fun drawCircleBorder(): Bitmap {
+        val tempSize = (starMapRadius.value!! + starMapBorder.value!!.width!!) * 2
+
+        var tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(tempBitmap)
+
+        val mapBorder = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+            color = Color.parseColor(starMapBorderColor.value!!)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        canvas.drawCircle(starMapRadius.value!! + starMapBorder.value!!.width!!, starMapRadius.value!! + starMapBorder.value!!.width!!, starMapRadius.value!! + starMapBorder.value!!.width!!, mapBorder)
+
+        return tempBitmap
+    }
+    protected fun drawCompassBorder(): Bitmap {
+        // Ширина компаса
+        val compassWidth = starMapBorder.value!!.width!! * 12F
+
+        // Длина (и высота) холста плд компас
+        val tempSize = (starMapRadius.value!! + compassWidth) * 2F
+
+        // Изображаение под компас
+        val tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
+
+        // Холст под компас
+        val canvas = Canvas(tempBitmap)
+
+        // Ширина линий
+        val lineWidth = 7F
+
+        // Стиль линий
+        val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = lineWidth
+            color = Color.parseColor(starMapBorderColor.value!!)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        // Координаты центра окружностей линий
+        val cx = starMapRadius.value!! + compassWidth
+        val cy = starMapRadius.value!! + compassWidth
+
+        // Радиусы кругов
+        val radiusSmall = starMapRadius.value!! + lineWidth / 2
+        val radiusMiddle = radiusSmall + starMapBorder.value!!.width!! * 1.9F
+        val radiusBig = radiusMiddle + starMapBorder.value!!.width!! * 3.3F
+
+        // Рисуем круги
+        canvas.drawCircle(cx, cy, radiusSmall, borderPaint)
+        canvas.drawCircle(cx, cy, radiusMiddle, borderPaint)
+        canvas.drawCircle(cx, cy, radiusBig, borderPaint)
+
+        // Стиль букв N, E, S, W
+        val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            textAlign = Paint.Align.CENTER
+            textSize = compassWidth * 0.4F
+            color = Color.parseColor(starMapBorderColor.value)
+            typeface = ResourcesCompat.getFont(activity, R.font.cormorant_infant_regular)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        // Определяем размеры букв для центровки по переметру компаса
+        val boundsN = Rect()
+        val boundsE = Rect()
+        val boundsW = Rect()
+        val boundsS = Rect()
+        textPaint.getTextBounds("N", 0, 1, boundsN)
+        textPaint.getTextBounds("E", 0, 1, boundsE)
+        textPaint.getTextBounds("W", 0, 1, boundsW)
+        textPaint.getTextBounds("S", 0, 1, boundsS)
+
+        // Стиль штрихов
+        val ticksPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+            color = Color.parseColor(starMapBorderColor.value!!)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        // Количество штрихов и их размеры (3 вида)
+        val ticks = 360
+        val littleBarWidth = lineWidth * 0.6F
+        val littleBarHeight = (radiusBig - radiusMiddle) / 2
+        val middleBarWidth = lineWidth * 0.8F
+        val middleBarHeight = radiusBig - radiusMiddle
+        val bigBarWidth = lineWidth * 1F
+        val bigBarHeight = (radiusBig - radiusMiddle) * 1.4F
+
+        // Рисуем буквы отталкиваясь от размеров больших штрихов
+        canvas.drawText("N", tempSize / 2, boundsN.height().toFloat(), textPaint)
+        canvas.drawText("E", tempSize / 2 - radiusMiddle - bigBarHeight - boundsE.width() - boundsN.width() / 2, radiusSmall + compassWidth + boundsE.height() / 2, textPaint)
+        canvas.drawText("W", tempSize / 2 + radiusMiddle + bigBarHeight + boundsN.width(), radiusSmall + compassWidth + boundsW.height() / 2, textPaint)
+        canvas.drawText("S", tempSize / 2, tempSize / 2 + radiusMiddle + bigBarHeight + boundsN.width() / 2 + boundsS.height(), textPaint)
+
+        // Перемещаем рисование к центру компаса
+        canvas.translate(tempSize / 2, tempSize / 2)
+
+        // Рисуем штрихи (3 видов) путем вращения и рисваония вертикальных линий (штрихов)
+        var i = 0F
+        while (i < 360) {
+            canvas.save()
+            canvas.rotate(i)
+            canvas.translate(0F, radiusMiddle)
+
+            when(true) {
+                i % 90F == 0F -> canvas.drawRect(- bigBarWidth / 2F, bigBarHeight, bigBarWidth / 2F, 0F, ticksPaint)
+                i % 10F == 0F -> canvas.drawRect(- middleBarWidth / 2F, middleBarHeight, middleBarWidth / 2F, 0F, ticksPaint)
+
+                else -> canvas.drawRect(- littleBarWidth / 2F, littleBarHeight, littleBarWidth / 2F, 0F, ticksPaint)
+            }
+
+            canvas.restore()
+
+            i += 360 / ticks
+        }
+
+        // Возвращаем изображение компаса
+        return tempBitmap
+    }
+
+    protected fun drawLineSeparator(): Bitmap {
+        val separatorHeight = (separator.value!!.width * 0.01F).coerceAtLeast(1F)
+
+        val separatorLine = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            isDither = true
+            isAntiAlias = true
+            strokeWidth = separatorHeight
+            color = Color.parseColor(separatorColor.value!!)
+        }
+
+        val tempBitmap = Bitmap.createBitmap(separator.value!!.width.toInt(), separatorHeight.toInt(), Bitmap.Config.ARGB_8888)
+
+        Canvas(tempBitmap).drawLine(0F, 0F, separator.value!!.width, 0F, separatorLine)
+
+        return tempBitmap
+    }
+    protected fun drawDrawableSizedSeparator(shapeType: Int, viewportWidth: Float, viewportHeight: Float, scale: Float): Bitmap {
+        val separatorWidth = separator.value!!.width * scale
+        val separatorHeight = separatorWidth * (viewportHeight/viewportWidth)
+
+        val tempBitmap = Bitmap.createBitmap(separatorWidth.toInt(), separatorHeight.toInt(), Bitmap.Config.ARGB_8888)
+
+        // TODO: Дублирвоание кода, drawable уже указывается при создании списка шейпов в адапторе
+        val drawableId = when(shapeType) {
+            STARS -> R.drawable.ic_shape_stars
+            HEARTS -> R.drawable.ic_shape_hearts
+            CURVED -> R.drawable.ic_shape_curved
+            STAR -> R.drawable.ic_shape_star
+            HEART -> R.drawable.ic_shape_heart
+
+            else -> R.drawable.ic_shape_star
+        }
+
+        val canvas = Canvas(tempBitmap)
+        val starSVG = ContextCompat.getDrawable(activity, drawableId)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            starSVG!!.colorFilter = BlendModeColorFilter(Color.parseColor(separatorColor.value), BlendMode.SRC_ATOP)
+        } else {
+            starSVG!!.setColorFilter(Color.parseColor(separatorColor.value), PorterDuff.Mode.SRC_ATOP)
+        }
+
+        starSVG.setBounds(0, 0, separatorWidth.toInt(), separatorHeight.toInt())
+        starSVG.draw(canvas)
+
+        return tempBitmap
     }
 
     companion object {

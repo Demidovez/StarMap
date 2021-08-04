@@ -1,8 +1,8 @@
 package com.nikolaydemidovez.starmap.pojo
 
-class ShapeMapBorder (var title: String?, var iconId: Int?, var type: Int?) {
-    constructor() : this(null,null, null)
+import com.nikolaydemidovez.starmap.interfaces.ShapeInterface
 
+class ShapeMapBorder (override var iconId: Int, override var type: Int): ShapeInterface {
     companion object {
         const val NONE = 1
         const val CIRCLE = 2
