@@ -4,7 +4,6 @@ import adapters.ColorAdapter
 import android.app.Dialog
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -314,7 +313,7 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         val width = (resources.displayMetrics.widthPixels * 0.9).toInt()
 
         val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.simple_picker_layout)
+        dialog.setContentView(R.layout.picker_simple_layout)
         dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
 
         val listView = dialog.findViewById<ListView>(R.id.listView)

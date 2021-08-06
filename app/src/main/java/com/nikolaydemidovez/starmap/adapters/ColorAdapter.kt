@@ -83,7 +83,7 @@ class ColorAdapter(
 
         private fun showColorPicker(mutableColor: MutableLiveData<String>, listener: (color: String) -> Unit) {
             val layoutInflater = LayoutInflater.from(itemView.context)
-            val layout: View = layoutInflater.inflate(R.layout.color_picker_layout, null)
+            val layout: View = layoutInflater.inflate(R.layout.picker_color_layout, null)
             layout.findViewById<TextView>(R.id.title).text = "Цвет текста"
 
             val colorPickerView    = layout.findViewById<ColorPickerView>(R.id.colorPickerView)

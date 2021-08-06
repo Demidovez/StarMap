@@ -1,6 +1,5 @@
 package com.nikolaydemidovez.starmap.adapters
 
-import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -13,7 +12,7 @@ import com.nikolaydemidovez.starmap.controllers.save_v1.SaveV1ControllerFragment
 import com.nikolaydemidovez.starmap.controllers.separator_v1.SeparatorV1ControllerFragment
 import com.nikolaydemidovez.starmap.controllers.stars_v1.StarsV1ControllerFragment
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
-import controllers.event_v1.EventV1ControllerFragment
+import com.nikolaydemidovez.starmap.controllers.event_v1.EventV1ControllerFragment
 
 class ControllerTabAdapter(fm: FragmentManager, lifecycle: Lifecycle, private var numberOfTabs: Int, private var templateCanvas: TemplateCanvas) : FragmentStateAdapter(fm, lifecycle) {
 

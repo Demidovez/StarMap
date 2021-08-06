@@ -60,8 +60,7 @@ class LocationAdapter (
 
                     templateCanvas.eventLocation.value  = locationList[i].location
                     templateCanvas.eventCountry.value   = locationList[i].country
-                    templateCanvas.eventLatitude.value  = place.latLng?.latitude
-                    templateCanvas.eventLongitude.value = place.latLng?.longitude
+                    templateCanvas.coordinates.value  = arrayListOf(place.latLng!!.latitude, place.latLng!!.longitude)
 
                     dialog.dismiss()
                 }

@@ -1,7 +1,5 @@
-package controllers.event_v1
+package com.nikolaydemidovez.starmap.controllers.event_v1
 
-import android.app.DatePickerDialog
-import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,9 +24,9 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.*
 import androidx.core.view.updatePadding
+import com.airbnb.lottie.LottieAnimationView
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.adapters.LocationAdapter
-import com.nikolaydemidovez.starmap.controllers.event_v1.EventV1ControllerViewModel
 import com.nikolaydemidovez.starmap.databinding.FragmentEventV1ControllerBinding
 import com.nikolaydemidovez.starmap.pojo.Location
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
@@ -62,12 +60,12 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         }
 
         binding.editLatitude.setOnClickListener {
-            val value = "%.6f".format(templateCanvas.eventLatitude.value).replace(",", ".")
+            val value = "%.6f".format(templateCanvas.coordinates.value!![0]).replace(",", ".")
             showLatLongDialog("Широта места события", value, LATITUDE)
         }
 
         binding.editLongitude.setOnClickListener {
-            val value = "%.6f".format(templateCanvas.eventLongitude.value).replace(",", ".")
+            val value = "%.6f".format(templateCanvas.coordinates.value!![1]).replace(",", ".")
             showLatLongDialog("Долгота места события", value, LONGITUDE)
         }
 
@@ -92,16 +90,14 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             binding.editLocation.setText(text)
         })
 
-        templateCanvas.eventLatitude.observe(requireActivity(), {
+        templateCanvas.coordinates.observe(requireActivity(), {
             if(!binding.editLatitude.isFocused) {
-                val value = "%.6f".format(it).replace(",", ".")
+                val value = "%.6f".format(it[0]).replace(",", ".")
                 binding.editLatitude.setText(value)
             }
-        })
 
-        templateCanvas.eventLongitude.observe(requireActivity(), {
             if(!binding.editLongitude.isFocused) { // TODO нужна ли уже эта првоерка?
-                val value = "%.6f".format(it).replace(",", ".")
+                val value = "%.6f".format(it[1]).replace(",", ".")
                 binding.editLongitude.setText(value)
             }
         })
@@ -124,7 +120,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
     private fun showLatLongDialog(title: String, value: String, flag: Int) {
         val layoutInflater = LayoutInflater.from(requireContext())
-        val layout: View = layoutInflater.inflate(R.layout.lat_long_picker_layout, null)
+        val layout: View = layoutInflater.inflate(R.layout.picker_lat_long_layout, null)
         layout.findViewById<TextView>(R.id.title).text = title
 
         val editText      = layout.findViewById<EditText>(R.id.edit_text_lat_long)
@@ -132,7 +128,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         val descText      = layout.findViewById<TextView>(R.id.desc_text)
 
         var descTextValue = ""
-        descTextValue = if(flag == LATITUDE) "Допустимые значения от -90 до +90" else "Допустимые значения от -180 до +180"
+        descTextValue = if(flag == LATITUDE) "Диапазон значений от -90 до +90" else "Диапазон значений от -180 до +180"
         descText.text = descTextValue
 
         editText.setText(value)
@@ -179,8 +175,10 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
                     if(flag == LATITUDE) {
                         if(isValidLat(editValue)) {
-                            if(templateCanvas.eventLatitude.value != editValue) {
-                                templateCanvas.eventLatitude.value = editValue
+                            if(templateCanvas.coordinates.value!![0] != editValue) {
+                                val newCoordinates = templateCanvas.coordinates.value
+                                newCoordinates!![0] = editValue
+                                templateCanvas.coordinates.value = newCoordinates
 
                                 binding.editLocation.setText("Другое...")
                             }
@@ -194,8 +192,10 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
                     if(flag == LONGITUDE) {
                         if(isValidLong(editValue)) {
-                            if(templateCanvas.eventLongitude.value != editValue) {
-                                templateCanvas.eventLongitude.value = editValue
+                            if(templateCanvas.coordinates.value!![1] != editValue) {
+                                val newCoordinates = templateCanvas.coordinates.value
+                                newCoordinates!![1] = editValue
+                                templateCanvas.coordinates.value = newCoordinates
 
                                 binding.editLocation.setText("Другое...")
                             }
@@ -215,18 +215,21 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         dialog.show()
 
-        val width = (resources.displayMetrics.widthPixels * 0.9).toInt()
+        val width = (resources.displayMetrics.widthPixels * 0.8).toInt()
         dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
     private fun showLocationPicker() {
         val placesClient = Places.createClient(requireActivity())
         val token = AutocompleteSessionToken.newInstance()
-        val width = (resources.displayMetrics.widthPixels * 0.9).toInt()
 
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.location_picker_layout)
-        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.picker_location_layout, null)
+
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setView(layout)
+
+        val dialog = builder.create()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             dialog.window?.setDecorFitsSystemWindows(false)
@@ -240,9 +243,10 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         }
 
-        val editText = dialog.findViewById<EditText>(R.id.edit_text_location)
-        val imgClearText = dialog.findViewById<ImageView>(R.id.clear_text)
-        val listView = dialog.findViewById<ListView>(R.id.listView)
+        val editText = layout.findViewById<EditText>(R.id.edit_text_location)
+        val imgClearText = layout.findViewById<ImageView>(R.id.clear_text)
+        val imgLoading = layout.findViewById<LottieAnimationView>(R.id.loading)
+        val listView = layout.findViewById<ListView>(R.id.listView)
 
         val searchLocations: ArrayList<Location> = ArrayList()
 
@@ -264,6 +268,8 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             placesClient.findAutocompletePredictions(request)
                 .addOnSuccessListener { response: FindAutocompletePredictionsResponse ->
                     adapter.clear()
+
+                    imgLoading.visibility = GONE
 
                     for (prediction in response.autocompletePredictions) {
                         val searchLocation = Location(prediction.getPrimaryText(null).toString(), prediction.getSecondaryText(null).toString(), prediction.placeId)
@@ -289,6 +295,9 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         }
 
         dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.8).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
     private fun showDatePickerDialog() {
@@ -300,48 +309,114 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         val format = getDateInstance(LONG, Locale("ru"))
 
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, monthOfYear, dayOfMonth ->
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.picker_date_layout, null)
+
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setPositiveButton(android.R.string.ok, null)
+        builder.setNegativeButton(android.R.string.cancel, null)
+        builder.setView(layout)
+
+        val dialog = builder.create()
+
+        val datePicker = layout.findViewById<DatePicker>(R.id.datePicker)
+        datePicker.updateDate(mYear, mMonth, mDay)
+
+        dialog.setOnShowListener {
+
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+
+            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+            okButton.setOnClickListener {
+                val year = datePicker.year
+                val monthOfYear = datePicker.month
+                val dayOfMonth = datePicker.dayOfMonth
+
                 c.set(year, monthOfYear, dayOfMonth)
 
                 templateCanvas.eventDate.value = c.time
 
                 binding.editDate.setText(format.format(c.time).toString())
-            },
-            mYear, mMonth, mDay
-        )
 
-        datePickerDialog.setOnShowListener {
-            datePickerDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
-            datePickerDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+                dialog.dismiss()
+            }
         }
 
-        datePickerDialog.show()
+        dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.7).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
     private fun showTimePickerDialog() {
-        val is24HView = true
-        val hour = templateCanvas.eventTime.value!!.split(":")[0].toInt()
-        val minute = templateCanvas.eventTime.value!!.split(":")[1].toInt()
+        val dateDefault = Calendar.getInstance()
+        var hour = dateDefault.get(Calendar.HOUR_OF_DAY)
+        var minute = dateDefault.get(Calendar.MINUTE)
 
-        val timePickerDialog = TimePickerDialog (
-            requireContext(), { _, hourOfDay, minute ->
-                val newTime = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
+        templateCanvas.eventTime.value.let {
+            if(it!!.isNotEmpty()) {
+                hour = it.split(":")[0].toInt()
+                minute = it.split(":")[1].toInt()
+            }
+        }
+
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.picker_time_layout, null)
+
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setPositiveButton(android.R.string.ok, null)
+        builder.setNegativeButton(android.R.string.cancel, null)
+        builder.setView(layout)
+
+        val dialog = builder.create()
+
+        val timePicker = layout.findViewById<TimePicker>(R.id.timePicker)
+        timePicker.setIs24HourView(true)
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            timePicker.hour = hour
+            timePicker.minute = minute
+        } else {
+            timePicker.currentHour = hour
+            timePicker.currentMinute = minute
+        }
+
+        dialog.setOnShowListener {
+
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+
+            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+            okButton.setOnClickListener {
+                var hour = 0
+                var minute = 0
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    hour = timePicker.hour
+                    minute = timePicker.minute
+                } else {
+                    hour = timePicker.currentHour
+                    minute = timePicker.currentMinute
+                }
+
+                val newTime = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
 
                 templateCanvas.eventTime.value = newTime
 
                 binding.editTime.setText(newTime)
-            }, hour, minute, is24HView
-        )
 
-        timePickerDialog.setOnShowListener {
-            timePickerDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
-            timePickerDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                R.color.dark))
+                dialog.dismiss()
+            }
         }
 
-        timePickerDialog.show()
+        dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.6).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
     companion object {

@@ -112,6 +112,14 @@
         <item name="android:fontFamily">@font/nunito_regular</item>
     </style>
 
+    <style name="date_picker_style" parent="@android:style/Widget.DatePicker">
+
+    </style>
+
+    <style name="date_time_spinner_theme">
+        <item name="android:textColorPrimary">@color/dark</item>
+        <item name="colorControlNormal">@color/dark</item>
+    </style>
 
 
 </resources>

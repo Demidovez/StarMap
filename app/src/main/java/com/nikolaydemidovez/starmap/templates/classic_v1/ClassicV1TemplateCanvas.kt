@@ -83,7 +83,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         starMapRadius.value =                   900F
         starMapColor.value =                    "#000000"
         starMapBorder.value =                   StarMapBorder(15F, NONE)
-        starMapBorderColor.value =              "#FFFFFF"
+        starMapBorderColor.value =              "#000000"
         descFont.value =                        FontText("Comfortaa Regular", R.font.comfortaa_regular, 120F)
         descFontColor.value =                   "#000000"
         descText.value =                        "День, когда сошлись\nвсе звезды вселенной..."
@@ -99,8 +99,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         locationFont.value =                    FontText("Comfortaa Regular", R.font.comfortaa_regular, 60F)
         locationFontColor.value =               "#000000"
         hasEventCoordinatesInLocation.value =   true
-        eventLatitude.value =                   55.755826
-        eventLongitude.value =                  37.6173
+        coordinates.value =                     arrayListOf(55.755826, 37.6173)
         separator.value =                       Separator(1000F, CURVED)
         separatorColor.value =                  "#000000"
         hasGraticule.value =                    true
@@ -442,7 +441,6 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                     val drawObjects = launch {
                         launch { correctLocationText() }
                         launch { initRequestStarMap() }
-                        launch { drawMap() }
                     }
 
                     drawObjects.join()
@@ -468,7 +466,6 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                     val drawObjects = launch {
                         launch { correctLocationText() }
                         launch { initRequestStarMap() }
-                        launch { drawMap() }
                     }
 
                     drawObjects.join()
@@ -536,27 +533,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 }
             }
         }
-        eventLatitude.observe(activity) {
+        coordinates.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
                         launch { correctLocationText() }
                         launch { initRequestStarMap() }
-                        launch { drawMap() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
-                }
-            }
-        }
-        eventLongitude.observe(activity) {
-            if(isDataInitialized) {
-                CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { correctLocationText() }
-                        launch { initRequestStarMap() }
-                        launch { drawMap() }
                     }
 
                     drawObjects.join()
@@ -714,8 +696,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             """
                             {
                                 "date": ${date.time.time},
-                                "latitude": ${eventLatitude.value}, 
-                                "longtitude" :${eventLongitude.value},
+                                "latitude": ${coordinates.value!![0]}, 
+                                "longtitude" :${coordinates.value!![1]},
                                 "width": ${starMapRadius.value!! * 2},
                                 "font": "Arial, Times, 'Times Roman', serif",
                                 "stars": {
@@ -842,7 +824,18 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 locationText = "$locationText,"
 
             if(hasEventTimeInLocation.value!!) {
-                locationText = "${locationText}${eventTime.value!!}\n"
+                val dateDefault = Calendar.getInstance()
+                var hour = dateDefault.get(Calendar.HOUR_OF_DAY)
+                var minute = dateDefault.get(Calendar.MINUTE)
+
+                eventTime.value.let {
+                    if(it!!.isNotEmpty()) {
+                        hour = it.split(":")[0].toInt()
+                        minute = it.split(":")[1].toInt()
+                    }
+                }
+
+                locationText = "${locationText}$hour:$minute\n"
             } else if(hasEventDateInLocation.value!!) {
                 locationText = "$locationText\n"
             }
@@ -856,7 +849,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
             }
 
             if(hasEventCoordinatesInLocation.value!!)
-                locationText = "${locationText}${Helper.convert(eventLatitude.value!!, eventLongitude.value!!)}"
+                locationText = "${locationText}${Helper.convert(coordinates.value!![0], coordinates.value!![1])}"
 
             resultLocationText.postValue(locationText.trim())
         }
