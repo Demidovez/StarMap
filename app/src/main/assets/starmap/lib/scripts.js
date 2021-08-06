@@ -410,6 +410,7 @@ function saveSvg() {
   var img = new Image();
   var svg = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
   var url = DOMURL.createObjectURL(svg);
+
   img.onload = function () {
     ctx.drawImage(img, 0, 0);
 
@@ -419,6 +420,7 @@ function saveSvg() {
 
     androidCallback(canvasdata);
   };
+
   img.src = url;
 }
 

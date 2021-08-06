@@ -15,10 +15,6 @@ import java.util.*
 import androidx.core.graphics.drawable.DrawableCompat
 
 import android.graphics.Bitmap
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.util.Base64
 import android.util.Log
 import android.webkit.*
@@ -38,6 +34,20 @@ import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEARTS
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.LINE
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STAR
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STARS
+import androidx.webkit.WebViewAssetLoader.ResourcesPathHandler
+
+import androidx.webkit.WebViewAssetLoader.AssetsPathHandler
+
+import androidx.webkit.WebViewAssetLoader
+
+import android.R.string.no
+import android.net.Uri
+import android.os.*
+import android.webkit.WebResourceRequest
+
+import android.webkit.WebResourceResponse
+import androidx.annotation.RequiresApi
+
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
     private val controllerList = arrayListOf(
@@ -607,6 +617,10 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private fun initStarMapBitmap() {
         Log.d("MyLog", "Start initStarMapBitmap")
 
+        val assetLoader = WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", AssetsPathHandler(activity))
+            .build()
+
         val webChromeClient = object : WebChromeClient() {
             override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
                 Log.d("Console", "${consoleMessage.message()} -- From line ${consoleMessage.lineNumber()} of ${consoleMessage.sourceId()}");
@@ -615,6 +629,15 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
 
         val webViewClient = object : WebViewClient() {
+            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+            override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest): WebResourceResponse? {
+                return assetLoader.shouldInterceptRequest(request.url)
+            }
+
+            override fun shouldInterceptRequest(view: WebView?, url: String): WebResourceResponse? {
+                return assetLoader.shouldInterceptRequest(Uri.parse(url))
+            }
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 Log.d("Console", "onPageFinished")
                 view!!.loadUrl("""
@@ -633,7 +656,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         }
 
         activity.runOnUiThread(Runnable {
-            webViewStarMap.loadUrl("file:///android_asset/starmap/templates/classic_v1/index.html")
+            webViewStarMap.loadUrl("https://appassets.androidplatform.net/assets/starmap/templates/classic_v1/index.html")
             webViewStarMap.webChromeClient = webChromeClient
             webViewStarMap.webViewClient = webViewClient
             webViewStarMap.addJavascriptInterface(object {
@@ -651,8 +674,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
 
             webViewStarMap.settings.apply {
                 javaScriptEnabled = true
-                allowFileAccess = true
-                allowContentAccess = true
+                allowFileAccess = false
+                allowContentAccess = false
             }
         })
         
@@ -698,9 +721,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                 "stars": {
                                     "size": ${starsSize.value!!},
                                     "exponent": -0.28,
-                                    "dataPath": "http://62.75.195.219:3000/data/stars.6.json",
+                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/stars.6.json",
                                     "propername": ${hasNames.value},
-                                    "propernamePath": "http://62.75.195.219:3000/data/starnames.json",
+                                    "propernamePath": "https://appassets.androidplatform.net/assets/starmap/data/starnames.json",
                                     "propernameLang": "${namesStarsLang.value!!.name}",
                                     "propernameStyle": {
                                         "fill": "${namesStarsColor.value!!}",
@@ -719,7 +742,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                     "size": ${starsSize.value!!},
                                     "names": ${hasNames.value},
                                     "nameLang": "${namesStarsLang.value!!.name}",
-                                    "namePath": "http://62.75.195.219:3000/data/dsonames.json",
+                                    "namePath": "https://appassets.androidplatform.net/assets/starmap/data/dsonames.json",
                                     "nameStyle": {
                                         "fill": "${namesStarsColor.value!!}",
                                         "font": "${namesStarsSize.value!!}",
@@ -728,7 +751,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                     },
                                     "nameLimit": 4,
                                     "exponent": -0.28,
-                                    "dataPath": "http://62.75.195.219:3000/data/dsos.bright.json"
+                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/dsos.bright.json"
                                 },
                                 "planets": {
                                     "show": true,
@@ -749,7 +772,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                       "plu": { "fill": "#aaaaaa" },
                                       "eri": { "fill": "#eeeeee" }
                                     },
-                                    "dataPath": "http://62.75.195.219:3000/data/planets.json",
+                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/planets.json",
                                     "names": ${hasNames.value},
                                     "nameLang": "${namesStarsLang.value!!.name}",
                                     "nameStyle": {
@@ -761,7 +784,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                 },
                                 "constellations": {
                                     "show": ${hasConstellations.value},
-                                    "dataPath": "http://62.75.195.219:3000/data/constellations.lines.json",
+                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/constellations.lines.json",
                                     "style": {
                                       "stroke": "${constellationsColor.value!!}", 
                                       "strokeWidth": ${constellationsWidth.value!!},
@@ -769,7 +792,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                     },
                                     "names": ${hasNames.value},
                                     "nameLang": "${namesStarsLang.value!!.name}",
-                                    "namePath": "http://62.75.195.219:3000/data/constellations.json",
+                                    "namePath": "https://appassets.androidplatform.net/assets/starmap/data/constellations.json",
                                     "nameStyle": {
                                         "fill": "${namesStarsColor.value!!}",
                                         "align": "center",
@@ -781,7 +804,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                                 "mw": {
                                     "show": ${hasMilkyWay.value},
                                     "style": { "fill": "#ffffff", "opacity": "0.15" },
-                                    "dataPath": "http://62.75.195.219:3000/data/mw.json"
+                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/mw.json"
                                 },
                                 "graticule": {
                                     "show": ${hasGraticule.value},
