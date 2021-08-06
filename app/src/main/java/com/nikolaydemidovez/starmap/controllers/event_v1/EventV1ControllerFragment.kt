@@ -1,30 +1,23 @@
 package com.nikolaydemidovez.starmap.controllers.event_v1
 
-import android.app.TimePickerDialog
+import android.graphics.Insets
+import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.airbnb.lottie.LottieAnimationView
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
-import java.text.DateFormat.*
-import java.util.*
-import android.view.WindowManager
-import android.view.WindowInsets
-import android.graphics.Insets
-import android.os.Build
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.widget.*
-import androidx.core.view.updatePadding
-import com.airbnb.lottie.LottieAnimationView
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.adapters.LocationAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentEventV1ControllerBinding
@@ -32,7 +25,9 @@ import com.nikolaydemidovez.starmap.pojo.Location
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.isValidLat
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.isValidLong
-
+import java.text.DateFormat.LONG
+import java.text.DateFormat.getDateInstance
+import java.util.*
 
 class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
     private lateinit var viewModel: EventV1ControllerViewModel
@@ -321,6 +316,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         val datePicker = layout.findViewById<DatePicker>(R.id.datePicker)
         datePicker.updateDate(mYear, mMonth, mDay)
+
 
         dialog.setOnShowListener {
 

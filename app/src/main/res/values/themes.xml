@@ -117,9 +117,15 @@
     </style>
 
     <style name="date_time_spinner_theme">
-        <item name="android:textColorPrimary">@color/dark</item>
         <item name="colorControlNormal">@color/dark</item>
+        <item name="android:editTextStyle">@style/text_style_picker</item>
     </style>
 
+    <style name="text_style_picker">
+        <item name="android:textColor">@color/dark</item> <!-- DatePicker color text -->
+        <item name="android:textStyle">bold</item>  <!-- DatePicker font style text -->
+        <item name="android:textSize">15sp</item>  <!-- DatePicker font size text -->
+        <item name="android:fontFamily">@font/nunito_regular</item>
+    </style>
 
 </resources>
