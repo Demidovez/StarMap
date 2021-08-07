@@ -427,6 +427,7 @@ function saveSvg() {
 function incrementNumberStep() {
   currentStep++;
 
+  console.log(currentStep + "/10");
   if (currentStep == 10) saveSvg();
 }
 

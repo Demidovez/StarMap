@@ -4,13 +4,14 @@
     android:layout_height="match_parent"
     android:id="@+id/linear_layout"
     android:gravity="center_vertical"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
+
     android:orientation="vertical">
 
 
     <ListView
         android:id="@+id/listView"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>

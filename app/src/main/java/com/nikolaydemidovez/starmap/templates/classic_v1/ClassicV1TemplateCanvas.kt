@@ -49,7 +49,7 @@ import android.webkit.WebResourceResponse
 import androidx.annotation.RequiresApi
 
 
-class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanvas(activity) {
+class ClassicV1TemplateCanvas(private val activity: MainActivity, private val properties: TemplateProperties) : TemplateCanvas(activity) {
     private val controllerList = arrayListOf(
         Controller("event_v1",     "Событие",     ContextCompat.getDrawable(activity,R.drawable.ic_event_v1)),
         Controller("canvas_v1",    "Холст",       ContextCompat.getDrawable(activity,R.drawable.ic_canvas_v1)),
@@ -75,50 +75,50 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
     private  var isLoadedStarMap = MutableLiveData(false)    // Загрузилась ли звездная карта с сервера
 
     init {
-        holst.value =                           Holst("A4", "297 x 210 мм", 2480F, 3508F)
-        holstColor.value =                      "#FFFFFF" // #16A085
-        hasBorderHolst.value =                  true
-        borderHolst.value =                     HolstBorder(100F, 10F)
-        borderHolstColor.value =                "#000000"
-        starMapRadius.value =                   900F
-        starMapColor.value =                    "#000000"
-        starMapBorder.value =                   StarMapBorder(15F, NONE)
-        starMapBorderColor.value =              "#000000"
-        descFont.value =                        FontText("Comfortaa Regular", R.font.comfortaa_regular, 120F)
-        descFontColor.value =                   "#000000"
-        descText.value =                        "День, когда сошлись\nвсе звезды вселенной..."
-        hasEventDateInLocation.value =          true
-        eventDate.value =                       Calendar.getInstance().time
-        hasEventTimeInLocation.value =          true
-        eventTime.value =                       ""
-        hasEventCityInLocation.value =          true
-        eventLocation.value =                   "Москва"
-        eventCountry.value =                    "Россия"
-        hasEditResultLocationText.value =       false
-        resultLocationText.value =              ""
-        locationFont.value =                    FontText("Comfortaa Regular", R.font.comfortaa_regular, 60F)
-        locationFontColor.value =               "#000000"
-        hasEventCoordinatesInLocation.value =   true
-        coordinates.value =                     arrayListOf(55.755826, 37.6173)
-        separator.value =                       Separator(1000F, CURVED)
-        separatorColor.value =                  "#000000"
-        hasGraticule.value =                    true
-        graticuleWidth.value =                  2F
-        graticuleColor.value =                  "#FFFFFF"
-        graticuleOpacity.value =                70
-        graticuleType.value =                   LINE_GRATICULE
-        hasMilkyWay.value =                     true
-        hasNames.value =                        true
-        namesStarsSize.value =                  12
-        namesStarsColor.value =                 "#FFFFFF"
-        namesStarsLang.value =                  Lang("Русский", "ru")
-        hasConstellations.value =               true
-        constellationsWidth.value =             3F
-        constellationsColor.value =             "#FFFFFF"
-        constellationsOpacity.value =           100
-        starsSize.value =                       17F
-        starsColor.value =                      "#FFFFFF"
-        starsOpacity.value =                    100
+        holst.value =                           Holst("A4", "297 x 210 мм", properties.holstWidth, properties.holstHeight)
+        holstColor.value =                      properties.holstColor // #16A085
+        hasBorderHolst.value =                  properties.hasBorderHolst
+        borderHolst.value =                     HolstBorder(properties.borderHolstIndent, properties.borderHolstWidth)
+        borderHolstColor.value =                properties.borderHolstColor
+        starMapRadius.value =                   properties.starMapRadius
+        starMapColor.value =                    properties.starMapColor
+        starMapBorder.value =                   StarMapBorder(properties.starMapBorderWidth!!, properties.starMapBorderType!!)
+        starMapBorderColor.value =              properties.starMapBorderColor
+        descFont.value =                        FontText(properties.descFontName, properties.descFontResId, properties.descFontSize)
+        descFontColor.value =                   properties.descFontColor
+        descText.value =                        properties.descText
+        hasEventDateInLocation.value =          properties.hasEventDateInLocation
+        eventDate.value =                       properties.eventDate
+        hasEventTimeInLocation.value =          properties.hasEventTimeInLocation
+        eventTime.value =                       properties.eventTime
+        hasEventCityInLocation.value =          properties.hasEventCityInLocation
+        eventLocation.value =                   properties.eventLocation
+        eventCountry.value =                    properties.eventCountry
+        hasEditResultLocationText.value =       properties.hasEditResultLocationText
+        resultLocationText.value =              properties.resultLocationText
+        locationFont.value =                    FontText(properties.locationFontName, properties.locationFontResId, properties.locationFontSize)
+        locationFontColor.value =               properties.locationFontColor
+        hasEventCoordinatesInLocation.value =   properties.hasEventCoordinatesInLocation
+        coordinates.value =                     properties.coordinates
+        separator.value =                       Separator(properties.separatorWidth!!, properties.separatorType!!)
+        separatorColor.value =                  properties.separatorColor
+        hasGraticule.value =                    properties.hasGraticule
+        graticuleWidth.value =                  properties.graticuleWidth
+        graticuleColor.value =                  properties.graticuleColor
+        graticuleOpacity.value =                properties.graticuleOpacity
+        graticuleType.value =                   properties.graticuleType
+        hasMilkyWay.value =                     properties.hasMilkyWay
+        hasNames.value =                        properties.hasNames
+        namesStarsSize.value =                  properties.namesStarsSize
+        namesStarsColor.value =                 properties.namesStarsColor
+        namesStarsLang.value =                  Lang(properties.namesStarsLangLabel, properties.namesStarsLangName)
+        hasConstellations.value =               properties.hasConstellations
+        constellationsWidth.value =             properties.constellationsWidth
+        constellationsColor.value =             properties.constellationsColor
+        constellationsOpacity.value =           properties.constellationsOpacity
+        starsSize.value =                       properties.starsSize
+        starsColor.value =                      properties.starsColor
+        starsOpacity.value =                    properties.starsOpacity
     }
 
     init {
@@ -438,13 +438,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         eventDate.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { correctLocationText() }
-                        launch { initRequestStarMap() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    launch { correctLocationText() }
+                    launch { initRequestStarMap() }
                 }
             }
         }
@@ -463,13 +458,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         eventTime.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { correctLocationText() }
-                        launch { initRequestStarMap() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    launch { correctLocationText() }
+                    launch { initRequestStarMap() }
                 }
             }
         }
@@ -488,12 +478,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         eventLocation.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { correctLocationText() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    correctLocationText()
                 }
             }
         }
@@ -536,13 +521,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         coordinates.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { correctLocationText() }
-                        launch { initRequestStarMap() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    launch { correctLocationText() }
+                    launch { initRequestStarMap() }
                 }
             }
         }
@@ -664,7 +644,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         Log.d("MyLog", "Done initStarMapBitmap")
     }
     private fun initRequestStarMap() {
-        Log.d("MyLog", "Start requestStarMap")
+        Log.d("MyLog", "Start initRequestStarMap")
 
         activity.runOnUiThread(Runnable {
             webViewStarMap.loadUrl("""
@@ -673,10 +653,10 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         })
 
 
-        Log.d("MyLog", "Done requestStarMap")
+        Log.d("MyLog", "Done initRequestStarMap")
     }
     private fun initConfigStarMap(): String {
-        Log.d("MyLog", "Start getRequestBodyStarMap")
+        Log.d("MyLog", "Start initConfigStarMap")
 
         val date = Calendar.getInstance()
         date.time = eventDate.value!!
@@ -799,7 +779,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                             }       
             """.trimIndent()
 
-        Log.d("MyLog", "Done getRequestBodyStarMap")
+        Log.d("MyLog", "Done initConfigStarMap")
         return jsonString
     }
     private fun requestStarMap(funcName: String, value: String) {
@@ -821,7 +801,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                 locationText = "$locationText ${SimpleDateFormat("dd MMMM yyyy", Locale("ru")).format(eventDate.value!!)}"
 
             if(hasEventDateInLocation.value!! && hasEventTimeInLocation.value!!)
-                locationText = "$locationText,"
+                locationText = "$locationText, "
 
             if(hasEventTimeInLocation.value!!) {
                 val dateDefault = Calendar.getInstance()
@@ -835,7 +815,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
                     }
                 }
 
-                locationText = "${locationText}$hour:$minute\n"
+                locationText = "${locationText}${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}\n"
             } else if(hasEventDateInLocation.value!!) {
                 locationText = "$locationText\n"
             }
@@ -1113,13 +1093,14 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity) : TemplateCanv
         canvas.drawBitmap(bitmapMap, holst.value!!.width!!/2 - bitmapMap.width / 2, holst.value!!.width!!/2 - bitmapMap.width / 2, null)
 
         val autoMargin = getAutoAlignMargin()
+        val absoluteHeightMap = getAbsoluteHeightMap()
 
         // Рисуем текст описание
-        canvas.drawBitmap(bitmapDesc, 0F, getAbsoluteHeightMap() + autoMargin, null)
+        canvas.drawBitmap(bitmapDesc, 0F, absoluteHeightMap + autoMargin, null)
 
         // Рисуем разделитель
         if(separator.value!!.shapeType != ShapeSeparator.NONE) {
-            canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!!) / 2 - bitmapSeparator.width / 2, getAbsoluteHeightMap() + autoMargin + bitmapDesc.height + autoMargin, null)
+            canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!!) / 2 - bitmapSeparator.width / 2, absoluteHeightMap + autoMargin + bitmapDesc.height + autoMargin, null)
         }
 
         // Рисуем текст локации

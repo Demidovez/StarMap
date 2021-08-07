@@ -57,7 +57,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val hasEditResultLocationText =     MutableLiveData<Boolean>()              // Изменить ли результирующий текст в локации
     val resultLocationText =            MutableLiveData<String>()               // Результирующий текст локации
     val hasEventCoordinatesInLocation = MutableLiveData<Boolean>()              // Добавить ли широту и долготу в текст локации
-    val coordinates =                   MutableLiveData<ArrayList<Double>>()    // Координаты места события
+    val coordinates =                   MutableLiveData<ArrayList<Float>>()     // Координаты места события
     val separator =                     MutableLiveData<Separator>()            // Разделителя
     val separatorColor =                MutableLiveData<String>()               // Цвет разделителя
     val hasGraticule =                  MutableLiveData<Boolean>()              // Добавить ли сеть координат

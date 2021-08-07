@@ -22,8 +22,7 @@ class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {
 
             cardView.setOnClickListener { view ->
                 val bundle = bundleOf(
-                    "templateName" to template.name,
-                    "templateTitle" to template.title
+                    "templateName" to template.name
                 )
 
                 view.findNavController().navigate(R.id.action_navigation_templates_to_templateFragment, bundle)

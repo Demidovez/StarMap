@@ -166,7 +166,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
             okButton.setOnClickListener {
                 if(editText.text.isNotEmpty()) {
-                    val editValue = editText.text.toString().toDouble()
+                    val editValue = editText.text.toString().toFloat()
 
                     if(flag == LATITUDE) {
                         if(isValidLat(editValue)) {

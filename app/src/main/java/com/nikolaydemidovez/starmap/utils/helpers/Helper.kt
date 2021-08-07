@@ -1,5 +1,6 @@
 package com.nikolaydemidovez.starmap.utils.helpers
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -13,12 +14,15 @@ import android.view.MotionEvent
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
+import com.nikolaydemidovez.starmap.R
+import com.nikolaydemidovez.starmap.pojo.FontText
+import java.util.ArrayList
 
 
 class Helper {
     companion object {
         // Конверт координат в виде N 12°12'32.3'
-        fun convert(latitude: Double, longitude: Double): String {
+        fun convert(latitude: Float, longitude: Float): String {
             val builder = StringBuilder()
 
             if (latitude < 0) {
@@ -27,7 +31,7 @@ class Helper {
                 builder.append("N ")
             }
 
-            val latitudeDegrees: String = Location.convert(abs(latitude), Location.FORMAT_SECONDS)
+            val latitudeDegrees: String = Location.convert(abs(latitude.toDouble()), Location.FORMAT_SECONDS)
             val latitudeSplit = latitudeDegrees.replace(",", ".").split(":").toTypedArray()
 
             builder.append(latitudeSplit[0])
@@ -46,7 +50,7 @@ class Helper {
             }
 
             val longitudeDegrees: String =
-                Location.convert(abs(longitude), Location.FORMAT_SECONDS)
+                Location.convert(abs(longitude.toDouble()), Location.FORMAT_SECONDS)
             val longitudeSplit = longitudeDegrees.replace(",", ".").split(":").toTypedArray()
 
             builder.append(longitudeSplit[0])
@@ -88,12 +92,12 @@ class Helper {
         }
 
         // Проверка на валидность широты
-        fun isValidLat(latitude: Double?): Boolean {
+        fun isValidLat(latitude: Float?): Boolean {
             return latitude?.toInt() in -90 until 90
         }
 
         // Проверка на валидность долготы
-        fun isValidLong(longitude: Double?): Boolean {
+        fun isValidLong(longitude: Float?): Boolean {
             return longitude?.toInt() in -180 until 180
         }
 
@@ -124,6 +128,26 @@ class Helper {
             init {
                 this.isEnable = isEnable
             }
+        }
+
+        // Список шрифтов
+        fun getAllFonts(activity: Activity): ArrayList<FontText> {
+            val allFonts: ArrayList<FontText> = ArrayList()
+            val fontList = activity.resources.getStringArray(R.array.font_in_locations)
+
+            for (font in fontList) {
+                val fontResID   = activity.resources.getIdentifier(font, "font", activity.packageName)
+                val stringResID = activity.resources.getIdentifier(font, "string", activity.packageName)
+                val fontName    = activity.resources.getString(stringResID)
+
+                try {
+                    allFonts.add(FontText(fontName, fontResID, null))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            return allFonts
         }
     }
 }

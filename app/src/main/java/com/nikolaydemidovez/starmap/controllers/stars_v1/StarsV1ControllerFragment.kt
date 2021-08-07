@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.SeekBar
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.R
@@ -310,14 +311,15 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     private fun showLangDialog() {
-        val width = (resources.displayMetrics.widthPixels * 0.9).toInt()
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.picker_simple_layout, null)
 
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.picker_simple_layout)
-        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setView(layout)
 
-        val listView = dialog.findViewById<ListView>(R.id.listView)
+        val dialog = builder.create()
 
+        val listView = layout.findViewById<ListView>(R.id.listView)
 
         val adapter = LangAdapter(activity, templateCanvas, dialog) {
             templateCanvas.namesStarsLang.value = it
@@ -328,6 +330,9 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
         listView.adapter = adapter
 
         dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.6).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
 }

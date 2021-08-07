@@ -18,9 +18,13 @@ import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.adapters.ControllerTabAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
+import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder
+import com.nikolaydemidovez.starmap.pojo.ShapeSeparator
+import com.nikolaydemidovez.starmap.pojo.TemplateProperties
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.half_v1.HalfV1TemplateCanvas
+import java.util.*
 
 class TemplateFragment : Fragment() {
     private lateinit var templateViewModel: TemplateViewModel
@@ -30,6 +34,7 @@ class TemplateFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         editActionAndStatusBar()
         val templateName = arguments?.getString("templateName")
+        val templateProperties = getTemplateProperties(templateName)
 
         templateViewModel = ViewModelProviders.of(this, TemplateViewModelFactory(templateName!!)).get(TemplateViewModel::class.java)
 
@@ -37,7 +42,7 @@ class TemplateFragment : Fragment() {
 
         val root: View = binding.root
 
-        templateCanvas = getTemplateCanvas(templateName)
+        templateCanvas = getTemplateCanvas(templateName, templateProperties)
 
         binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
 
@@ -109,10 +114,68 @@ class TemplateFragment : Fragment() {
         imageView.setImage(ImageSource.bitmap(templateCanvas.bitmap))
     }
 
-    private fun getTemplateCanvas(templateName: String): TemplateCanvas = when(templateName) {
-        "classic_v1" -> ClassicV1TemplateCanvas(activity as MainActivity)
+    private fun getTemplateCanvas(templateName: String, templateProperties: TemplateProperties): TemplateCanvas = when(templateName) {
+        "classic_v1" -> ClassicV1TemplateCanvas(activity as MainActivity, templateProperties)
         //"half_v1" -> HalfV1TemplateCanvas(activity as MainActivity)
 
-        else -> ClassicV1TemplateCanvas(activity as MainActivity)
+        else -> ClassicV1TemplateCanvas(activity as MainActivity, templateProperties)
+    }
+
+    private fun getTemplateProperties(templateName: String?): TemplateProperties {
+        return TemplateProperties(
+            holstWidth = 2480F,
+            holstHeight = 3508F,
+            holstColor = "#FFFFFF",
+            hasBorderHolst = true,
+            borderHolstIndent = 100F,
+            borderHolstWidth = 10F,
+            borderHolstColor = "#000000",
+            starMapRadius = 900F,
+            starMapColor = "#000000",
+            starMapBorderWidth = 15F,
+            starMapBorderType = ShapeMapBorder.NONE,
+            starMapBorderColor = "#000000",
+            descFontName = "Comfortaa Regular",
+            descFontResId = R.font.comfortaa_regular,
+            descFontSize = 120F,
+            descFontColor = "#000000",
+            descText = "День, когда сошлись\nвсе звезды вселенной...",
+            hasEventDateInLocation = true,
+            eventDate = Calendar.getInstance().time,
+            hasEventTimeInLocation = true,
+            eventTime = "",
+            hasEventCityInLocation = true,
+            eventLocation = "Москва",
+            eventCountry = "Россия",
+            hasEditResultLocationText = false,
+            resultLocationText = "",
+            locationFontName = "Comfortaa Regular",
+            locationFontResId = R.font.comfortaa_regular,
+            locationFontSize = 60F,
+            locationFontColor = "#000000",
+            hasEventCoordinatesInLocation = true,
+            coordinates = arrayListOf(55.755826F, 37.6173F),
+            separatorWidth = 1000F,
+            separatorType = ShapeSeparator.CURVED,
+            separatorColor = "#000000",
+            hasGraticule = true,
+            graticuleWidth = 2F,
+            graticuleColor = "#FFFFFF",
+            graticuleOpacity = 70,
+            graticuleType = TemplateCanvas.LINE_GRATICULE,
+            hasMilkyWay = true,
+            hasNames = true,
+            namesStarsSize = 12,
+            namesStarsColor = "#FFFFFF",
+            namesStarsLangLabel = "Русский",
+            namesStarsLangName = "ru",
+            hasConstellations = true,
+            constellationsWidth = 3F,
+            constellationsColor = "#FFFFFF",
+            constellationsOpacity = 100,
+            starsSize = 17F,
+            starsColor = "#FFFFFF",
+            starsOpacity = 100
+        )
     }
 }

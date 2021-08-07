@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,8 @@ import com.nikolaydemidovez.starmap.adapters.FontAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentDescV1ControllerBinding
 import com.nikolaydemidovez.starmap.pojo.FontText
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
+import com.nikolaydemidovez.starmap.utils.helpers.Helper
+import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getAllFonts
 import java.util.ArrayList
 
 class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
@@ -89,15 +92,17 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
     }
 
     private fun showFontDialog() {
-        val width = (resources.displayMetrics.widthPixels * 0.9).toInt()
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.picker_simple_layout, null)
 
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.picker_simple_layout)
-        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setView(layout)
 
-        val listView = dialog.findViewById<ListView>(R.id.listView)
+        val dialog = builder.create()
 
-        val allFonts: ArrayList<FontText> = getAllFonts()
+        val listView = layout.findViewById<ListView>(R.id.listView)
+
+        val allFonts: ArrayList<FontText> = getAllFonts(requireActivity())
 
         val adapter = FontAdapter(activity, templateCanvas, dialog, allFonts) {
             val newFont = templateCanvas.descFont.value
@@ -110,25 +115,8 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
         listView.adapter = adapter
 
         dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.8).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
-
-    private fun getAllFonts(): ArrayList<FontText> {
-        val allFonts: ArrayList<FontText> = ArrayList()
-        val fontList = requireActivity().resources.getStringArray(R.array.font_in_desc)
-
-        for (font in fontList) {
-            val fontResID   = requireActivity().resources.getIdentifier(font, "font", activity?.packageName)
-            val stringResID = requireActivity().resources.getIdentifier(font, "string", activity?.packageName)
-            val fontName    = requireActivity().resources.getString(stringResID)
-
-            try {
-                allFonts.add(FontText(fontName, fontResID, null))
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        return allFonts
-    }
-
 }
