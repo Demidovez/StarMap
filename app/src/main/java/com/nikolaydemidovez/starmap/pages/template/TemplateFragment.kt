@@ -20,10 +20,9 @@ import com.nikolaydemidovez.starmap.adapters.ControllerTabAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
 import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator
-import com.nikolaydemidovez.starmap.pojo.TemplateProperties
+import com.nikolaydemidovez.starmap.pojo.Template
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas
-import com.nikolaydemidovez.starmap.templates.half_v1.HalfV1TemplateCanvas
 import java.util.*
 
 class TemplateFragment : Fragment() {
@@ -114,15 +113,15 @@ class TemplateFragment : Fragment() {
         imageView.setImage(ImageSource.bitmap(templateCanvas.bitmap))
     }
 
-    private fun getTemplateCanvas(templateName: String, templateProperties: TemplateProperties): TemplateCanvas = when(templateName) {
-        "classic_v1" -> ClassicV1TemplateCanvas(activity as MainActivity, templateProperties)
+    private fun getTemplateCanvas(templateName: String, template: Template): TemplateCanvas = when(templateName) {
+        "classic_v1" -> ClassicV1TemplateCanvas(activity as MainActivity, template)
         //"half_v1" -> HalfV1TemplateCanvas(activity as MainActivity)
 
-        else -> ClassicV1TemplateCanvas(activity as MainActivity, templateProperties)
+        else -> ClassicV1TemplateCanvas(activity as MainActivity, template)
     }
 
-    private fun getTemplateProperties(templateName: String?): TemplateProperties {
-        return TemplateProperties(
+    private fun getTemplateProperties(templateName: String?): Template {
+        return Template(
             holstWidth = 2480F,
             holstHeight = 3508F,
             holstColor = "#FFFFFF",
@@ -141,7 +140,7 @@ class TemplateFragment : Fragment() {
             descFontColor = "#000000",
             descText = "День, когда сошлись\nвсе звезды вселенной...",
             hasEventDateInLocation = true,
-            eventDate = Calendar.getInstance().time,
+            eventDate = Calendar.getInstance().time.time,
             hasEventTimeInLocation = true,
             eventTime = "",
             hasEventCityInLocation = true,
@@ -154,7 +153,8 @@ class TemplateFragment : Fragment() {
             locationFontSize = 60F,
             locationFontColor = "#000000",
             hasEventCoordinatesInLocation = true,
-            coordinates = arrayListOf(55.755826F, 37.6173F),
+            coordinatesLatitude = 55.755826F,
+            coordinatesLongitude = 37.6173F,
             separatorWidth = 1000F,
             separatorType = ShapeSeparator.CURVED,
             separatorColor = "#000000",

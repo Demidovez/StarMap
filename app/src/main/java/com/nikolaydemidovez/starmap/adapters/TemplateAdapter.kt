@@ -12,13 +12,13 @@ import com.nikolaydemidovez.starmap.pojo.Template
 import com.squareup.picasso.Picasso
 
 class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {
-    private var templateList = listOf<Template>()
+    private var templateList = listOf<Template?>()
 
     class TemplateHolder(item: View): RecyclerView.ViewHolder(item) {
         private val binding = TemplateItemBinding.bind(item)
 
-        fun bind(template: Template) = with(binding) {
-            labelTemplate.text = template.title
+        fun bind(template: Template?) = with(binding) {
+            labelTemplate.text = template!!.title
 
             cardView.setOnClickListener { view ->
                 val bundle = bundleOf(
@@ -45,7 +45,7 @@ class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {
         return templateList.size
     }
 
-    fun addAllTemplateList(list: List<Template>) {
+    fun addAllTemplateList(list: List<Template?>) {
         templateList = list
         notifyDataSetChanged()
     }

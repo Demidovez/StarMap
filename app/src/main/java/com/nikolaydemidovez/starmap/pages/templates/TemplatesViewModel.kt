@@ -1,31 +1,26 @@
 package com.nikolaydemidovez.starmap.pages.templates
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.nikolaydemidovez.starmap.pojo.Template
-import com.nikolaydemidovez.starmap.retrofit.common.Common
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.nikolaydemidovez.starmap.room.AppDatabase
+import kotlinx.coroutines.launch
 
-class TemplatesViewModel : ViewModel() {
+class TemplatesViewModel(context: Context) : ViewModel() {
 
-    private val _templateList = MutableLiveData<List<Template>>().apply {
+    private val _templateList = MutableLiveData<List<Template?>>().apply {
+//        val db: AppDatabase = AppDatabase.getInstance(context)
+//
+//        viewModelScope.launch {
+//            value = db.templateDao()!!.getAll()
+//        }
 
 
-        Common.retrofitService.getTemplateList().enqueue(object : Callback<List<Template>> {
-            override fun onFailure(call: Call<List<Template>>, t: Throwable) {
-
-            }
-
-            override fun onResponse(call: Call<List<Template>>?, response: Response<List<Template>>?) {
-                if(response?.body() != null)
-                value = response.body()!!
-            }
-        })
     }
 
-    val templateList: LiveData<List<Template>> = _templateList
+    val templateList: LiveData<List<Template?>> = _templateList
 }
 

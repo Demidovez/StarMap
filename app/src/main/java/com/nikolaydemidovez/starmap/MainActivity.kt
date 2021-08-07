@@ -16,8 +16,16 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.room.Room
 import com.google.android.libraries.places.api.Places
 import com.nikolaydemidovez.starmap.databinding.ActivityMainBinding
+import com.nikolaydemidovez.starmap.room.AppDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
+
+import androidx.room.RoomDatabase
+
+
+
 
 class MainActivity : AppCompatActivity() {
 

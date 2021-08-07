@@ -34,13 +34,11 @@ import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEARTS
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.LINE
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STAR
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STARS
-import androidx.webkit.WebViewAssetLoader.ResourcesPathHandler
 
 import androidx.webkit.WebViewAssetLoader.AssetsPathHandler
 
 import androidx.webkit.WebViewAssetLoader
 
-import android.R.string.no
 import android.net.Uri
 import android.os.*
 import android.webkit.WebResourceRequest
@@ -49,7 +47,7 @@ import android.webkit.WebResourceResponse
 import androidx.annotation.RequiresApi
 
 
-class ClassicV1TemplateCanvas(private val activity: MainActivity, private val properties: TemplateProperties) : TemplateCanvas(activity) {
+class ClassicV1TemplateCanvas(private val activity: MainActivity, private val properties: Template) : TemplateCanvas(activity) {
     private val controllerList = arrayListOf(
         Controller("event_v1",     "Событие",     ContextCompat.getDrawable(activity,R.drawable.ic_event_v1)),
         Controller("canvas_v1",    "Холст",       ContextCompat.getDrawable(activity,R.drawable.ic_canvas_v1)),
@@ -88,7 +86,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         descFontColor.value =                   properties.descFontColor
         descText.value =                        properties.descText
         hasEventDateInLocation.value =          properties.hasEventDateInLocation
-        eventDate.value =                       properties.eventDate
+        eventDate.value =                       Date(properties.eventDate!!)
         hasEventTimeInLocation.value =          properties.hasEventTimeInLocation
         eventTime.value =                       properties.eventTime
         hasEventCityInLocation.value =          properties.hasEventCityInLocation
@@ -99,7 +97,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         locationFont.value =                    FontText(properties.locationFontName, properties.locationFontResId, properties.locationFontSize)
         locationFontColor.value =               properties.locationFontColor
         hasEventCoordinatesInLocation.value =   properties.hasEventCoordinatesInLocation
-        coordinates.value =                     properties.coordinates
+        coordinates.value =                     arrayListOf(properties.coordinatesLatitude!!, properties.coordinatesLongitude!!)
         separator.value =                       Separator(properties.separatorWidth!!, properties.separatorType!!)
         separatorColor.value =                  properties.separatorColor
         hasGraticule.value =                    properties.hasGraticule

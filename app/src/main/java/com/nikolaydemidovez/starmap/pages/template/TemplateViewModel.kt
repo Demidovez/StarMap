@@ -8,6 +8,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+// TODO: ViewModelFactory можно убрать
 class TemplateViewModel(private val templateName: String) : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
