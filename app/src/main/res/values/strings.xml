@@ -2,7 +2,7 @@
     <string name="app_name">StarMap</string>
     <string name="api_key_places">AIzaSyCp9X6e2hQeTg6tIOEMdNmsLkGwF62vHBI</string>
     <string name="title_templates">Шаблоны</string>
-    <string name="title_projects">Проекты</string>
+    <string name="title_projects">Мои проекты</string>
     <string name="title_settings">Настройки</string>
     <string name="title_template">Шаблон</string>
     <string name="full_screen">На весь экран</string>
@@ -59,6 +59,12 @@
     <string name="label_enable_coordinates_in_location">Добавить координаты</string>
     <string name="label_result_text">Изменить текст</string>
     <string name="label_width_separator">Длина разделителя</string>
+    <string name="not_found_projects">У Вас пока нет проектов</string>
+    <string name="image">Изображение</string>
+    <string name="invalid_value">Неверное значение!</string>
+    <string name="input_text">Введите текст!</string>
+    <string name="label_color_text">Цвет текста</string>
+    <string name="cancel">Отмена</string>
 
 
 

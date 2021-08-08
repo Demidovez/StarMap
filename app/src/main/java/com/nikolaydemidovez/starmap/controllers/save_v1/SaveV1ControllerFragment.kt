@@ -1,29 +1,33 @@
 package com.nikolaydemidovez.starmap.controllers.save_v1
 
-import adapters.ColorAdapter
 import adapters.FileFormatAdapter
-import adapters.HolstSizeAdapter
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.RadioButton
 import androidx.core.content.FileProvider
 import com.nikolaydemidovez.starmap.databinding.FragmentSaveV1ControllerBinding
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import android.content.pm.ResolveInfo
 import android.content.pm.PackageManager
+import android.graphics.Insets
+import android.view.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.view.updatePadding
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.nikolaydemidovez.starmap.pojo.Holst
+import com.nikolaydemidovez.starmap.R
+import com.nikolaydemidovez.starmap.templates.TemplateCanvas.Companion.DEFAULT
 
 class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
 
@@ -93,6 +97,16 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
             }
         }
 
+        binding.saveBtn.setOnClickListener {
+            showSaveDialog()
+        }
+
+        binding.deleteBtn.visibility = if(templateCanvas.type == DEFAULT) GONE else VISIBLE
+
+        binding.deleteBtn.setOnClickListener {
+            showDeleteDialog()
+        }
+
         return root
     }
 
@@ -111,8 +125,7 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
         }
     }
 
-
-            private fun recyclerFormatFile() {
+    private fun recyclerFormatFile() {
         val holstSizeAdapter = FileFormatAdapter(currentFormat) {
             currentFormat.value = it
         }
@@ -130,6 +143,109 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
             "jpg",
             "pdf"
         ))
+    }
+
+    private fun showSaveDialog() {
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.dialog_save_layout, null)
+        layout.findViewById<TextView>(R.id.title).text = "Сохранить в Мои проекты"
+
+        val editText      = layout.findViewById<EditText>(R.id.editName)
+        val imgClearText  = layout.findViewById<ImageView>(R.id.clearText)
+        val descText      = layout.findViewById<TextView>(R.id.descText)
+
+        val descTextDefault = "Название проекта"
+        descText.text = descTextDefault
+
+        editText.setText(templateCanvas.title ?: templateCanvas.category)
+        editText.doOnTextChanged { text, _, _, _ ->
+            descText.text = descTextDefault
+            descText.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark_gray))
+
+            imgClearText.visibility = if(text!!.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+        imgClearText.setOnClickListener { editText .setText("") }
+
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setPositiveButton("Сохранить", null)
+        builder.setNegativeButton(android.R.string.cancel, null)
+        builder.setView(layout)
+
+        val dialog = builder.create()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            dialog.window?.setDecorFitsSystemWindows(false)
+            dialog.window?.decorView!!.setOnApplyWindowInsetsListener { v, insets ->
+                val imeInsets: Insets = insets.getInsets(WindowInsets.Type.ime())
+                val paddingBottom = if(imeInsets.bottom == 0) 40 else imeInsets.bottom
+                v.updatePadding(bottom = paddingBottom)
+                insets
+            }
+        } else {
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
+
+        dialog.setOnShowListener {
+            imgClearText.visibility = if(editText.text.isNotEmpty()) View.VISIBLE else View.GONE
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+
+            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+            okButton.setOnClickListener {
+                if(editText.text.isNotEmpty()) {
+                    templateCanvas.saveToProjects(editText.text.toString())
+
+                    requireView().findNavController().navigate(R.id.action_templateFragment_to_navigation_projects)
+
+                    dialog.dismiss()
+                } else {
+                    descText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_flat))
+                    descText.text = "Пустое значение недопустимо!"
+                }
+            }
+        }
+
+        dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.8).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+
+    }
+
+    private fun showDeleteDialog() {
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.dialog_delete_layout, null)
+
+        val title = "Вы уверены, что хотите удалить проект?"
+        layout.findViewById<TextView>(R.id.title).text = title
+
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setPositiveButton("Удалить", null)
+        builder.setNegativeButton(android.R.string.cancel, null)
+        builder.setView(layout)
+
+        val dialog = builder.create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+
+            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+            okButton.setOnClickListener {
+                templateCanvas.deleteProject()
+
+                requireView().findNavController().navigate(R.id.action_templateFragment_to_navigation_projects)
+
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.8).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
 }

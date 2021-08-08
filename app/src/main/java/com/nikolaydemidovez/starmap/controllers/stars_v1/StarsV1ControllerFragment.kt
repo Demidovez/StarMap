@@ -1,7 +1,6 @@
 package com.nikolaydemidovez.starmap.controllers.stars_v1
 
-import adapters.ColorAdapter
-import android.app.Dialog
+import com.nikolaydemidovez.starmap.adapters.ColorAdapter
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -22,15 +22,27 @@ import android.R.attr.right
 import android.R.attr.left
 
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewModelScope
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.CURVED
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEART
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEARTS
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STAR
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.STARS
+import com.nikolaydemidovez.starmap.room.AppDatabase
+import com.nikolaydemidovez.starmap.room.TemplateRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 abstract class TemplateCanvas(private val activity: MainActivity) {
+    var title: String? = null
+    var category: String? = null
+    var name: String? = null
+    var type = DEFAULT
+    var templateId: Int? = null
 
     // Начало списка основных свойства холста
     val holst =                         MutableLiveData<Holst>()                // Холст
@@ -131,6 +143,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     abstract fun drawCanvas()
     abstract fun getControllerList(): ArrayList<Controller>
 
+    // TODO: Что это?
     fun getShortBitmap(): Bitmap {
         val maxSize = (holst.value!!.width!!).coerceAtLeast(holst.value!!.height!!)
         val scaleFactor: Float = if(maxSize > 3000) maxSize / 3000 else 1F
@@ -202,6 +215,93 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             pdfDocument.close()
 
             Toast.makeText(activity.applicationContext, "Сохранено", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun deleteProject() {
+        val templateDao = AppDatabase.getDatabase(activity, CoroutineScope(Dispatchers.IO)).templateDao()
+        val repository = TemplateRepository(templateDao)
+
+        CoroutineScope(Dispatchers.IO).launch  {
+            repository.deleteById(templateId!!)
+        }
+    }
+
+    fun saveToProjects(title: String) {
+        val templateDao = AppDatabase.getDatabase(activity, CoroutineScope(Dispatchers.IO)).templateDao()
+        val repository = TemplateRepository(templateDao)
+
+        Log.d("MyLog", templateId.toString())
+
+        val template = Template(
+            id = if(type == DEFAULT) null else templateId,
+            name = name,
+            category = category,
+            title = title,
+            image = "http://62.75.195.219:3000/images/templates/classic.jpeg",
+            type = "custom",
+            status = "active",
+            holstWidth = holst.value!!.width,
+            holstHeight = holst.value!!.height,
+            holstColor = holstColor.value,
+            hasBorderHolst = hasBorderHolst.value,
+            borderHolstIndent = borderHolst.value!!.indent,
+            borderHolstWidth = borderHolst.value!!.width,
+            borderHolstColor = borderHolstColor.value,
+            starMapRadius = starMapRadius.value,
+            starMapColor = starMapColor.value,
+            starMapBorderWidth = starMapBorder.value!!.width,
+            starMapBorderType = starMapBorder.value!!.shapeType,
+            starMapBorderColor = starMapBorderColor.value,
+            descFontName = descFont.value!!.name,
+            descFontResId = descFont.value!!.resId,
+            descFontSize = descFont.value!!.size,
+            descFontColor = descFontColor.value,
+            descText = descText.value,
+            hasEventDateInLocation = hasEventDateInLocation.value,
+            eventDate = eventDate.value!!.time,
+            hasEventTimeInLocation = hasEventTimeInLocation.value,
+            eventTime = eventTime.value,
+            hasEventCityInLocation = hasEventCityInLocation.value,
+            eventLocation = eventLocation.value,
+            eventCountry = eventCountry.value,
+            hasEditResultLocationText = hasEditResultLocationText.value,
+            resultLocationText = resultLocationText.value,
+            locationFontName = locationFont.value!!.name,
+            locationFontResId = locationFont.value!!.resId,
+            locationFontSize = locationFont.value!!.size,
+            locationFontColor = locationFontColor.value,
+            hasEventCoordinatesInLocation = hasEventCoordinatesInLocation.value,
+            coordinatesLatitude = coordinates.value!![0],
+            coordinatesLongitude = coordinates.value!![1],
+            separatorWidth = separator.value!!.width,
+            separatorType = separator.value!!.shapeType,
+            separatorColor = separatorColor.value,
+            hasGraticule = hasGraticule.value,
+            graticuleWidth = graticuleWidth.value,
+            graticuleColor = graticuleColor.value,
+            graticuleOpacity = graticuleOpacity.value,
+            graticuleType = graticuleType.value,
+            hasMilkyWay = hasMilkyWay.value,
+            hasNames = hasNames.value,
+            namesStarsSize = namesStarsSize.value,
+            namesStarsColor = namesStarsColor.value,
+            namesStarsLangLabel = namesStarsLang.value!!.label,
+            namesStarsLangName = namesStarsLang.value!!.name,
+            hasConstellations = hasConstellations.value,
+            constellationsWidth = constellationsWidth.value,
+            constellationsColor = constellationsColor.value,
+            constellationsOpacity = constellationsOpacity.value,
+            starsSize = starsSize.value,
+            starsColor = starsColor.value,
+            starsOpacity = starsOpacity.value
+        )
+
+        CoroutineScope(Dispatchers.IO).launch  {
+            if(type == DEFAULT)
+                repository.insert(template)
+            else
+                repository.update(template)
         }
     }
 
@@ -382,6 +482,8 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     companion object {
         const val LINE_GRATICULE = 1
         const val DASHED_GRATICULE = 2
+        const val DEFAULT = 3
+        const val CUSTOM = 4
     }
 }
 

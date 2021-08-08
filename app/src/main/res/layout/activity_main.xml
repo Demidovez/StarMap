@@ -12,7 +12,10 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
+        app:titleTextColor="@color/dark"
+        app:titleTextAppearance="@style/tool_bar_text"
+        android:contentInsetStart="24dp"
+        app:contentInsetStart="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

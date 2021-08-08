@@ -45,6 +45,7 @@ import android.webkit.WebResourceRequest
 
 import android.webkit.WebResourceResponse
 import androidx.annotation.RequiresApi
+import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getTimeString
 
 
 class ClassicV1TemplateCanvas(private val activity: MainActivity, private val properties: Template) : TemplateCanvas(activity) {
@@ -73,6 +74,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
     private  var isLoadedStarMap = MutableLiveData(false)    // Загрузилась ли звездная карта с сервера
 
     init {
+        title =                                 properties.title
+        category =                              properties.category
+        name =                                  properties.name
+        type =                                  if(properties.type == "default") DEFAULT else CUSTOM
+        templateId =                            properties.id
+
         holst.value =                           Holst("A4", "297 x 210 мм", properties.holstWidth, properties.holstHeight)
         holstColor.value =                      properties.holstColor // #16A085
         hasBorderHolst.value =                  properties.hasBorderHolst
@@ -86,14 +93,14 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         descFontColor.value =                   properties.descFontColor
         descText.value =                        properties.descText
         hasEventDateInLocation.value =          properties.hasEventDateInLocation
-        eventDate.value =                       Date(properties.eventDate!!)
+        eventDate.value =                       if(properties.eventDate == null) Date() else Date(properties.eventDate)
         hasEventTimeInLocation.value =          properties.hasEventTimeInLocation
-        eventTime.value =                       properties.eventTime
+        eventTime.value =                       properties.eventTime ?: getTimeString()
         hasEventCityInLocation.value =          properties.hasEventCityInLocation
         eventLocation.value =                   properties.eventLocation
         eventCountry.value =                    properties.eventCountry
         hasEditResultLocationText.value =       properties.hasEditResultLocationText
-        resultLocationText.value =              properties.resultLocationText
+        resultLocationText.value =              properties.resultLocationText ?: ""
         locationFont.value =                    FontText(properties.locationFontName, properties.locationFontResId, properties.locationFontSize)
         locationFontColor.value =               properties.locationFontColor
         hasEventCoordinatesInLocation.value =   properties.hasEventCoordinatesInLocation
@@ -662,119 +669,116 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         val year    = date.get(Calendar.YEAR)
         val month   = date.get(Calendar.MONTH)
         val day     = date.get(Calendar.DAY_OF_MONTH)
-        val hourOfDay = date.get(Calendar.HOUR_OF_DAY)
-        val minute    = date.get(Calendar.MINUTE)
-
-        val hours   = if(eventTime.value!!.isNotEmpty()) eventTime.value!!.split(":")[0].toInt() else hourOfDay
-        val minutes = if(eventTime.value!!.isNotEmpty()) eventTime.value!!.split(":")[1].toInt() else minute
+        val hours   = eventTime.value!!.split(":")[0].toInt()
+        val minutes = eventTime.value!!.split(":")[1].toInt()
 
         date.set(year, month, day, hours, minutes)
 
         val jsonString =
             """
-                            {
-                                "date": ${date.time.time},
-                                "latitude": ${coordinates.value!![0]}, 
-                                "longtitude" :${coordinates.value!![1]},
-                                "width": ${starMapRadius.value!! * 2},
-                                "font": "Arial, Times, 'Times Roman', serif",
-                                "stars": {
-                                    "size": ${starsSize.value!!},
-                                    "exponent": -0.28,
-                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/stars.6.json",
-                                    "propername": ${hasNames.value},
-                                    "propernamePath": "https://appassets.androidplatform.net/assets/starmap/data/starnames.json",
-                                    "propernameLang": "${namesStarsLang.value!!.name}",
-                                    "propernameStyle": {
-                                        "fill": "${namesStarsColor.value!!}",
-                                        "font": "${namesStarsSize.value!!}",
-                                        "align": "right",
-                                        "opacity": 1
-                                    },
-                                    "propernameLimit": 2.5,
-                                    "fill": "${starsColor.value!!}", 
-                                    "opacity": ${starsOpacity.value!!.toFloat() / 100} 
-                                },
-                                "dsos": {
-                                    "show": true,
-                                    "limit": 6,
-                                    "style": { "fill": "${starsColor.value!!}", "width": 2, "opacity": ${starsOpacity.value!!.toFloat() / 100}  }, 
-                                    "size": ${starsSize.value!!},
-                                    "names": ${hasNames.value},
-                                    "nameLang": "${namesStarsLang.value!!.name}",
-                                    "namePath": "https://appassets.androidplatform.net/assets/starmap/data/dsonames.json",
-                                    "nameStyle": {
-                                        "fill": "${namesStarsColor.value!!}",
-                                        "font": "${namesStarsSize.value!!}",
-                                        "align": "left",
-                                        "opacity": 1
-                                    },
-                                    "nameLimit": 4,
-                                    "exponent": -0.28,
-                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/dsos.bright.json"
-                                },
-                                "planets": {
-                                    "show": true,
-                                    "which": [ "sol", "mer", "ven", "ter", "lun", "mar", "jup", "sat", "ura", "nep", "cer", "plu"],
-                                    "style": {
-                                      "sol": { "fill": "#ffff00", "size": 12 },
-                                      "mer": { "fill": "#cccccc" },
-                                      "ven": { "fill": "#eeeecc" },
-                                      "ter": { "fill": "#00ccff" },
-                                      "lun": { "fill": "#ffffff" },
-                                      "mar": { "fill": "#ff6600" },
-                                      "cer": { "fill": "#cccccc" },
-                                      "ves": { "fill": "#cccccc" },
-                                      "jup": { "fill": "#ffaa33" },
-                                      "sat": { "fill": "#ffdd66" },
-                                      "ura": { "fill": "#66ccff" },
-                                      "nep": { "fill": "#6666ff" },
-                                      "plu": { "fill": "#aaaaaa" },
-                                      "eri": { "fill": "#eeeeee" }
-                                    },
-                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/planets.json",
-                                    "names": ${hasNames.value},
-                                    "nameLang": "${namesStarsLang.value!!.name}",
-                                    "nameStyle": {
-                                        "fill": "${namesStarsColor.value!!}",
-                                        "font": "${namesStarsSize.value!!}",
-                                        "align": "right",
-                                        "opacity": 1
-                                    }
-                                },
-                                "constellations": {
-                                    "show": ${hasConstellations.value},
-                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/constellations.lines.json",
-                                    "style": {
-                                      "stroke": "${constellationsColor.value!!}", 
-                                      "strokeWidth": ${constellationsWidth.value!!},
-                                      "opacity": ${constellationsOpacity.value!!.toFloat() / 100} 
-                                    },
-                                    "names": ${hasNames.value},
-                                    "nameLang": "${namesStarsLang.value!!.name}",
-                                    "namePath": "https://appassets.androidplatform.net/assets/starmap/data/constellations.json",
-                                    "nameStyle": {
-                                        "fill": "${namesStarsColor.value!!}",
-                                        "align": "center",
-                                        "baseline": "middle",
-                                        "opacity": 1,
-                                        "font": "${namesStarsSize.value!!}"
-                                    }
-                                },
-                                "mw": {
-                                    "show": ${hasMilkyWay.value},
-                                    "style": { "fill": "#ffffff", "opacity": "0.15" },
-                                    "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/mw.json"
-                                },
-                                "graticule": {
-                                    "show": ${hasGraticule.value},
-                                    "style": {
-                                        "stroke": "${graticuleColor.value!!}",
-                                        "strokeWidth": ${graticuleWidth.value!!},
-                                        "opacity": ${graticuleOpacity.value!!.toFloat() / 100}
-                                    }
-                                }
-                            }       
+                {
+                    "date": ${date.time.time},
+                    "latitude": ${coordinates.value!![0]}, 
+                    "longtitude" :${coordinates.value!![1]},
+                    "width": ${starMapRadius.value!! * 2},
+                    "font": "Arial, Times, 'Times Roman', serif",
+                    "stars": {
+                        "size": ${starsSize.value!!},
+                        "exponent": -0.28,
+                        "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/stars.6.json",
+                        "propername": ${hasNames.value},
+                        "propernamePath": "https://appassets.androidplatform.net/assets/starmap/data/starnames.json",
+                        "propernameLang": "${namesStarsLang.value!!.name}",
+                        "propernameStyle": {
+                            "fill": "${namesStarsColor.value!!}",
+                            "font": "${namesStarsSize.value!!}",
+                            "align": "right",
+                            "opacity": 1
+                        },
+                        "propernameLimit": 2.5,
+                        "fill": "${starsColor.value!!}", 
+                        "opacity": ${starsOpacity.value!!.toFloat() / 100} 
+                    },
+                    "dsos": {
+                        "show": true,
+                        "limit": 6,
+                        "style": { "fill": "${starsColor.value!!}", "width": 2, "opacity": ${starsOpacity.value!!.toFloat() / 100}  }, 
+                        "size": ${starsSize.value!!},
+                        "names": ${hasNames.value},
+                        "nameLang": "${namesStarsLang.value!!.name}",
+                        "namePath": "https://appassets.androidplatform.net/assets/starmap/data/dsonames.json",
+                        "nameStyle": {
+                            "fill": "${namesStarsColor.value!!}",
+                            "font": "${namesStarsSize.value!!}",
+                            "align": "left",
+                            "opacity": 1
+                        },
+                        "nameLimit": 4,
+                        "exponent": -0.28,
+                        "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/dsos.bright.json"
+                    },
+                    "planets": {
+                        "show": true,
+                        "which": [ "sol", "mer", "ven", "ter", "lun", "mar", "jup", "sat", "ura", "nep", "cer", "plu"],
+                        "style": {
+                          "sol": { "fill": "#ffff00", "size": 12 },
+                          "mer": { "fill": "#cccccc" },
+                          "ven": { "fill": "#eeeecc" },
+                          "ter": { "fill": "#00ccff" },
+                          "lun": { "fill": "#ffffff" },
+                          "mar": { "fill": "#ff6600" },
+                          "cer": { "fill": "#cccccc" },
+                          "ves": { "fill": "#cccccc" },
+                          "jup": { "fill": "#ffaa33" },
+                          "sat": { "fill": "#ffdd66" },
+                          "ura": { "fill": "#66ccff" },
+                          "nep": { "fill": "#6666ff" },
+                          "plu": { "fill": "#aaaaaa" },
+                          "eri": { "fill": "#eeeeee" }
+                        },
+                        "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/planets.json",
+                        "names": ${hasNames.value},
+                        "nameLang": "${namesStarsLang.value!!.name}",
+                        "nameStyle": {
+                            "fill": "${namesStarsColor.value!!}",
+                            "font": "${namesStarsSize.value!!}",
+                            "align": "right",
+                            "opacity": 1
+                        }
+                    },
+                    "constellations": {
+                        "show": ${hasConstellations.value},
+                        "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/constellations.lines.json",
+                        "style": {
+                          "stroke": "${constellationsColor.value!!}", 
+                          "strokeWidth": ${constellationsWidth.value!!},
+                          "opacity": ${constellationsOpacity.value!!.toFloat() / 100} 
+                        },
+                        "names": ${hasNames.value},
+                        "nameLang": "${namesStarsLang.value!!.name}",
+                        "namePath": "https://appassets.androidplatform.net/assets/starmap/data/constellations.json",
+                        "nameStyle": {
+                            "fill": "${namesStarsColor.value!!}",
+                            "align": "center",
+                            "baseline": "middle",
+                            "opacity": 1,
+                            "font": "${namesStarsSize.value!!}"
+                        }
+                    },
+                    "mw": {
+                        "show": ${hasMilkyWay.value},
+                        "style": { "fill": "#ffffff", "opacity": "0.15" },
+                        "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/mw.json"
+                    },
+                    "graticule": {
+                        "show": ${hasGraticule.value},
+                        "style": {
+                            "stroke": "${graticuleColor.value!!}",
+                            "strokeWidth": ${graticuleWidth.value!!},
+                            "opacity": ${graticuleOpacity.value!!.toFloat() / 100}
+                        }
+                    }
+                }       
             """.trimIndent()
 
         Log.d("MyLog", "Done initConfigStarMap")

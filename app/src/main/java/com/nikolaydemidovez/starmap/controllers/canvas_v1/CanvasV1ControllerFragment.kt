@@ -1,20 +1,15 @@
 package com.nikolaydemidovez.starmap.controllers.canvas_v1
 
-import adapters.ColorAdapter
+import com.nikolaydemidovez.starmap.adapters.ColorAdapter
 import adapters.HolstSizeAdapter
-import android.R.attr
-import android.graphics.Color
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.FragmentCanvasV1ControllerBinding
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
-import android.R.attr.checked
 import android.widget.SeekBar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

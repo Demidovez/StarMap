@@ -4,11 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.updatePadding
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.TemplateItemBinding
 import com.nikolaydemidovez.starmap.pojo.Template
+import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.squareup.picasso.Picasso
 
 class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {
@@ -18,11 +20,17 @@ class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {
         private val binding = TemplateItemBinding.bind(item)
 
         fun bind(template: Template?) = with(binding) {
-            labelTemplate.text = template!!.title
+            if(adapterPosition in 0..1) {
+                rootItem.updatePadding(top = Helper.dpToPx(24F, itemView.context))
+            } else {
+                rootItem.updatePadding(top = 0)
+            }
+
+            labelTemplate.text = template!!.category
 
             cardView.setOnClickListener { view ->
                 val bundle = bundleOf(
-                    "templateName" to template.name
+                    "templateId" to template.id
                 )
 
                 view.findNavController().navigate(R.id.action_navigation_templates_to_templateFragment, bundle)

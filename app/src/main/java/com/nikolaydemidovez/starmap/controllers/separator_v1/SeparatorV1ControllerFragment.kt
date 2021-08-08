@@ -1,6 +1,6 @@
 package com.nikolaydemidovez.starmap.controllers.separator_v1
 
-import adapters.ColorAdapter
+import com.nikolaydemidovez.starmap.adapters.ColorAdapter
 import adapters.ShapeAdapter
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -15,10 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.FragmentSeparatorV1ControllerBinding
 import com.nikolaydemidovez.starmap.interfaces.HasShapeInterface
-import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
-import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.shadowAlpha
 
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.RecyclerViewDisabler

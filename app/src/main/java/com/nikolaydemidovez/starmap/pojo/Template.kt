@@ -13,6 +13,7 @@ data class Template(
     val title: String? = null,
     val image: String? = null,
     val type: String? = null,
+    val category: String? = null,
     val status: String? = null,
     val holstWidth: Float? = null,
     val holstHeight: Float? = null,
@@ -67,5 +68,5 @@ data class Template(
     val constellationsOpacity: Int? = null,
     val starsSize: Float? = null,
     val starsColor: String? = null,
-    val starsOpacity: Int?
+    val starsOpacity: Int? = null
 )

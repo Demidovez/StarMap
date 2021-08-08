@@ -1,4 +1,4 @@
-package adapters
+package com.nikolaydemidovez.starmap.adapters
 
 import android.os.Build
 import androidx.core.content.ContextCompat
@@ -33,7 +33,7 @@ class ColorAdapter(
             val borderColor = if(color == mutableColor.value!!) {
                 ContextCompat.getColor(itemView.context, R.color.dark)
             } else {
-                Color.parseColor("#FFFFFF")
+                ContextCompat.getColor(itemView.context, R.color.white)
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -43,7 +43,7 @@ class ColorAdapter(
             }
 
             val circleColor = if(color == "#FFFFFF") {
-                Color.parseColor("#ECF0F1")
+                ContextCompat.getColor(itemView.context, R.color.light)
             } else {
                 Color.parseColor(color)
             }
@@ -65,7 +65,7 @@ class ColorAdapter(
             val borderColor = if(!colorList.contains(mutableColor.value!!)) {
                 ContextCompat.getColor(itemView.context, R.color.dark)
             } else {
-                Color.parseColor("#FFFFFF")
+                ContextCompat.getColor(itemView.context, R.color.white)
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -84,7 +84,7 @@ class ColorAdapter(
         private fun showColorPicker(mutableColor: MutableLiveData<String>, listener: (color: String) -> Unit) {
             val layoutInflater = LayoutInflater.from(itemView.context)
             val layout: View = layoutInflater.inflate(R.layout.picker_color_layout, null)
-            layout.findViewById<TextView>(R.id.title).text = "Цвет текста"
+            layout.findViewById<TextView>(R.id.title).text = itemView.context.getString(R.string.label_color_text)
 
             val colorPickerView    = layout.findViewById<ColorPickerView>(R.id.colorPickerView)
             val brightnessSlideBar = layout.findViewById<BrightnessSlideBar>(R.id.brightnessSlide)
@@ -131,7 +131,7 @@ class ColorAdapter(
 
             val builder = AlertDialog.Builder(itemView.context, R.style.dialog_corners)
             builder.setPositiveButton(android.R.string.ok, null)
-            builder.setNegativeButton(android.R.string.cancel, null)
+            builder.setNegativeButton(itemView.context.getString(R.string.cancel), null)
             builder.setView(layout)
 
             val dialog = builder.create()
@@ -164,10 +164,10 @@ class ColorAdapter(
 
                             dialog.dismiss()
                         } else {
-                            descText.text = "Неверное значение!"
+                            descText.text = itemView.context.getString(R.string.invalid_value)
                         }
                     } else {
-                        descText.text = "Введите текст!"
+                        descText.text = itemView.context.getString(R.string.input_text)
                     }
                 }
             }

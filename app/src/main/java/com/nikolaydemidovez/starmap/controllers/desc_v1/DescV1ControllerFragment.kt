@@ -1,7 +1,6 @@
 package com.nikolaydemidovez.starmap.controllers.desc_v1
 
-import adapters.ColorAdapter
-import android.app.Dialog
+import com.nikolaydemidovez.starmap.adapters.ColorAdapter
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -18,7 +17,6 @@ import com.nikolaydemidovez.starmap.adapters.FontAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentDescV1ControllerBinding
 import com.nikolaydemidovez.starmap.pojo.FontText
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
-import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getAllFonts
 import java.util.ArrayList
 

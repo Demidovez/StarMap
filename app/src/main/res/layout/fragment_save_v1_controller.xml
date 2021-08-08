@@ -87,6 +87,23 @@
             app:layout_constraintTop_toBottomOf="@+id/formatFileRecycler" />
 
         <Button
+            android:id="@+id/deleteBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="24dp"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_background_delete"
+            android:text="Удалить"
+            android:textAppearance="@style/label_controller"
+            style="?android:attr/borderlessButtonStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/shareBtn" />
+
+        <Button
             android:id="@+id/downloadBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,7 +118,7 @@
             style="?android:attr/borderlessButtonStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/shareBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/deleteBtn" />
 
 
 

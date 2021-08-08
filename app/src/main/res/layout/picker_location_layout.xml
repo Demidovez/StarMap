@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/linear_layout"
@@ -27,7 +28,9 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:ignore="LabelFor,RtlSymmetry"
+            android:autofillHints="location" />
 
         <ImageView
             android:id="@+id/clear_text"
@@ -38,7 +41,9 @@
             android:padding="8dp"
             android:paddingEnd="12dp"
             android:layout_width="34dp"
-            android:layout_height="30dp" />
+            android:layout_height="30dp"
+            tools:ignore="RtlSymmetry"
+            android:contentDescription="@string/image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

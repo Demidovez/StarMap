@@ -1,6 +1,6 @@
 package com.nikolaydemidovez.starmap.controllers.map_v1
 
-import adapters.ColorAdapter
+import com.nikolaydemidovez.starmap.adapters.ColorAdapter
 import adapters.ShapeAdapter
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle

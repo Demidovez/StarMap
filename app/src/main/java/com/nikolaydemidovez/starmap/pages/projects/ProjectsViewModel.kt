@@ -1,13 +1,26 @@
 package com.nikolaydemidovez.starmap.pages.projects
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.content.Context
+import androidx.lifecycle.*
+import com.nikolaydemidovez.starmap.pages.templates.TemplatesViewModel
+import com.nikolaydemidovez.starmap.pojo.Template
+import com.nikolaydemidovez.starmap.room.AppDatabase
+import com.nikolaydemidovez.starmap.room.TemplateRepository
+import kotlinx.coroutines.launch
 
-class ProjectsViewModel : ViewModel() {
+class ProjectsViewModel(context: Context) : ViewModel() {
+    private val repository: TemplateRepository
+    val allTemplates: LiveData<List<Template>>
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is projects Fragment"
+    init {
+        val templateDao = AppDatabase.getDatabase(context, viewModelScope).templateDao()
+
+        repository = TemplateRepository(templateDao)
+
+        allTemplates = repository.allCustomTemplates
     }
-    val text: LiveData<String> = _text
+
+    fun insert(template: Template) = viewModelScope.launch {
+        repository.insert(template)
+    }
 }

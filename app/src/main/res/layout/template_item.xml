@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginTop="8dp"
+    android:id="@+id/rootItem"
     android:layout_marginBottom="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -35,7 +35,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:contentDescription="@string/image" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -45,10 +46,10 @@
         android:id="@+id/labelTemplate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-condensed"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/nunito_regular"
         android:gravity="center"
-        android:text="TextView"
-        android:textColor="@color/black"
+        android:textColor="@color/dark"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

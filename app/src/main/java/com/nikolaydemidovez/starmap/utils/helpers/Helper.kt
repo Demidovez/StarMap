@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.pojo.FontText
-import java.util.ArrayList
+import java.util.*
 
 
 class Helper {
@@ -148,6 +148,16 @@ class Helper {
             }
 
             return allFonts
+        }
+
+        // Получаем текущее время в виде строки "hh:mm"
+        fun getTimeString(): String {
+            val date = Calendar.getInstance()
+
+            val hourOfDay = date.get(Calendar.HOUR_OF_DAY)
+            val minute = date.get(Calendar.MINUTE)
+
+            return "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
         }
     }
 }

@@ -11,6 +11,11 @@
         <item name="android:timePickerStyle" tools:targetApi="21">@style/TimePickerStyle</item>
     </style>
 
+    <style name="tool_bar_text" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">21sp</item>
+        <item name="android:fontFamily">@font/nunito_semi_bold</item>
+    </style>
+
     <style name="full_screen_dialog" >
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">false</item>
@@ -122,9 +127,37 @@
     </style>
 
     <style name="text_style_picker">
-        <item name="android:textColor">@color/dark</item> <!-- DatePicker color text -->
-        <item name="android:textStyle">bold</item>  <!-- DatePicker font style text -->
-        <item name="android:textSize">15sp</item>  <!-- DatePicker font size text -->
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="project_title">
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="project_desc">
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="project_location">
+        <item name="android:textColor">@color/dark_shadow</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="not_found_projects">
+        <item name="android:textColor">@color/dark_light</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">25sp</item>
         <item name="android:fontFamily">@font/nunito_regular</item>
     </style>
 

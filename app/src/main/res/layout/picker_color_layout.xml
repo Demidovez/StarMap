@@ -2,6 +2,7 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -62,7 +63,9 @@
             app:layout_constraintStart_toEndOf="@id/color_preview"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/color_preview"
-            app:layout_constraintBottom_toBottomOf="@id/color_preview" />
+            app:layout_constraintBottom_toBottomOf="@id/color_preview"
+            android:autofillHints="picker"
+            tools:ignore="LabelFor" />
 
         <ImageView
             android:id="@+id/clear_text"
@@ -73,7 +76,9 @@
             android:padding="8dp"
             android:paddingEnd="12dp"
             android:layout_width="34dp"
-            android:layout_height="30dp" />
+            android:layout_height="30dp"
+            tools:ignore="RtlSymmetry"
+            android:contentDescription="@string/image" />
 
         <TextView
             android:id="@+id/desc_text"

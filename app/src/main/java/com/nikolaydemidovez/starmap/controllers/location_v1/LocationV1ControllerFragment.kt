@@ -1,7 +1,6 @@
 package com.nikolaydemidovez.starmap.controllers.location_v1
 
-import adapters.ColorAdapter
-import android.app.Dialog
+import com.nikolaydemidovez.starmap.adapters.ColorAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

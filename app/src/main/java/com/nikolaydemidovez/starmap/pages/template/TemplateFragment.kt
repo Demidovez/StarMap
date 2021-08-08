@@ -32,34 +32,35 @@ class TemplateFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         editActionAndStatusBar()
-        val templateName = arguments?.getString("templateName")
-        val templateProperties = getTemplateProperties(templateName)
+        val templateId = arguments?.getInt("templateId")
 
-        templateViewModel = ViewModelProviders.of(this, TemplateViewModelFactory(templateName!!)).get(TemplateViewModel::class.java)
+        templateViewModel = ViewModelProviders.of(this, TemplateViewModelFactory(requireContext(), templateId!!)).get(TemplateViewModel::class.java)
 
         binding = FragmentTemplateBinding.inflate(inflater, container, false)
 
         val root: View = binding.root
 
-        templateCanvas = getTemplateCanvas(templateName, templateProperties)
+        templateViewModel.template.observe(viewLifecycleOwner, {
+            templateCanvas = getTemplateCanvas(it)
 
-        binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
+            binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
 
-        templateCanvas.doneRedraw.observe(requireActivity()) {
-            if(it) {
-                binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
+            templateCanvas.doneRedraw.observe(requireActivity()) {
+                if(it) {
+                    binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
+                }
             }
-        }
 
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
+            binding.btnBack.setOnClickListener {
+                requireActivity().onBackPressed()
+            }
 
-        binding.canvasImage.setOnClickListener {
-            showFullScreenCanvasDialog(templateCanvas)
-        }
+            binding.canvasImage.setOnClickListener {
+                showFullScreenCanvasDialog(templateCanvas)
+            }
 
-        initTabControllers()
+            initTabControllers()
+        })
 
         return root
     }
@@ -113,69 +114,10 @@ class TemplateFragment : Fragment() {
         imageView.setImage(ImageSource.bitmap(templateCanvas.bitmap))
     }
 
-    private fun getTemplateCanvas(templateName: String, template: Template): TemplateCanvas = when(templateName) {
+    private fun getTemplateCanvas(template: Template): TemplateCanvas = when(template.name) {
         "classic_v1" -> ClassicV1TemplateCanvas(activity as MainActivity, template)
         //"half_v1" -> HalfV1TemplateCanvas(activity as MainActivity)
 
         else -> ClassicV1TemplateCanvas(activity as MainActivity, template)
-    }
-
-    private fun getTemplateProperties(templateName: String?): Template {
-        return Template(
-            holstWidth = 2480F,
-            holstHeight = 3508F,
-            holstColor = "#FFFFFF",
-            hasBorderHolst = true,
-            borderHolstIndent = 100F,
-            borderHolstWidth = 10F,
-            borderHolstColor = "#000000",
-            starMapRadius = 900F,
-            starMapColor = "#000000",
-            starMapBorderWidth = 15F,
-            starMapBorderType = ShapeMapBorder.NONE,
-            starMapBorderColor = "#000000",
-            descFontName = "Comfortaa Regular",
-            descFontResId = R.font.comfortaa_regular,
-            descFontSize = 120F,
-            descFontColor = "#000000",
-            descText = "День, когда сошлись\nвсе звезды вселенной...",
-            hasEventDateInLocation = true,
-            eventDate = Calendar.getInstance().time.time,
-            hasEventTimeInLocation = true,
-            eventTime = "",
-            hasEventCityInLocation = true,
-            eventLocation = "Москва",
-            eventCountry = "Россия",
-            hasEditResultLocationText = false,
-            resultLocationText = "",
-            locationFontName = "Comfortaa Regular",
-            locationFontResId = R.font.comfortaa_regular,
-            locationFontSize = 60F,
-            locationFontColor = "#000000",
-            hasEventCoordinatesInLocation = true,
-            coordinatesLatitude = 55.755826F,
-            coordinatesLongitude = 37.6173F,
-            separatorWidth = 1000F,
-            separatorType = ShapeSeparator.CURVED,
-            separatorColor = "#000000",
-            hasGraticule = true,
-            graticuleWidth = 2F,
-            graticuleColor = "#FFFFFF",
-            graticuleOpacity = 70,
-            graticuleType = TemplateCanvas.LINE_GRATICULE,
-            hasMilkyWay = true,
-            hasNames = true,
-            namesStarsSize = 12,
-            namesStarsColor = "#FFFFFF",
-            namesStarsLangLabel = "Русский",
-            namesStarsLangName = "ru",
-            hasConstellations = true,
-            constellationsWidth = 3F,
-            constellationsColor = "#FFFFFF",
-            constellationsOpacity = 100,
-            starsSize = 17F,
-            starsColor = "#FFFFFF",
-            starsOpacity = 100
-        )
     }
 }
