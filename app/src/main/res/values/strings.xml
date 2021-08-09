@@ -65,8 +65,11 @@
     <string name="input_text">Введите текст!</string>
     <string name="label_color_text">Цвет текста</string>
     <string name="cancel">Отмена</string>
-
-
+    <string name="review_label">Оставить отзыв</string>
+    <string name="label_share">Поделиться с друзьями</string>
+    <string name="label_about_error">Сообщить о проблеме</string>
+    <string name="label_politics">Политика конфиденциальности</string>
+    <string name="label_telegram">Наш телеграм</string>
 
 
 </resources>

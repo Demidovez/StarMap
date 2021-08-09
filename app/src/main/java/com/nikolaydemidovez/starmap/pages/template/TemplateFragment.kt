@@ -4,11 +4,15 @@ import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.material.tabs.TabLayout
@@ -18,8 +22,6 @@ import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.adapters.ControllerTabAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
-import com.nikolaydemidovez.starmap.pojo.ShapeMapBorder
-import com.nikolaydemidovez.starmap.pojo.ShapeSeparator
 import com.nikolaydemidovez.starmap.pojo.Template
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas
@@ -51,10 +53,6 @@ class TemplateFragment : Fragment() {
                 }
             }
 
-            binding.btnBack.setOnClickListener {
-                requireActivity().onBackPressed()
-            }
-
             binding.canvasImage.setOnClickListener {
                 showFullScreenCanvasDialog(templateCanvas)
             }
@@ -62,7 +60,43 @@ class TemplateFragment : Fragment() {
             initTabControllers()
         })
 
+        binding.btnBack.setOnClickListener {
+            showAskSaveDialog()
+        }
+
         return root
+    }
+
+    private fun showAskSaveDialog() {
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.dialog_ask_layout, null)
+
+        val title = "Вы уверены, что хотите покинуть проект?"
+        layout.findViewById<TextView>(R.id.title).text = title
+
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setPositiveButton("Да", null)
+        builder.setNegativeButton(R.string.cancel, null)
+        builder.setView(layout)
+
+        val dialog = builder.create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+
+            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+            okButton.setOnClickListener {
+                requireActivity().onBackPressed()
+
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.8).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
     private fun initTabControllers() {

@@ -216,7 +216,7 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
 
     private fun showDeleteDialog() {
         val layoutInflater = LayoutInflater.from(requireContext())
-        val layout: View = layoutInflater.inflate(R.layout.dialog_delete_layout, null)
+        val layout: View = layoutInflater.inflate(R.layout.dialog_ask_layout, null)
 
         val title = "Вы уверены, что хотите удалить проект?"
         layout.findViewById<TextView>(R.id.title).text = title

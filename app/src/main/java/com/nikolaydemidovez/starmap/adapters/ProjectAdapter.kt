@@ -1,6 +1,7 @@
 package com.nikolaydemidovez.starmap.adapters
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -11,14 +12,24 @@ import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.ProjectItemBinding
 import com.nikolaydemidovez.starmap.databinding.TemplateItemBinding
 import com.nikolaydemidovez.starmap.pojo.Template
+import com.nikolaydemidovez.starmap.utils.extensions.resIdByName
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Picasso.LoadedFrom
 import java.lang.Exception
+import android.R
+import android.R.attr
+
+import android.R.attr.path
+import android.content.Context
+import android.widget.ImageView
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+
 
 class ProjectAdapter: RecyclerView.Adapter<ProjectAdapter.ProjectHolder>() {
     private var projectList = listOf<Template?>()
@@ -42,23 +53,21 @@ class ProjectAdapter: RecyclerView.Adapter<ProjectAdapter.ProjectHolder>() {
                     "templateId" to template.id
                 )
 
-                view.findNavController().navigate(R.id.action_navigation_projects_to_templateFragment, bundle)
+                view.findNavController().navigate(com.nikolaydemidovez.starmap.R.id.action_navigation_projects_to_templateFragment, bundle)
             }
 
-            Picasso.get().load(template.image).into(object : com.squareup.picasso.Target {
-                override fun onBitmapLoaded(bitmap: Bitmap?, from: LoadedFrom?) {
-                    imageProject.setImageBitmap(bitmap)
-                }
-
-                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {}
-
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-            })
+            try {
+                val f = File(itemView.context.applicationContext.filesDir.path, template.image!!)
+                val b = BitmapFactory.decodeStream(FileInputStream(f))
+                imageProject.setImageBitmap(b)
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProjectHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.project_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(com.nikolaydemidovez.starmap.R.layout.project_item, parent, false)
         return ProjectHolder(view)
     }
 

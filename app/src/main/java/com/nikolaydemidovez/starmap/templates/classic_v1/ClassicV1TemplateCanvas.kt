@@ -79,6 +79,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         name =                                  properties.name
         type =                                  if(properties.type == "default") DEFAULT else CUSTOM
         templateId =                            properties.id
+        image =                                 properties.image
 
         holst.value =                           Holst("A4", "297 x 210 мм", properties.holstWidth, properties.holstHeight)
         holstColor.value =                      properties.holstColor // #16A085

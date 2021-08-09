@@ -1,12 +1,10 @@
 package com.nikolaydemidovez.starmap.templates
 
-import android.R.attr
 import android.graphics.*
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import android.text.TextPaint
-import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
@@ -17,14 +15,8 @@ import com.nikolaydemidovez.starmap.pojo.*
 import java.io.*
 import java.util.*
 import kotlin.collections.ArrayList
-import android.R.attr.right
-
-import android.R.attr.left
-
-import android.graphics.drawable.Drawable
-import android.util.Log
+import android.content.Context
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewModelScope
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.CURVED
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEART
 import com.nikolaydemidovez.starmap.pojo.ShapeSeparator.Companion.HEARTS
@@ -35,7 +27,10 @@ import com.nikolaydemidovez.starmap.room.TemplateRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
+import android.graphics.Bitmap
+import android.content.ContextWrapper
+import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.dpToPx
+import java.lang.Exception
 
 abstract class TemplateCanvas(private val activity: MainActivity) {
     var title: String? = null
@@ -43,6 +38,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     var name: String? = null
     var type = DEFAULT
     var templateId: Int? = null
+    var image: String? = null
 
     // Начало списка основных свойства холста
     val holst =                         MutableLiveData<Holst>()                // Холст
@@ -223,7 +219,8 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         val repository = TemplateRepository(templateDao)
 
         CoroutineScope(Dispatchers.IO).launch  {
-            repository.deleteById(templateId!!)
+            launch { deleteThumbnailProject() }
+            launch { repository.deleteById(templateId!!) }
         }
     }
 
@@ -231,14 +228,18 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         val templateDao = AppDatabase.getDatabase(activity, CoroutineScope(Dispatchers.IO)).templateDao()
         val repository = TemplateRepository(templateDao)
 
-        Log.d("MyLog", templateId.toString())
+        val imageName = if(type == DEFAULT) {
+            "${name}_${Calendar.getInstance().time.time}"
+        } else {
+            image
+        }
 
         val template = Template(
             id = if(type == DEFAULT) null else templateId,
             name = name,
             category = category,
             title = title,
-            image = "http://62.75.195.219:3000/images/templates/classic.jpeg",
+            image = imageName,
             type = "custom",
             status = "active",
             holstWidth = holst.value!!.width,
@@ -298,17 +299,50 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         )
 
         CoroutineScope(Dispatchers.IO).launch  {
-            if(type == DEFAULT)
-                repository.insert(template)
-            else
-                repository.update(template)
+            launch { saveThumbnailProject(imageName!!) }
+            launch {
+                if(type == DEFAULT)
+                    repository.insert(template)
+                else
+                    repository.update(template)
+            }
+        }
+    }
+
+    private fun saveThumbnailProject(name: String) {
+        val width = dpToPx(300F, activity)
+        val height = dpToPx(bitmap.height / (bitmap.width / 300F), activity)
+
+        val thumb = Bitmap.createScaledBitmap(bitmap, width, height, false)
+
+        val pathFile = File(activity.applicationContext.filesDir.path, name)
+
+        var fos: FileOutputStream? = null
+        try {
+            fos = FileOutputStream(pathFile)
+            thumb.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                fos!!.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun deleteThumbnailProject() {
+        val file = File(activity.applicationContext.filesDir.path, image!!)
+        if (file.exists()) {
+            file.delete()
         }
     }
 
     protected fun drawCircleBorder(): Bitmap {
-        val tempSize = (starMapRadius.value!! + starMapBorder.value!!.width!!) * 2
+        val tempSize = (starMapRadius.value!! + starMapBorder.value!!.width) * 2
 
-        var tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
 
         val canvas = Canvas(tempBitmap)
 
@@ -319,13 +353,13 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             isAntiAlias = true
         }
 
-        canvas.drawCircle(starMapRadius.value!! + starMapBorder.value!!.width!!, starMapRadius.value!! + starMapBorder.value!!.width!!, starMapRadius.value!! + starMapBorder.value!!.width!!, mapBorder)
+        canvas.drawCircle(starMapRadius.value!! + starMapBorder.value!!.width, starMapRadius.value!! + starMapBorder.value!!.width, starMapRadius.value!! + starMapBorder.value!!.width, mapBorder)
 
         return tempBitmap
     }
     protected fun drawCompassBorder(): Bitmap {
         // Ширина компаса
-        val compassWidth = starMapBorder.value!!.width!! * 12F
+        val compassWidth = starMapBorder.value!!.width * 12F
 
         // Длина (и высота) холста плд компас
         val tempSize = (starMapRadius.value!! + compassWidth) * 2F
@@ -354,8 +388,8 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
 
         // Радиусы кругов
         val radiusSmall = starMapRadius.value!! + lineWidth / 2
-        val radiusMiddle = radiusSmall + starMapBorder.value!!.width!! * 1.9F
-        val radiusBig = radiusMiddle + starMapBorder.value!!.width!! * 3.3F
+        val radiusMiddle = radiusSmall + starMapBorder.value!!.width * 1.9F
+        val radiusBig = radiusMiddle + starMapBorder.value!!.width * 3.3F
 
         // Рисуем круги
         canvas.drawCircle(cx, cy, radiusSmall, borderPaint)

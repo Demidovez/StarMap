@@ -7,11 +7,13 @@ import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.databinding.TemplateItemBinding
 import com.nikolaydemidovez.starmap.pojo.Template
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
-import com.squareup.picasso.Picasso
+import android.graphics.BitmapFactory
+import com.nikolaydemidovez.starmap.R
+import com.nikolaydemidovez.starmap.utils.extensions.resIdByName
+
 
 class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {
     private var templateList = listOf<Template?>()
@@ -36,7 +38,10 @@ class TemplateAdapter: RecyclerView.Adapter<TemplateAdapter.TemplateHolder>() {
                 view.findNavController().navigate(R.id.action_navigation_templates_to_templateFragment, bundle)
             }
 
-            Picasso.get().load(template.image).into(imageTemplate)
+            val imageStream = itemView.context.resources.openRawResource(itemView.context.resIdByName(template.image, "raw"))
+            val bitmap = BitmapFactory.decodeStream(imageStream)
+
+            imageTemplate.setImageBitmap(bitmap)
         }
     }
 

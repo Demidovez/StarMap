@@ -6,17 +6,149 @@
     android:layout_height="match_parent"
     tools:context=".pages.settings.SettingsFragment">
 
-    <TextView
-        android:id="@+id/text_settings"
+    <LinearLayout
+        android:id="@+id/tellAboutError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:background="@drawable/ripple"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:src="@drawable/ic_tell_error"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/image" />
+
+        <TextView
+            android:text="@string/label_about_error"
+            android:theme="@style/label_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/share"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:background="@drawable/ripple"
+        app:layout_constraintTop_toBottomOf="@+id/tellAboutError"
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:src="@drawable/ic_share"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/image" />
+
+        <TextView
+            android:text="@string/label_share"
+            android:theme="@style/label_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/review"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:background="@drawable/ripple"
+        app:layout_constraintTop_toBottomOf="@+id/share"
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:src="@drawable/ic_review"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/image" />
+
+        <TextView
+            android:text="@string/review_label"
+            android:theme="@style/label_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/politics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:background="@drawable/ripple"
+        app:layout_constraintTop_toBottomOf="@+id/review"
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:src="@drawable/ic_politics"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/image" />
+
+        <TextView
+            android:text="@string/label_politics"
+            android:theme="@style/label_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/telegram"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:background="@drawable/ripple"
+        app:layout_constraintTop_toBottomOf="@+id/politics"
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:src="@drawable/ic_telegram"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/image" />
+
+        <TextView
+            android:text="@string/label_telegram"
+            android:theme="@style/label_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
