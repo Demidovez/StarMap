@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "465084386798",
+    "project_id": "starmap-36c54",
+    "storage_bucket": "starmap-36c54.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:465084386798:android:32c8d6850e9c5bbee092ff",
+        "android_client_info": {
+          "package_name": "com.nikolaydemidovez.starmap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "465084386798-t0vn9sc4qmouuud8d14ji2q0m9p4u5bh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzQQgbIGCQbs11XK20TERtuQ61HCQekcg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "465084386798-t0vn9sc4qmouuud8d14ji2q0m9p4u5bh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

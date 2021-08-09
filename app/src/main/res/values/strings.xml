@@ -70,6 +70,8 @@
     <string name="label_about_error">Сообщить о проблеме</string>
     <string name="label_politics">Политика конфиденциальности</string>
     <string name="label_telegram">Наш телеграм</string>
+    <string name="hint_contact">Ваш контакт (любой)</string>
+    <string name="hint_problem">Описание проблемы</string>
 
 
 </resources>

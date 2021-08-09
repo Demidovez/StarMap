@@ -3,26 +3,30 @@ package com.nikolaydemidovez.starmap.pages.settings
 import android.content.ActivityNotFoundException
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
-import com.nikolaydemidovez.starmap.databinding.FragmentProjectsBinding
 import com.nikolaydemidovez.starmap.databinding.FragmentSettingsBinding
-import com.nikolaydemidovez.starmap.pages.projects.ProjectsViewModel
-import com.nikolaydemidovez.starmap.pages.projects.ProjectsViewModelFactory
 import android.content.Intent
+import android.graphics.Insets
 import android.net.Uri
+import android.util.Log
+import android.view.*
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.updatePadding
+import androidx.core.widget.doOnTextChanged
 import java.lang.Exception
-
+import com.google.firebase.database.FirebaseDatabase
+import android.widget.Toast
+import com.nikolaydemidovez.starmap.MainActivity
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import java.util.*
 
 class SettingsFragment : Fragment() {
 
@@ -82,7 +86,91 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showTellAboutErrorDialog() {
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.dialog_tell_about_error_layout, null)
 
+        val title = "Сообщение"
+
+        val titleTextView    = layout.findViewById<TextView>(R.id.title)
+        val editContact      = layout.findViewById<EditText>(R.id.contact)
+        val editMessage      = layout.findViewById<EditText>(R.id.message)
+        val imgClearContact  = layout.findViewById<ImageView>(R.id.clearContact)
+        val imgClearMessage  = layout.findViewById<ImageView>(R.id.clearMessage)
+
+        titleTextView.text = title
+
+        editMessage.doOnTextChanged { text, _, _, _ ->
+            titleTextView.text = title
+            titleTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark_gray))
+            imgClearMessage.visibility = if(text!!.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+
+        editContact.doOnTextChanged { text, _, _, _ ->
+            imgClearContact.visibility = if(text!!.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+
+        editMessage.doOnTextChanged { text, _, _, _ ->
+            imgClearMessage.visibility = if(text!!.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+
+        imgClearContact.setOnClickListener { editContact.text = null }
+        imgClearMessage.setOnClickListener { editMessage.text = null }
+
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setPositiveButton("Отправить", null)
+        builder.setNegativeButton(R.string.cancel, null)
+        builder.setView(layout)
+
+        val dialog = builder.create()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            dialog.window?.setDecorFitsSystemWindows(false)
+            dialog.window?.decorView!!.setOnApplyWindowInsetsListener { v, insets ->
+                val imeInsets: Insets = insets.getInsets(WindowInsets.Type.ime())
+                val paddingBottom = if(imeInsets.bottom == 0) 40 else imeInsets.bottom
+                v.updatePadding(bottom = paddingBottom)
+                insets
+            }
+        } else {
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
+
+        dialog.setOnShowListener {
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+
+            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+            okButton.setOnClickListener {
+                if(editMessage.text.isNotEmpty()) {
+                    sendProblemToFirebase(editMessage.text.toString(), editContact.text.toString())
+
+                    dialog.dismiss()
+                } else {
+                    titleTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_flat))
+                    titleTextView.text = "Пустое значение недопустимо!"
+                }
+            }
+        }
+
+        dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.8).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+    }
+
+    private fun sendProblemToFirebase(message: String, contact: String) {
+        val database = Firebase.database("https://starmap-36c54-default-rtdb.europe-west1.firebasedatabase.app")
+        val myRef = database.getReference("problems")
+
+        myRef.child(Calendar.getInstance().time.time.toString()).setValue("$message::$contact")
+            .addOnSuccessListener {
+                Toast.makeText(activity, "Отправлено!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(activity, "Ошибка!", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun editActionAndStatusBar() {

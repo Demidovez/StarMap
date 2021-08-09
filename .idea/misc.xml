@@ -67,6 +67,7 @@
         <entry key="app/src/main/res/layout/controller_item.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/dialog_delete_layout.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/dialog_save_layout.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/dialog_tell_about_error_layout.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/event_v1_controller_fragment.xml" value="0.3619791666666667" />
         <entry key="app/src/main/res/layout/font_item.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/font_picker_layout.xml" value="0.37604166666666666" />

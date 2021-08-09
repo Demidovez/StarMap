@@ -23,8 +23,7 @@ import com.nikolaydemidovez.starmap.room.AppDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 import androidx.room.RoomDatabase
-
-
+import com.google.firebase.FirebaseApp
 
 
 class MainActivity : AppCompatActivity() {
@@ -68,6 +67,7 @@ class MainActivity : AppCompatActivity() {
             Places.initialize(applicationContext, resources.getString(R.string.api_key_places))
         }
 
+//       FirebaseApp.initializeApp(this)
     }
 
     override fun onSupportNavigateUp(): Boolean {
