@@ -29,14 +29,10 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 
 class SettingsFragment : Fragment() {
-
-    private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var binding: FragmentSettingsBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         editActionAndStatusBar()
-
-        settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel::class.java)
 
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
 

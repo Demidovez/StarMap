@@ -25,40 +25,18 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/edit_text_lat_long"
-            style="@style/unit_size_text_controller"
-            android:textSize="20sp"
+            android:id="@+id/desc"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:inputType="number"
+            style="@style/text_area_dialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:autofillHints="coordinates"
+            android:autofillHints="description"
             tools:ignore="LabelFor" />
 
-        <ImageView
-            android:id="@+id/clear_text"
-            app:layout_constraintTop_toTopOf="@+id/edit_text_lat_long"
-            app:layout_constraintBottom_toBottomOf="@+id/edit_text_lat_long"
-            app:layout_constraintEnd_toEndOf="@+id/edit_text_lat_long"
-            android:src="@drawable/ic_clear"
-            android:padding="8dp"
-            android:paddingEnd="12dp"
-            android:layout_width="34dp"
-            android:layout_height="30dp"
-            android:contentDescription="@string/image"
-            tools:ignore="RtlSymmetry" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/desc_text"
-        android:layout_margin="8dp"
-        android:layout_marginTop="4dp"
-        style="@style/desc_dialog"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
 </LinearLayout >

@@ -22,12 +22,16 @@ import com.nikolaydemidovez.starmap.MainActivity
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.adapters.ControllerTabAdapter
 import com.nikolaydemidovez.starmap.databinding.FragmentTemplateBinding
+import com.nikolaydemidovez.starmap.interfaces.IOnBackPressed
 import com.nikolaydemidovez.starmap.pojo.Template
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.templates.classic_v1.ClassicV1TemplateCanvas
 import java.util.*
+import android.content.DialogInterface
+import androidx.navigation.fragment.findNavController
 
-class TemplateFragment : Fragment() {
+
+class TemplateFragment : Fragment(), IOnBackPressed {
     private lateinit var templateViewModel: TemplateViewModel
     private lateinit var binding: FragmentTemplateBinding
     private lateinit var templateCanvas: TemplateCanvas
@@ -61,10 +65,16 @@ class TemplateFragment : Fragment() {
         })
 
         binding.btnBack.setOnClickListener {
-            showAskSaveDialog()
+            onBackPressed()
         }
 
         return root
+    }
+
+    override fun onBackPressed(): Boolean {
+        showAskSaveDialog()
+
+        return true
     }
 
     private fun showAskSaveDialog() {
@@ -76,7 +86,7 @@ class TemplateFragment : Fragment() {
 
         val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
         builder.setPositiveButton("Да", null)
-        builder.setNegativeButton(R.string.cancel, null)
+        builder.setNegativeButton("Нет", null)
         builder.setView(layout)
 
         val dialog = builder.create()
@@ -87,9 +97,9 @@ class TemplateFragment : Fragment() {
             val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
             okButton.setOnClickListener {
-                requireActivity().onBackPressed()
+               findNavController().popBackStack()
 
-                dialog.dismiss()
+               dialog.dismiss()
             }
         }
 

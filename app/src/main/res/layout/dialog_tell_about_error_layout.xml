@@ -31,7 +31,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            style="@style/text_area_about_problem"
+            style="@style/text_area_dialog"
             android:hint="@string/hint_problem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
 
         <EditText
             android:id="@+id/contact"
-            style="@style/edit_text_controller"
+            style="@style/unit_size_text_controller"
             android:textSize="16sp"
             android:paddingEnd="35dp"
             app:layout_constraintEnd_toEndOf="parent"

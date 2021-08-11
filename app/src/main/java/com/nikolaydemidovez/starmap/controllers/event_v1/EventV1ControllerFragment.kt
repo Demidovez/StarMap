@@ -30,11 +30,9 @@ import java.text.DateFormat.getDateInstance
 import java.util.*
 
 class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
-    private lateinit var viewModel: EventV1ControllerViewModel
     private lateinit var binding: FragmentEventV1ControllerBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        viewModel = ViewModelProvider(this).get(EventV1ControllerViewModel::class.java)
         binding = FragmentEventV1ControllerBinding.inflate(inflater, container, false)
 
         val root: View = binding.root

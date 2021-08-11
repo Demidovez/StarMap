@@ -47,7 +47,6 @@ import android.webkit.WebResourceResponse
 import androidx.annotation.RequiresApi
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getTimeString
 
-
 class ClassicV1TemplateCanvas(private val activity: MainActivity, private val properties: Template) : TemplateCanvas(activity) {
     private val controllerList = arrayListOf(
         Controller("event_v1",     "Событие",     ContextCompat.getDrawable(activity,R.drawable.ic_event_v1)),
@@ -154,7 +153,10 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                     val drawObjects = launch {
                         launch { drawHolst() }
                         launch { drawHolstBorder() }
+                        launch { drawMap() }
+                        launch { drawMapBorder() }
                         launch { drawDesc() }
+                        launch { drawSeparator() }
                         launch { drawLocationText() }
                     }
 
@@ -215,6 +217,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
                     initStarMapBitmap()
+
                     val drawObjects = launch {
                         launch {  drawMap() }
                     }
@@ -247,7 +250,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         graticuleWidth.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap("widthGraticule", it.toString())
+                    val width = getRadiusMap() * it / 2000
+                    requestStarMap("widthGraticule", width.toString())
                 }
             }
         }
@@ -289,7 +293,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         namesStarsSize.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap("sizeNames", it.toString())
+                    val size = getRadiusMap() * it / 1750
+                    requestStarMap("sizeNames", size.toString())
                 }
             }
         }
@@ -317,7 +322,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         constellationsWidth.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap("widthConstellations", it.toString())
+                    val width = getRadiusMap() * it / 2000
+                    requestStarMap("widthConstellations", width.toString())
                 }
             }
         }
@@ -338,7 +344,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         starsSize.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    requestStarMap("sizeStars", it.toString())
+                    val size = getRadiusMap() * it / 1750
+                    requestStarMap("sizeStars", size.toString())
                 }
             }
         }
@@ -681,10 +688,10 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                     "date": ${date.time.time},
                     "latitude": ${coordinates.value!![0]}, 
                     "longtitude" :${coordinates.value!![1]},
-                    "width": ${starMapRadius.value!! * 2},
+                    "width": ${getRadiusMap() * 2},
                     "font": "Arial, Times, 'Times Roman', serif",
                     "stars": {
-                        "size": ${starsSize.value!!},
+                        "size": ${getRadiusMap() * starsSize.value!! / 1750},
                         "exponent": -0.28,
                         "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/stars.6.json",
                         "propername": ${hasNames.value},
@@ -692,7 +699,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                         "propernameLang": "${namesStarsLang.value!!.name}",
                         "propernameStyle": {
                             "fill": "${namesStarsColor.value!!}",
-                            "font": "${namesStarsSize.value!!}",
+                            "font": "${getRadiusMap() * namesStarsSize.value!! / 1750}",
                             "align": "right",
                             "opacity": 1
                         },
@@ -704,13 +711,13 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                         "show": true,
                         "limit": 6,
                         "style": { "fill": "${starsColor.value!!}", "width": 2, "opacity": ${starsOpacity.value!!.toFloat() / 100}  }, 
-                        "size": ${starsSize.value!!},
+                        "size": ${getRadiusMap() * starsSize.value!! / 1750},
                         "names": ${hasNames.value},
                         "nameLang": "${namesStarsLang.value!!.name}",
                         "namePath": "https://appassets.androidplatform.net/assets/starmap/data/dsonames.json",
                         "nameStyle": {
                             "fill": "${namesStarsColor.value!!}",
-                            "font": "${namesStarsSize.value!!}",
+                            "font": "${getRadiusMap() * namesStarsSize.value!! / 1750}",
                             "align": "left",
                             "opacity": 1
                         },
@@ -742,7 +749,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                         "nameLang": "${namesStarsLang.value!!.name}",
                         "nameStyle": {
                             "fill": "${namesStarsColor.value!!}",
-                            "font": "${namesStarsSize.value!!}",
+                            "font": "${getRadiusMap() * namesStarsSize.value!! / 1750}",
                             "align": "right",
                             "opacity": 1
                         }
@@ -752,7 +759,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                         "dataPath": "https://appassets.androidplatform.net/assets/starmap/data/constellations.lines.json",
                         "style": {
                           "stroke": "${constellationsColor.value!!}", 
-                          "strokeWidth": ${constellationsWidth.value!!},
+                          "strokeWidth": ${getRadiusMap() * constellationsWidth.value!! / 2000},
                           "opacity": ${constellationsOpacity.value!!.toFloat() / 100} 
                         },
                         "names": ${hasNames.value},
@@ -763,7 +770,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                             "align": "center",
                             "baseline": "middle",
                             "opacity": 1,
-                            "font": "${namesStarsSize.value!!}"
+                            "font": "${getRadiusMap() * namesStarsSize.value!! / 1750}"
                         }
                     },
                     "mw": {
@@ -775,7 +782,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                         "show": ${hasGraticule.value},
                         "style": {
                             "stroke": "${graticuleColor.value!!}",
-                            "strokeWidth": ${graticuleWidth.value!!},
+                            "strokeWidth": ${getRadiusMap() * graticuleWidth.value!! / 2000},
                             "opacity": ${graticuleOpacity.value!!.toFloat() / 100}
                         }
                     }
@@ -825,9 +832,9 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
 
             if(hasEventCityInLocation.value!!) {
                 locationText = if(eventCountry.value!!.isNotEmpty()) {
-                    "${locationText}г. ${eventLocation.value}, ${eventCountry.value}\n"
+                    "$locationText${eventLocation.value}, ${eventCountry.value}\n"
                 } else {
-                    "${locationText}г. ${eventLocation.value}\n"
+                    "$locationText${eventLocation.value}\n"
                 }
             }
 
@@ -858,17 +865,20 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
     private fun drawHolstBorder() {
         Log.d("MyLog", "Start drawHolstBorder")
 
+        val indent = (holst.value!!.width!! / 5F) * borderHolst.value!!.indent!! / 100
+        val widthBorder = (holst.value!!.width!! / 15F) * borderHolst.value!!.width!! / 100
+
         val border = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.STROKE
             color = Color.parseColor(borderHolstColor.value!!)
-            strokeWidth = borderHolst.value!!.width!!  //TODO: Ширина границы не изменяет общую длину отступа от края?
+            strokeWidth = widthBorder  //TODO: Ширина границы не изменяет общую длину отступа от края?
             isDither = true
             isAntiAlias = true
         }
 
         val tempBitmap = Bitmap.createBitmap(holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt(), Bitmap.Config.ARGB_8888)
 
-        Canvas(tempBitmap).drawRect(borderHolst.value!!.indent!!, borderHolst.value!!.indent!!, holst.value!!.width!!.toInt() - borderHolst.value!!.indent!!, holst.value!!.height!!.toInt() - borderHolst.value!!.indent!!, border)
+        Canvas(tempBitmap).drawRect(indent, indent, holst.value!!.width!!.toInt() - indent, holst.value!!.height!!.toInt() - indent, border)
 
         bitmapHolstBorder = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), holst.value!!.height!!.toInt())
 
@@ -879,13 +889,15 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
 
         var tempBitmap: Bitmap
 
+        val radiusMap = getRadiusMap()
+
         if(isLoadedStarMap.value!!) {
-            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap, (starMapRadius.value!! * 2).toInt(), (starMapRadius.value!! * 2).toInt(), true)
+            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap, (radiusMap * 2).toInt(), (radiusMap * 2).toInt(), true)
             tempBitmap = getBitmapClippedCircle(tempBitmap)!!
 
-            val x = (tempBitmap.width / 2) - starMapRadius.value!!
-            val y = (tempBitmap.height / 2) - starMapRadius.value!!
-            val width = (starMapRadius.value!! * 2).toInt()
+            val x = (tempBitmap.width / 2) - radiusMap
+            val y = (tempBitmap.height / 2) - radiusMap
+            val width = (radiusMap * 2).toInt()
 
             tempBitmap = Bitmap.createBitmap(tempBitmap, x.toInt(), y.toInt(), width, width)
         } else {
@@ -917,9 +929,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
     private fun drawDesc() {
         Log.d("MyLog", "Start drawDesc")
 
+        val textSizeDesc = holst.value!!.width!! * descFont.value!!.size!! / 1000
+        val lineHeightDesc = textSizeDesc * 0.5F
+
         val descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
-            textSize = descFont.value!!.size!!
+            textSize = textSizeDesc
             typeface = ResourcesCompat.getFont(activity.applicationContext, descFont.value!!.resId!!)
             color = Color.parseColor(descFontColor.value!!)
             isDither = true
@@ -934,7 +949,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         var totalHeightText = 0F
 
         for(textLine in textLines) {
-            totalHeightText += canvas.drawMultilineText(textLine, descTextPaint, (holst.value!!.width!!/1.3).toInt() , holst.value!!.width!!/2, totalHeightText)
+            totalHeightText += canvas.drawMultilineText(textLine, descTextPaint, (holst.value!!.width!!/1.3).toInt() , holst.value!!.width!!/2, totalHeightText, lineHeightDesc)
         }
 
         bitmapDesc = Bitmap.createBitmap(tempBitmap, 0, 0, holst.value!!.width!!.toInt(), totalHeightText.toInt())
@@ -962,9 +977,11 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
     private fun drawLocationText() {
         Log.d("MyLog", "Start drawLocationText")
 
+        val textSizeLocation = (holst.value!!.width!! / 2) * locationFont.value!!.size!! / 1000
+
         val eventLocation = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
-            textSize = locationFont.value!!.size!!
+            textSize = textSizeLocation
             color = Color.parseColor(locationFontColor.value!!)
             typeface = ResourcesCompat.getFont(activity, locationFont.value!!.resId!!)
             isDither = true
@@ -991,9 +1008,12 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
 
         var margin = 0F
 
+        val indentHolstBorder = (holst.value!!.width!! / 5F) * borderHolst.value!!.indent!! / 100
+        val widthHolstBorder = (holst.value!!.width!! / 15F) * borderHolst.value!!.width!! / 100
+
         margin = margin.plus(
             if(hasBorderHolst.value!!) {
-                borderHolst.value!!.indent!! + borderHolst.value!!.width!! + (borderHolst.value!!.indent!!*0.5).toFloat()
+                indentHolstBorder + widthHolstBorder + (indentHolstBorder * 0.5).toFloat()
             } else {
                 (bitmapLocationText.height * 0.5).toFloat()
             }
@@ -1047,6 +1067,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
     private fun getLoadingBitmap(): Bitmap {
         Log.d("MyLog", "Start getLoadingBitmap")
 
+        val radiusMap = getRadiusMap()
+
         val map = Paint(ANTI_ALIAS_FLAG).apply {
             style = Style.FILL
             color = Color.parseColor(starMapColor.value!!)
@@ -1058,19 +1080,24 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
 
         val loadingCanvas = Canvas(tempBitmap)
 
-        loadingCanvas.drawCircle(starMapRadius.value!!, starMapRadius.value!!, starMapRadius.value!!, map)
+        loadingCanvas.drawCircle(radiusMap, radiusMap, radiusMap, map)
 
-        val widthLoadingIcon = starMapRadius.value!! * 0.5
-        val heightLoadingIcon = starMapRadius.value!! * 0.5
+        val widthLoadingIcon = radiusMap * 0.5
+        val heightLoadingIcon = radiusMap * 0.5
         val drawableLoadingIcon = ContextCompat.getDrawable(activity, R.drawable.ic_loading_map)!!
         val wrappedDrawable = DrawableCompat.wrap(drawableLoadingIcon)
-        DrawableCompat.setTint(wrappedDrawable, if (starMapColor.value!! == "#FFFFFF") Color.BLACK else Color.WHITE)
-        val bitmapLoadingIcon = wrappedDrawable.toBitmap(widthLoadingIcon.toInt(), heightLoadingIcon.toInt())
 
-        loadingCanvas.drawBitmap(bitmapLoadingIcon, (starMapRadius.value!! - widthLoadingIcon / 2).toFloat(), (starMapRadius.value!! - heightLoadingIcon / 2).toFloat(), null)
+        DrawableCompat.setTint(wrappedDrawable, if (starMapColor.value!! == "#FFFFFF") Color.BLACK else Color.WHITE)
+
+        val bitmapLoadingIcon = wrappedDrawable.toBitmap(
+            widthLoadingIcon.toInt(),
+            heightLoadingIcon.toInt().coerceAtLeast(1)
+        )
+
+        loadingCanvas.drawBitmap(bitmapLoadingIcon, (radiusMap - widthLoadingIcon / 2).toFloat(), (radiusMap - heightLoadingIcon / 2).toFloat(), null)
 
         Log.d("MyLog", "Done getLoadingBitmap")
-        return Bitmap.createBitmap(tempBitmap, 0, 0, (starMapRadius.value!! * 2).toInt(), (starMapRadius.value!! * 2).toInt())
+        return Bitmap.createBitmap(tempBitmap, 0, 0, (radiusMap * 2).toInt(), (radiusMap * 2).toInt())
     }
     override fun drawCanvas() {
         Log.d("MyLog", "Start drawCanvas")

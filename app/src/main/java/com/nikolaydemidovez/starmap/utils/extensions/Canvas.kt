@@ -99,11 +99,11 @@ fun Canvas.drawMultilineText(
     width: Int,
     x: Float,
     y: Float,
+    spacingAdd: Float = 0f,
     start: Int = 0,
     end: Int = text.length,
     alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL,
     spacingMult: Float = 1f,
-    spacingAdd: Float = 0f,
     includePad: Boolean = true,
     ellipsizedWidth: Int = width,
     ellipsize: TextUtils.TruncateAt? = null): Int {

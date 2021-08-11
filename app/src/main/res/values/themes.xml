@@ -40,14 +40,13 @@
         <item name="android:fontFamily">@font/nunito_semi_bold</item>
     </style>
 
-    <style name="edit_text_controller" parent="@style/Widget.AppCompat.EditText">
+    <style name="unit_size_text_controller" parent="@style/Widget.AppCompat.EditText">
         <item name="android:padding">8dp</item>
         <item name="android:background">@drawable/rounded_border_edittext</item>
         <item name="android:textSize">15sp</item>
         <item name="android:fontFamily">@font/nunito_semi_bold</item>
         <item name="android:textColor">@color/dark</item>
         <item name="android:gravity">top</item>
-        <item name="android:inputType">textNoSuggestions</item>
     </style>
 
     <style name="view_text_controller" parent="@style/Widget.AppCompat.EditText">
@@ -168,7 +167,7 @@
         <item name="android:fontFamily">@font/nunito_regular</item>
     </style>
 
-    <style name="text_area_about_problem" parent="@style/Widget.AppCompat.EditText">
+    <style name="text_area_dialog" parent="@style/Widget.AppCompat.EditText">
         <item name="android:padding">8dp</item>
         <item name="android:background">@drawable/rounded_border_edittext</item>
         <item name="android:textSize">15sp</item>

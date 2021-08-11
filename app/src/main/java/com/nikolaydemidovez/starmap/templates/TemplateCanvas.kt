@@ -29,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.graphics.Bitmap
 import android.content.ContextWrapper
+import android.util.Log
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.dpToPx
 import java.lang.Exception
 
@@ -139,10 +140,9 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     abstract fun drawCanvas()
     abstract fun getControllerList(): ArrayList<Controller>
 
-    // TODO: Что это?
     fun getShortBitmap(): Bitmap {
         val maxSize = (holst.value!!.width!!).coerceAtLeast(holst.value!!.height!!)
-        val scaleFactor: Float = if(maxSize > 3000) maxSize / 3000 else 1F
+        val scaleFactor: Float = if(maxSize > 2000) maxSize / 2000 else 1F
 
         return Bitmap.createScaledBitmap(bitmap, (holst.value!!.width!! / scaleFactor).toInt(), (holst.value!!.height!! / scaleFactor).toInt(), false)
     }
@@ -340,7 +340,10 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     }
 
     protected fun drawCircleBorder(): Bitmap {
-        val tempSize = (starMapRadius.value!! + starMapBorder.value!!.width) * 2
+        val radiusMap = getRadiusMap()
+        val borderWidth = (radiusMap / 4F) * starMapBorder.value!!.width / 100
+
+        val tempSize = (radiusMap + borderWidth) * 2
 
         val tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
 
@@ -353,16 +356,22 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             isAntiAlias = true
         }
 
-        canvas.drawCircle(starMapRadius.value!! + starMapBorder.value!!.width, starMapRadius.value!! + starMapBorder.value!!.width, starMapRadius.value!! + starMapBorder.value!!.width, mapBorder)
+        canvas.drawCircle(radiusMap + borderWidth, radiusMap + borderWidth, radiusMap + borderWidth, mapBorder)
 
         return tempBitmap
     }
     protected fun drawCompassBorder(): Bitmap {
+        // Радиус карты
+        val radiusMap = getRadiusMap()
+
+        // Ширина рамки
+        val borderWidth = (radiusMap / 10F) * starMapBorder.value!!.width / 100
+
         // Ширина компаса
-        val compassWidth = starMapBorder.value!!.width * 12F
+        val compassWidth = borderWidth * 12F
 
         // Длина (и высота) холста плд компас
-        val tempSize = (starMapRadius.value!! + compassWidth) * 2F
+        val tempSize = (radiusMap + compassWidth) * 2F
 
         // Изображаение под компас
         val tempBitmap = Bitmap.createBitmap(tempSize.toInt(), tempSize.toInt(), Bitmap.Config.ARGB_8888)
@@ -371,7 +380,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         val canvas = Canvas(tempBitmap)
 
         // Ширина линий
-        val lineWidth = 7F
+        val lineWidth = holst.value!!.width!! * 0.002F
 
         // Стиль линий
         val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -383,13 +392,13 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         }
 
         // Координаты центра окружностей линий
-        val cx = starMapRadius.value!! + compassWidth
-        val cy = starMapRadius.value!! + compassWidth
+        val cx = radiusMap + compassWidth
+        val cy = radiusMap + compassWidth
 
         // Радиусы кругов
-        val radiusSmall = starMapRadius.value!! + lineWidth / 2
-        val radiusMiddle = radiusSmall + starMapBorder.value!!.width * 1.9F
-        val radiusBig = radiusMiddle + starMapBorder.value!!.width * 3.3F
+        val radiusSmall = radiusMap + lineWidth / 2F
+        val radiusMiddle = radiusSmall + borderWidth * 1.9F
+        val radiusBig = radiusMiddle + borderWidth * 3.3F
 
         // Рисуем круги
         canvas.drawCircle(cx, cy, radiusSmall, borderPaint)
@@ -466,7 +475,8 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     }
 
     protected fun drawLineSeparator(): Bitmap {
-        val separatorHeight = (separator.value!!.width * 0.01F).coerceAtLeast(1F)
+        val separatorWidth = holst.value!!.width!! * separator.value!!.width / 100
+        val separatorHeight = (separatorWidth * 0.01F).coerceAtLeast(1F)
 
         val separatorLine = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             isDither = true
@@ -475,14 +485,14 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             color = Color.parseColor(separatorColor.value!!)
         }
 
-        val tempBitmap = Bitmap.createBitmap(separator.value!!.width.toInt(), separatorHeight.toInt(), Bitmap.Config.ARGB_8888)
+        val tempBitmap = Bitmap.createBitmap(separatorWidth.toInt(), separatorHeight.toInt(), Bitmap.Config.ARGB_8888)
 
-        Canvas(tempBitmap).drawLine(0F, 0F, separator.value!!.width, 0F, separatorLine)
+        Canvas(tempBitmap).drawLine(0F, 0F, separatorWidth, 0F, separatorLine)
 
         return tempBitmap
     }
     protected fun drawDrawableSizedSeparator(shapeType: Int, viewportWidth: Float, viewportHeight: Float, scale: Float): Bitmap {
-        val separatorWidth = separator.value!!.width * scale
+        val separatorWidth = holst.value!!.width!! * separator.value!!.width / 100 * scale
         val separatorHeight = separatorWidth * (viewportHeight/viewportWidth)
 
         val tempBitmap = Bitmap.createBitmap(separatorWidth.toInt(), separatorHeight.toInt(), Bitmap.Config.ARGB_8888)
@@ -499,18 +509,22 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         }
 
         val canvas = Canvas(tempBitmap)
-        val starSVG = ContextCompat.getDrawable(activity, drawableId)
+        val svg = ContextCompat.getDrawable(activity, drawableId)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            starSVG!!.colorFilter = BlendModeColorFilter(Color.parseColor(separatorColor.value), BlendMode.SRC_ATOP)
+            svg!!.colorFilter = BlendModeColorFilter(Color.parseColor(separatorColor.value), BlendMode.SRC_ATOP)
         } else {
-            starSVG!!.setColorFilter(Color.parseColor(separatorColor.value), PorterDuff.Mode.SRC_ATOP)
+            svg!!.setColorFilter(Color.parseColor(separatorColor.value), PorterDuff.Mode.SRC_ATOP)
         }
 
-        starSVG.setBounds(0, 0, separatorWidth.toInt(), separatorHeight.toInt())
-        starSVG.draw(canvas)
+        svg.setBounds(0, 0, separatorWidth.toInt(), separatorHeight.toInt())
+        svg.draw(canvas)
 
         return tempBitmap
+    }
+
+    protected fun getRadiusMap(): Float {
+        return ((holst.value!!.width!! / 1.5F) * starMapRadius.value!! / 100).coerceAtLeast(1F)
     }
 
     companion object {

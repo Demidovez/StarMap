@@ -36,12 +36,14 @@
                 android:inputType="none"
                 android:focusable="false"
                 android:layout_marginTop="8dp"
-                style="@style/edit_text_controller"
+                style="@style/unit_size_text_controller"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/label_font_family_location"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:autofillHints="font"
+                tools:ignore="LabelFor" />
 
             <TextView
                 android:id="@+id/label_color_font_location"
@@ -90,7 +92,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
                 android:textAlignment="center"
-                style="@style/edit_text_controller"
+                style="@style/unit_size_text_controller"
                 android:inputType="none"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
@@ -98,29 +100,17 @@
                 app:layout_constraintTop_toBottomOf="@+id/label_size_font_location"
                 />
 
-            <TextView
-                android:id="@+id/size_unit"
-                android:text="мм"
-                android:layout_marginStart="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/dark_shadow"
-                android:fontFamily="@font/nunito_regular"
-                app:layout_constraintTop_toTopOf="@+id/font_size"
-                app:layout_constraintStart_toEndOf="@+id/font_size"
-                app:layout_constraintBottom_toBottomOf="@+id/font_size"/>
-
             <SeekBar
                 android:id="@+id/slider_font_size"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:progress="20"
-                android:max="300"
+                android:max="100"
                 app:layout_constraintTop_toTopOf="@+id/font_size"
                 app:layout_constraintBottom_toBottomOf="@+id/font_size"
-                app:layout_constraintStart_toEndOf="@+id/size_unit"
+                app:layout_constraintStart_toEndOf="@+id/font_size"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
             <androidx.constraintlayout.widget.Guideline
@@ -245,7 +235,12 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/checkbox_edit_text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:autofillHints="location"
+                android:inputType="textMultiLine"
+                android:focusable="false"
+                tools:ignore="LabelFor" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </ScrollView>

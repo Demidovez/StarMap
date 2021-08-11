@@ -24,6 +24,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 import androidx.room.RoomDatabase
 import com.google.firebase.FirebaseApp
+import com.nikolaydemidovez.starmap.interfaces.IOnBackPressed
 
 
 class MainActivity : AppCompatActivity() {
@@ -67,10 +68,22 @@ class MainActivity : AppCompatActivity() {
             Places.initialize(applicationContext, resources.getString(R.string.api_key_places))
         }
 
-//       FirebaseApp.initializeApp(this)
     }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    override fun onBackPressed() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as? NavHostFragment
+        val currentFragment = fragment?.childFragmentManager?.fragments?.get(0) as? IOnBackPressed
+
+        if (currentFragment != null) {
+            currentFragment.onBackPressed().takeIf { !it }?.let{
+                super.onBackPressed()
+            }
+        } else {
+            super.onBackPressed()
+        }
     }
 }

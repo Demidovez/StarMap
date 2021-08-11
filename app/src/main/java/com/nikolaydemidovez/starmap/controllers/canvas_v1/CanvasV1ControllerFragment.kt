@@ -17,7 +17,6 @@ import com.nikolaydemidovez.starmap.pojo.Holst
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 
 class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
-    private lateinit var viewModel: CanvasV1ControllerViewModel
     private lateinit var binding: FragmentCanvasV1ControllerBinding
     private lateinit var holstSizeAdapter: HolstSizeAdapter
     private lateinit var backgroundColorAdapter: ColorAdapter
@@ -25,7 +24,6 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
     private val disablerColorRecycler = Helper.Companion.RecyclerViewDisabler(true)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewModel = ViewModelProvider(this).get(CanvasV1ControllerViewModel::class.java)
         binding = FragmentCanvasV1ControllerBinding.inflate(inflater, container, false)
 
         holstSizeAdapter = HolstSizeAdapter(templateCanvas.holst) {
@@ -72,10 +70,8 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
         templateCanvas.hasBorderHolst.observe(requireActivity(), {
             binding.labelIndentBorder.alpha = Helper.shadowAlpha(it)
             binding.indentSize.alpha = Helper.shadowAlpha(it)
-            binding.sizeIndentUnit.alpha = Helper.shadowAlpha(it)
             binding.sliderIndentBorder.isEnabled = it
             binding.labelWidthBorder.alpha = Helper.shadowAlpha(it)
-            binding.sizeUnit.alpha = Helper.shadowAlpha(it)
             binding.sliderWeightBorder.isEnabled = it
             binding.labelColorBorder.alpha = Helper.shadowAlpha(it)
             disablerColorRecycler.isEnable = it

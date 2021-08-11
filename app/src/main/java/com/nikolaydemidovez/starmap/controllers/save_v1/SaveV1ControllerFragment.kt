@@ -30,13 +30,10 @@ import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas.Companion.DEFAULT
 
 class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
-
-    private lateinit var viewModel: SaveV1ControllerViewModel
     private lateinit var binding: FragmentSaveV1ControllerBinding
     private var currentFormat = MutableLiveData("jpg")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        viewModel = ViewModelProvider(this).get(SaveV1ControllerViewModel::class.java)
         binding = FragmentSaveV1ControllerBinding.inflate(inflater, container, false)
 
         val root: View = binding.root

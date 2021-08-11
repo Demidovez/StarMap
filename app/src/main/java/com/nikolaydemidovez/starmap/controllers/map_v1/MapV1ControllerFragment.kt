@@ -23,15 +23,12 @@ import com.nikolaydemidovez.starmap.templates.TemplateCanvas
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 
 class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
-
-    private lateinit var viewModel: MapV1ControllerViewModel
     private lateinit var binding: FragmentMapV1ControllerBinding
     private lateinit var backgroundColorMapAdapter: ColorAdapter
     private lateinit var colorMapBorderAdapter: ColorAdapter
     private val disablerColorRecycler = Helper.Companion.RecyclerViewDisabler(true)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewModel = ViewModelProvider(this).get(MapV1ControllerViewModel::class.java)
         binding = FragmentMapV1ControllerBinding.inflate(inflater, container, false)
 
         val root: View = binding.root
@@ -78,7 +75,6 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
 
             binding.labelWidthBorder.alpha = Helper.shadowAlpha(isEnabled)
             binding.widthMapBorder.alpha = Helper.shadowAlpha(isEnabled)
-            binding.widthUnit.alpha = Helper.shadowAlpha(isEnabled)
             binding.sliderWidthMapBorder.isEnabled = isEnabled
             binding.labelColorBorder.alpha = Helper.shadowAlpha(isEnabled)
             disablerColorRecycler.isEnable = isEnabled
@@ -116,7 +112,7 @@ class MapV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
             templateCanvas.starMapBorderColor.value = it
         }
 
-        templateCanvas.starMapBorder.observe(requireActivity(), {
+        templateCanvas.starMapBorderColor.observe(requireActivity(), {
             colorMapBorderAdapter.notifyDataSetChanged()
         })
 

@@ -40,7 +40,11 @@
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/label_desc"/>
+                app:layout_constraintTop_toBottomOf="@+id/label_desc"
+                android:autofillHints="description"
+                tools:ignore="LabelFor"
+                android:inputType="none"
+                android:focusable="false" />
 
             <TextView
                 android:id="@+id/label_font_family"
@@ -58,12 +62,14 @@
                 android:inputType="none"
                 android:focusable="false"
                 android:layout_marginTop="8dp"
-                style="@style/edit_text_controller"
+                style="@style/unit_size_text_controller"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/label_font_family"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:autofillHints="font"
+                tools:ignore="LabelFor" />
 
             <TextView
                 android:id="@+id/label_color_font"
@@ -113,39 +119,25 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
                 android:textAlignment="center"
-                style="@style/edit_text_controller"
+                style="@style/unit_size_text_controller"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/label_size_font"
                 />
 
-            <TextView
-                android:id="@+id/size_unit"
-                android:text="мм"
-                android:layout_marginStart="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/dark_shadow"
-                android:fontFamily="@font/nunito_regular"
-                app:layout_constraintTop_toTopOf="@+id/font_size"
-                app:layout_constraintStart_toEndOf="@+id/font_size"
-                app:layout_constraintBottom_toBottomOf="@+id/font_size"/>
-
             <SeekBar
                 android:id="@+id/slider_font_size"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:progress="20"
-                android:max="300"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:max="100"
                 app:layout_constraintTop_toTopOf="@+id/font_size"
                 app:layout_constraintBottom_toBottomOf="@+id/font_size"
-                app:layout_constraintStart_toEndOf="@+id/size_unit"
+                app:layout_constraintStart_toEndOf="@+id/font_size"
                 app:layout_constraintEnd_toEndOf="parent"/>
-
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

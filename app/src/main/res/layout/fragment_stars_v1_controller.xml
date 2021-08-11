@@ -94,7 +94,7 @@
 
         <TextView
             android:id="@+id/opacityGraticule"
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
@@ -107,30 +107,18 @@
             app:layout_constraintTop_toBottomOf="@+id/labelOpacityGraticule"
             />
 
-        <TextView
-            android:id="@+id/sizeUnitOpacityGraticule"
-            android:text="%"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/dark_shadow"
-            android:fontFamily="@font/nunito_regular"
-            app:layout_constraintTop_toTopOf="@+id/opacityGraticule"
-            app:layout_constraintStart_toEndOf="@+id/opacityGraticule"
-            app:layout_constraintBottom_toBottomOf="@+id/opacityGraticule"/>
-
         <SeekBar
             android:id="@+id/sliderOpacityGraticule"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:progress="20"
             android:max="100"
             android:layout_marginEnd="16dp"
             app:layout_constraintTop_toTopOf="@+id/opacityGraticule"
             app:layout_constraintBottom_toBottomOf="@+id/opacityGraticule"
-            app:layout_constraintStart_toEndOf="@+id/sizeUnitOpacityGraticule"
+            app:layout_constraintStart_toEndOf="@+id/opacityGraticule"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
@@ -147,7 +135,7 @@
 
         <TextView
             android:id="@+id/widthGraticule"
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="4dp"
@@ -160,30 +148,18 @@
             app:layout_constraintTop_toBottomOf="@+id/labelWidthGraticule"
             />
 
-        <TextView
-            android:id="@+id/sizeUnitWidth"
-            android:text="мм"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/dark_shadow"
-            android:fontFamily="@font/nunito_regular"
-            app:layout_constraintTop_toTopOf="@+id/widthGraticule"
-            app:layout_constraintStart_toEndOf="@+id/widthGraticule"
-            app:layout_constraintBottom_toBottomOf="@+id/widthGraticule"/>
-
         <SeekBar
             android:id="@+id/sliderWidthGraticule"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:progress="20"
-            android:max="20"
+            android:max="100"
             android:layout_marginEnd="16dp"
             app:layout_constraintTop_toTopOf="@+id/widthGraticule"
             app:layout_constraintBottom_toBottomOf="@+id/widthGraticule"
-            app:layout_constraintStart_toEndOf="@+id/sizeUnitWidth"
+            app:layout_constraintStart_toEndOf="@+id/widthGraticule"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
@@ -240,7 +216,7 @@
 
         <TextView
             android:id="@+id/opacityStars"
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="4dp"
@@ -253,31 +229,18 @@
             app:layout_constraintTop_toBottomOf="@+id/labelOpacityStars"
             />
 
-        <TextView
-            android:id="@+id/sizeUnitOpacityStars"
-            android:text="%"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginEnd="2dp"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/dark_shadow"
-            android:fontFamily="@font/nunito_regular"
-            app:layout_constraintTop_toTopOf="@+id/opacityStars"
-            app:layout_constraintStart_toEndOf="@+id/opacityStars"
-            app:layout_constraintBottom_toBottomOf="@+id/opacityStars"/>
-
         <SeekBar
             android:id="@+id/sliderOpacityStars"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:progress="20"
             android:max="100"
             android:layout_marginEnd="16dp"
             app:layout_constraintTop_toTopOf="@+id/opacityStars"
             app:layout_constraintBottom_toBottomOf="@+id/opacityStars"
-            app:layout_constraintStart_toEndOf="@+id/sizeUnitOpacityStars"
+            app:layout_constraintStart_toEndOf="@+id/opacityStars"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
@@ -294,7 +257,7 @@
 
         <TextView
             android:id="@+id/sizeStars"
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="4dp"
@@ -307,30 +270,18 @@
             app:layout_constraintTop_toBottomOf="@+id/labelSizeStars"
             />
 
-        <TextView
-            android:id="@+id/sizeUnitSizeStars"
-            android:text="мм"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/dark_shadow"
-            android:fontFamily="@font/nunito_regular"
-            app:layout_constraintTop_toTopOf="@+id/sizeStars"
-            app:layout_constraintStart_toEndOf="@+id/sizeStars"
-            app:layout_constraintBottom_toBottomOf="@+id/sizeStars"/>
-
         <SeekBar
             android:id="@+id/sliderSizeStars"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:progress="20"
-            android:max="50"
+            android:max="100"
             android:layout_marginEnd="16dp"
             app:layout_constraintTop_toTopOf="@+id/sizeStars"
             app:layout_constraintBottom_toBottomOf="@+id/sizeStars"
-            app:layout_constraintStart_toEndOf="@+id/sizeUnitSizeStars"
+            app:layout_constraintStart_toEndOf="@+id/sizeStars"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
@@ -387,7 +338,7 @@
 
         <TextView
             android:id="@+id/opacityConstellations"
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="4dp"
@@ -400,30 +351,18 @@
             app:layout_constraintTop_toBottomOf="@+id/labelOpacityConstellations"
             />
 
-        <TextView
-            android:id="@+id/sizeUnitOpacityConstellations"
-            android:text="%"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/dark_shadow"
-            android:fontFamily="@font/nunito_regular"
-            app:layout_constraintTop_toTopOf="@+id/opacityConstellations"
-            app:layout_constraintStart_toEndOf="@+id/opacityConstellations"
-            app:layout_constraintBottom_toBottomOf="@+id/opacityConstellations"/>
-
         <SeekBar
             android:id="@+id/sliderOpacityConstellations"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:progress="20"
             android:max="100"
             app:layout_constraintTop_toTopOf="@+id/opacityConstellations"
             app:layout_constraintBottom_toBottomOf="@+id/opacityConstellations"
-            app:layout_constraintStart_toEndOf="@+id/sizeUnitOpacityConstellations"
+            app:layout_constraintStart_toEndOf="@+id/opacityConstellations"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
@@ -440,7 +379,7 @@
 
         <TextView
             android:id="@+id/widthConstellations"
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="4dp"
@@ -453,30 +392,18 @@
             app:layout_constraintTop_toBottomOf="@+id/labelWidthConstellations"
             />
 
-        <TextView
-            android:id="@+id/sizeUnitWidthConstellations"
-            android:text="мм"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/dark_shadow"
-            android:fontFamily="@font/nunito_regular"
-            app:layout_constraintTop_toTopOf="@+id/widthConstellations"
-            app:layout_constraintStart_toEndOf="@+id/widthConstellations"
-            app:layout_constraintBottom_toBottomOf="@+id/widthConstellations"/>
-
         <SeekBar
             android:id="@+id/sliderWidthConstellations"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:progress="20"
-            android:max="50"
+            android:max="100"
             android:layout_marginEnd="16dp"
             app:layout_constraintTop_toTopOf="@+id/widthConstellations"
             app:layout_constraintBottom_toBottomOf="@+id/widthConstellations"
-            app:layout_constraintStart_toEndOf="@+id/sizeUnitWidthConstellations"
+            app:layout_constraintStart_toEndOf="@+id/widthConstellations"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
@@ -534,7 +461,7 @@
 
         <TextView
             android:id="@+id/sizeNames"
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="4dp"
@@ -547,30 +474,18 @@
             app:layout_constraintTop_toBottomOf="@+id/labelSizeNames"
             />
 
-        <TextView
-            android:id="@+id/sizeUnitNames"
-            android:text="мм"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/dark_shadow"
-            android:fontFamily="@font/nunito_regular"
-            app:layout_constraintTop_toTopOf="@+id/sizeNames"
-            app:layout_constraintStart_toEndOf="@+id/sizeNames"
-            app:layout_constraintBottom_toBottomOf="@+id/sizeNames"/>
-
         <SeekBar
             android:id="@+id/sliderSizeNames"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:progress="20"
-            android:max="20"
+            android:max="100"
             android:layout_marginEnd="16dp"
             app:layout_constraintTop_toTopOf="@+id/sizeNames"
             app:layout_constraintBottom_toBottomOf="@+id/sizeNames"
-            app:layout_constraintStart_toEndOf="@+id/sizeUnitNames"
+            app:layout_constraintStart_toEndOf="@+id/sizeNames"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
@@ -589,7 +504,7 @@
             android:id="@+id/editLang"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/edit_text_controller"
+            style="@style/unit_size_text_controller"
             android:inputType="none"
             android:focusable="false"
             android:layout_marginTop="8dp"
@@ -597,7 +512,9 @@
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/labelLang"/>
+            app:layout_constraintTop_toBottomOf="@+id/labelLang"
+            android:autofillHints="language"
+            tools:ignore="LabelFor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

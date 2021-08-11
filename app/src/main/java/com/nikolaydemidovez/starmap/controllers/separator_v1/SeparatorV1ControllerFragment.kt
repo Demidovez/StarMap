@@ -21,18 +21,12 @@ import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.shadowAlpha
 
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.RecyclerViewDisabler
 
-
-
-
 class SeparatorV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
-
-    private lateinit var viewModel: SeparatorV1ControllerViewModel
     private lateinit var binding: FragmentSeparatorV1ControllerBinding
     private lateinit var colorAdapter: ColorAdapter
     private val disablerColorRecycler = RecyclerViewDisabler(true)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        viewModel = ViewModelProvider(this).get(SeparatorV1ControllerViewModel::class.java)
         binding = FragmentSeparatorV1ControllerBinding.inflate(inflater, container, false)
 
         colorAdapter = ColorAdapter(templateCanvas.separatorColor) {

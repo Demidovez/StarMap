@@ -32,7 +32,7 @@ d3.svg.customSymbol = function () {
 };
 
 function starSize(size, d) {
-  var mag = d.properties.mag;
+  var mag = Math.min(d.properties.mag, 5);
   if (mag === null) return 0.1;
   var r = size * Math.exp(cnf.stars.exponent * (mag + 2));
 
@@ -50,7 +50,7 @@ function dsosSize(d) {
 function planetSize(size, d) {
   var mag = d.properties.mag;
   if (mag === null) return 2;
-  var r = size * Math.exp(-0.05 * (mag + 2));
+  var r = size * Math.exp(-0.05 * (mag + 10));
 
   return Math.max(r, 2);
 }
@@ -428,21 +428,5 @@ function incrementNumberStep() {
   currentStep++;
 
   console.log(currentStep + "/10");
-  if (currentStep == 10) saveSvg();
-}
-
-function getAllSteps() {
-  var count = 1;
-
-  if (cnf.stars.propername) count++;
-  if (cnf.dsos.show) count++;
-  if (cnf.dsos.names) count++;
-  if (cnf.planets.show) count++;
-  if (cnf.planets.names) count++;
-  if (cnf.mw.show) count++;
-  if (cnf.graticule.show) count++;
-  if (cnf.constellations.show) count++;
-  if (cnf.constellations.names) count++;
-
-  return count;
+  if (currentStep >= 9) saveSvg();
 }

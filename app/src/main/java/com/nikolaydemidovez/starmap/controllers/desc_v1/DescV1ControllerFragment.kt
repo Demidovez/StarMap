@@ -1,33 +1,35 @@
 package com.nikolaydemidovez.starmap.controllers.desc_v1
 
+import android.graphics.Insets
+import android.os.Build
 import com.nikolaydemidovez.starmap.adapters.ColorAdapter
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.view.updatePadding
+import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nikolaydemidovez.starmap.R
 import com.nikolaydemidovez.starmap.adapters.FontAdapter
+import com.nikolaydemidovez.starmap.controllers.event_v1.EventV1ControllerFragment
 import com.nikolaydemidovez.starmap.databinding.FragmentDescV1ControllerBinding
 import com.nikolaydemidovez.starmap.pojo.FontText
 import com.nikolaydemidovez.starmap.templates.TemplateCanvas
+import com.nikolaydemidovez.starmap.utils.helpers.Helper
 import com.nikolaydemidovez.starmap.utils.helpers.Helper.Companion.getAllFonts
 import java.util.ArrayList
 
 class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
-
-    private lateinit var viewModel: DescV1ControllerViewModel
     private lateinit var binding: FragmentDescV1ControllerBinding
     private lateinit var colorAdapter: ColorAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        viewModel = ViewModelProvider(this).get(DescV1ControllerViewModel::class.java)
         binding = FragmentDescV1ControllerBinding.inflate(inflater, container, false)
 
         colorAdapter = ColorAdapter(templateCanvas.descFontColor) {
@@ -36,12 +38,14 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
 
         val root: View = binding.root
 
-        binding.editDesc.setText(templateCanvas.descText.value)
-
         // Изменяем текст под картой
-        binding.editDesc.doOnTextChanged { _, _, _, _ ->
-            templateCanvas.descText.value = binding.editDesc.text.toString()
+        binding.editDesc.setOnClickListener {
+            showDescDialog()
         }
+
+        templateCanvas.descText.observe(requireActivity(), {
+            binding.editDesc.setText(it)
+        })
 
         templateCanvas.descFont.observe(requireActivity(), {
             binding.editFont.setText(it.name )
@@ -87,6 +91,56 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
         recyclerColors.adapter = colorAdapter
 
         colorAdapter.addAllColorList(templateCanvas.colorList)
+    }
+
+    private fun showDescDialog() {
+        val layoutInflater = LayoutInflater.from(requireContext())
+        val layout: View = layoutInflater.inflate(R.layout.dialog_desc_layout, null)
+        layout.findViewById<TextView>(R.id.title).text = "Текст события"
+
+        val editText = layout.findViewById<EditText>(R.id.desc)
+
+        editText.setText(templateCanvas.descText.value)
+
+        val builder = AlertDialog.Builder(requireContext(), R.style.dialog_corners)
+        builder.setPositiveButton(android.R.string.ok, null)
+        builder.setNegativeButton(android.R.string.cancel, null)
+        builder.setView(layout)
+
+        val dialog = builder.create()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            dialog.window?.setDecorFitsSystemWindows(false)
+            dialog.window?.decorView!!.setOnApplyWindowInsetsListener { v, insets ->
+                val imeInsets: Insets = insets.getInsets(WindowInsets.Type.ime())
+                val paddingBottom = if(imeInsets.bottom == 0) 40 else imeInsets.bottom
+                v.updatePadding(bottom = paddingBottom)
+                insets
+            }
+        } else {
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
+
+        dialog.setOnShowListener {
+            editText.setSelection(editText.text.length)
+            editText.requestFocus()
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+
+            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
+            okButton.setOnClickListener {
+                templateCanvas.descText.value = editText.text.toString().trim()
+
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.8).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
     private fun showFontDialog() {

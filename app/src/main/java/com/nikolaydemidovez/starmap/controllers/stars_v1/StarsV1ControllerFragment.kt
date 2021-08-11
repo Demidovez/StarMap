@@ -22,15 +22,12 @@ import com.nikolaydemidovez.starmap.templates.TemplateCanvas.Companion.LINE_GRAT
 import com.nikolaydemidovez.starmap.utils.helpers.Helper
 
 class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
-
-    private lateinit var viewModel: StarsV1ControllerViewModel
     private lateinit var binding: FragmentStarsV1ControllerBinding
     private val disablerColorGraticuleRecycler = Helper.Companion.RecyclerViewDisabler(true)
     private val disablerColorConstellationsRecycler = Helper.Companion.RecyclerViewDisabler(true)
     private val disablerColorNamesRecycler = Helper.Companion.RecyclerViewDisabler(true)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        viewModel = ViewModelProvider(this).get(StarsV1ControllerViewModel::class.java)
         binding = FragmentStarsV1ControllerBinding.inflate(inflater, container, false)
 
         val root: View = binding.root
@@ -45,12 +42,10 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             disablerColorGraticuleRecycler.isEnable = it
             binding.labelOpacityGraticule.alpha = Helper.shadowAlpha(it)
             binding.opacityGraticule.alpha = Helper.shadowAlpha(it)
-            binding.sizeUnitOpacityGraticule.alpha = Helper.shadowAlpha(it)
             binding.sliderOpacityGraticule.alpha = Helper.shadowAlpha(it)
             binding.sliderOpacityGraticule.isEnabled = it
             binding.labelWidthGraticule.alpha = Helper.shadowAlpha(it)
             binding.widthGraticule.alpha = Helper.shadowAlpha(it)
-            binding.sizeUnitWidth.alpha = Helper.shadowAlpha(it)
             binding.sliderWidthGraticule.alpha = Helper.shadowAlpha(it)
             binding.sliderWidthGraticule.isEnabled = it
             binding.colorGraticuleRecycler.alpha = Helper.shadowAlpha(it)
@@ -147,11 +142,9 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             binding.colorConstellationsRecycler.alpha = Helper.shadowAlpha(it)
             binding.labelOpacityConstellations.alpha = Helper.shadowAlpha(it)
             binding.opacityConstellations.alpha = Helper.shadowAlpha(it)
-            binding.sizeUnitOpacityConstellations.alpha = Helper.shadowAlpha(it)
             binding.sliderOpacityConstellations.alpha = Helper.shadowAlpha(it)
             binding.labelWidthConstellations.alpha = Helper.shadowAlpha(it)
             binding.widthConstellations.alpha = Helper.shadowAlpha(it)
-            binding.sizeUnitWidthConstellations.alpha = Helper.shadowAlpha(it)
             binding.sliderWidthConstellations.alpha = Helper.shadowAlpha(it)
             binding.sliderOpacityConstellations.isEnabled = it
             binding.sliderWidthConstellations.isEnabled = it
@@ -202,7 +195,6 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             binding.colorNamesRecycler.alpha = Helper.shadowAlpha(it)
             binding.labelSizeNames.alpha = Helper.shadowAlpha(it)
             binding.sizeNames.alpha = Helper.shadowAlpha(it)
-            binding.sizeUnitNames.alpha = Helper.shadowAlpha(it)
             binding.sliderSizeNames.alpha = Helper.shadowAlpha(it)
             binding.labelLang.alpha = Helper.shadowAlpha(it)
             binding.editLang.alpha = Helper.shadowAlpha(it)

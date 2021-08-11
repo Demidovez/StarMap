@@ -75,12 +75,12 @@
 
             <TextView
                 android:id="@+id/width"
-                android:layout_width="50dp"
+                android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
                 android:textAlignment="center"
-                style="@style/edit_text_controller"
+                style="@style/unit_size_text_controller"
                 android:inputType="none"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
@@ -88,29 +88,17 @@
                 app:layout_constraintTop_toBottomOf="@+id/label_width_separator"
                 />
 
-            <TextView
-                android:id="@+id/size_unit"
-                android:text="мм"
-                android:layout_marginStart="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/dark_shadow"
-                android:fontFamily="@font/nunito_regular"
-                app:layout_constraintTop_toTopOf="@+id/width"
-                app:layout_constraintStart_toEndOf="@+id/width"
-                app:layout_constraintBottom_toBottomOf="@+id/width"/>
-
             <SeekBar
                 android:id="@+id/slider_width"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:progress="20"
-                android:max="2000"
+                android:max="100"
                 app:layout_constraintTop_toTopOf="@+id/width"
                 app:layout_constraintBottom_toBottomOf="@+id/width"
-                app:layout_constraintStart_toEndOf="@+id/size_unit"
+                app:layout_constraintStart_toEndOf="@+id/width"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
 
