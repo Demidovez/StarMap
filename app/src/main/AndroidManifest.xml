@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.nikolaydemidovez.starmap">
+    package="com.kalambur.mappy_stars">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -18,7 +18,7 @@
         android:allowBackup="false">
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.nikolaydemidovez.starmap.provider"
+            android:authorities="com.kalambur.mappy_stars.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -27,7 +27,7 @@
             </meta-data>
         </provider>
         <activity
-            android:name=".MainActivity"
+            android:name="com.kalambur.mappy_stars.MainActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>

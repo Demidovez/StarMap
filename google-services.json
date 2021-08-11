@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "724000716108",
+    "project_id": "mappy-stars",
+    "storage_bucket": "mappy-stars.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:724000716108:android:0cd6a743394c179cf78be9",
+        "android_client_info": {
+          "package_name": "com.kalambur.mappy_stars"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "724000716108-91cp35mqnlafau0gb061u6pku51jgb8b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN7e6zMJJOK7ZuxYvWyvk0_CXKnex0z84"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "724000716108-91cp35mqnlafau0gb061u6pku51jgb8b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

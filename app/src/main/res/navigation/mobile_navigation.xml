@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_templates"
-        android:name="com.nikolaydemidovez.starmap.pages.templates.TemplatesFragment"
+        android:name="com.kalambur.mappy_stars.pages.templates.TemplatesFragment"
         android:label="@string/title_templates"
         tools:layout="@layout/fragment_templates" >
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/navigation_projects"
-        android:name="com.nikolaydemidovez.starmap.pages.projects.ProjectsFragment"
+        android:name="com.kalambur.mappy_stars.pages.projects.ProjectsFragment"
         android:label="@string/title_projects"
         tools:layout="@layout/fragment_projects" >
         <action
@@ -30,13 +30,13 @@
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.nikolaydemidovez.starmap.pages.settings.SettingsFragment"
+        android:name="com.kalambur.mappy_stars.pages.settings.SettingsFragment"
         android:label="@string/title_settings"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/templateFragment"
-        android:name="com.nikolaydemidovez.starmap.pages.template.TemplateFragment"
+        android:name="com.kalambur.mappy_stars.pages.template.TemplateFragment"
         android:label="@string/title_template"
         tools:layout="@layout/fragment_template" >
         <action
