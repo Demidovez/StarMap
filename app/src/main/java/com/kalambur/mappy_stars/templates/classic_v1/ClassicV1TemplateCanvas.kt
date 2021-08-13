@@ -44,6 +44,7 @@ import android.os.*
 import android.webkit.WebResourceRequest
 
 import android.webkit.WebResourceResponse
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.kalambur.mappy_stars.utils.helpers.Helper.Companion.getTimeString
 
@@ -137,8 +138,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                 launch { drawMapBorder() }
                 launch { drawDesc() }
                 launch { drawSeparator() }
-                launch { correctLocationText() }
-                launch { drawLocationText() }
+                launch { correctLocationText()  }
             }
 
             drawObjects.join()
@@ -150,6 +150,8 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         holst.observe(activity)  {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
+                    initRequestStarMap()
+
                     val drawObjects = launch {
                         launch { drawHolst() }
                         launch { drawHolstBorder() }
@@ -216,7 +218,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         starMapRadius.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    initStarMapBitmap()
+                    initRequestStarMap()
 
                     val drawObjects = launch {
                         launch {  drawMap() }
@@ -439,12 +441,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         hasEventDateInLocation.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { correctLocationText() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    correctLocationText()
                 }
             }
         }
@@ -459,12 +456,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         hasEventTimeInLocation.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { correctLocationText() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    correctLocationText()
                 }
             }
         }
@@ -479,12 +471,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         hasEventCityInLocation.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { correctLocationText() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    correctLocationText()
                 }
             }
         }
@@ -522,12 +509,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         hasEventCoordinatesInLocation.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { correctLocationText() }
-                    }
-
-                    drawObjects.join()
-                    drawCanvas()
+                    correctLocationText()
                 }
             }
         }
@@ -842,6 +824,10 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
                 locationText = "${locationText}${Helper.convert(coordinates.value!![0], coordinates.value!![1])}"
 
             resultLocationText.postValue(locationText.trim())
+
+            if(!isDataInitialized) {
+                drawLocationText(locationText.trim())
+            }
         }
 
         Log.d("MyLog", "Done correctLocationText")
@@ -974,7 +960,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
 
         Log.d("MyLog", "Done drawSeparator")
     }
-    private fun drawLocationText() {
+    private fun drawLocationText(locationText: String = resultLocationText.value!!) {
         Log.d("MyLog", "Start drawLocationText")
 
         val textSizeLocation = (holst.value!!.width!! / 2) * locationFont.value!!.size!! / 1000
@@ -992,7 +978,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
 
         val canvas = Canvas(tempBitmap)
 
-        val textLines = resultLocationText.value!!.split("\n")
+        val textLines = locationText.split("\n")
         var totalHeightText = 0F
 
         for(textLine in textLines) {

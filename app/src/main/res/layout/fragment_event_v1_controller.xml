@@ -43,11 +43,13 @@
             android:layout_marginTop="8dp"
             android:inputType="none"
             android:focusable="false"
-            style="@style/unit_size_text_controller"
+            android:longClickable="false"
+            style="@style/text_controller"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/labelDate"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
-            tools:ignore="TextFields" />
+            tools:ignore="LabelFor,TextFields"
+            android:autofillHints="date" />
 
         <TextView
             android:id="@+id/labelTime"
@@ -66,13 +68,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            style="@style/unit_size_text_controller"
+            style="@style/text_controller"
             android:layout_marginTop="8dp"
             android:inputType="none"
             android:focusable="false"
+            android:longClickable="false"
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/labelTime"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:autofillHints="time"
+            tools:ignore="LabelFor" />
 
         <TextView
             android:id="@+id/labelLocation"
@@ -89,13 +94,16 @@
             android:id="@+id/editLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/unit_size_text_controller"
+            style="@style/text_controller"
             android:inputType="none"
             android:focusable="false"
+            android:longClickable="false"
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/labelLocation"/>
+            app:layout_constraintTop_toBottomOf="@+id/labelLocation"
+            android:autofillHints="location"
+            tools:ignore="LabelFor" />
 
         <TextView
             android:id="@+id/labelLatitude"
@@ -113,15 +121,17 @@
             android:id="@+id/editLatitude"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/unit_size_text_controller"
+            style="@style/text_controller"
             android:inputType="none"
             android:focusable="false"
+            android:longClickable="false"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/labelLatitude"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
-            />
+            android:autofillHints="latitude"
+            tools:ignore="LabelFor" />
 
         <TextView
             android:id="@+id/labelLongitude"
@@ -138,14 +148,17 @@
             android:id="@+id/editLongitude"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/unit_size_text_controller"
+            style="@style/text_controller"
             android:inputType="none"
             android:focusable="false"
+            android:longClickable="false"
             android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/labelLongitude"/>
+            app:layout_constraintTop_toBottomOf="@+id/labelLongitude"
+            android:autofillHints="longitude"
+            tools:ignore="LabelFor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

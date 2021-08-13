@@ -44,6 +44,7 @@
                 android:autofillHints="description"
                 tools:ignore="LabelFor"
                 android:inputType="none"
+                android:longClickable="false"
                 android:focusable="false" />
 
             <TextView
@@ -59,16 +60,17 @@
 
             <EditText
                 android:id="@+id/edit_font"
-                android:inputType="none"
-                android:focusable="false"
-                android:layout_marginTop="8dp"
-                style="@style/unit_size_text_controller"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/label_font_family"
+                style="@style/text_controller"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:autofillHints="font"
+                android:focusable="false"
+                android:longClickable="false"
+                android:inputType="none"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/label_font_family"
                 tools:ignore="LabelFor" />
 
             <TextView
@@ -119,7 +121,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
                 android:textAlignment="center"
-                style="@style/unit_size_text_controller"
+                style="@style/text_controller"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
                 app:layout_constraintStart_toStartOf="parent"

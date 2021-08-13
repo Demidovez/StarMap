@@ -2,9 +2,7 @@ package com.kalambur.mappy_stars.utils.helpers
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Path
+import android.graphics.*
 import android.location.Location
 import kotlin.math.abs
 import android.util.TypedValue
@@ -128,26 +126,6 @@ class Helper {
             init {
                 this.isEnable = isEnable
             }
-        }
-
-        // Список шрифтов
-        fun getAllFonts(activity: Activity): ArrayList<FontText> {
-            val allFonts: ArrayList<FontText> = ArrayList()
-            val fontList = activity.resources.getStringArray(R.array.font_in_locations)
-
-            for (font in fontList) {
-                val fontResID   = activity.resources.getIdentifier(font, "font", activity.packageName)
-                val stringResID = activity.resources.getIdentifier(font, "string", activity.packageName)
-                val fontName    = activity.resources.getString(stringResID)
-
-                try {
-                    allFonts.add(FontText(fontName, fontResID, null))
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-
-            return allFonts
         }
 
         // Получаем текущее время в виде строки "hh:mm"

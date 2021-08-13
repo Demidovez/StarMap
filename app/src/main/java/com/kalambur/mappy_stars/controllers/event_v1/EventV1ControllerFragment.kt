@@ -126,18 +126,6 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
         val dialog = builder.create()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            dialog.window?.setDecorFitsSystemWindows(false)
-            dialog.window?.decorView!!.setOnApplyWindowInsetsListener { v, insets ->
-                val imeInsets: Insets = insets.getInsets(WindowInsets.Type.ime())
-                val paddingBottom = if(imeInsets.bottom == 0) 40 else imeInsets.bottom
-                v.updatePadding(bottom = paddingBottom)
-                insets
-            }
-        } else {
-            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        }
-
         dialog.setOnShowListener {
             editText.setSelection(editText.text.length)
             editText.requestFocus()
@@ -150,10 +138,10 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
             okButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))
             okButton.setOnClickListener {
                 if(editText.text.isNotEmpty()) {
-                    val editValue = editText.text.toString().toFloat()
+                    val editValue = editText.text.toString().toFloatOrNull()
 
                     if(flag == LATITUDE) {
-                        if(isValidLat(editValue)) {
+                        if(editValue != null && isValidLat(editValue)) {
                             if(templateCanvas.coordinates.value!![0] != editValue) {
                                 val newCoordinates = templateCanvas.coordinates.value
                                 newCoordinates!![0] = editValue
@@ -170,7 +158,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
                     }
 
                     if(flag == LONGITUDE) {
-                        if(isValidLong(editValue)) {
+                        if(editValue != null && isValidLong(editValue)) {
                             if(templateCanvas.coordinates.value!![1] != editValue) {
                                 val newCoordinates = templateCanvas.coordinates.value
                                 newCoordinates!![1] = editValue

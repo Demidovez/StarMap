@@ -13,6 +13,8 @@ import com.kalambur.mappy_stars.controllers.separator_v1.SeparatorV1ControllerFr
 import com.kalambur.mappy_stars.controllers.stars_v1.StarsV1ControllerFragment
 import com.kalambur.mappy_stars.templates.TemplateCanvas
 import com.kalambur.mappy_stars.controllers.event_v1.EventV1ControllerFragment
+import com.kalambur.mappy_stars.controllers.map_v2.MapV2ControllerFragment
+import com.kalambur.mappy_stars.controllers.map_v2.MapV3ControllerFragment
 
 class ControllerTabAdapter(fm: FragmentManager, lifecycle: Lifecycle, private var numberOfTabs: Int, private var templateCanvas: TemplateCanvas) : FragmentStateAdapter(fm, lifecycle) {
 
@@ -21,6 +23,8 @@ class ControllerTabAdapter(fm: FragmentManager, lifecycle: Lifecycle, private va
             "event_v1" -> EventV1ControllerFragment(templateCanvas)
             "canvas_v1" -> CanvasV1ControllerFragment(templateCanvas)
             "map_v1" -> MapV1ControllerFragment(templateCanvas)
+            "map_v2" -> MapV2ControllerFragment(templateCanvas)
+            "map_v3" -> MapV3ControllerFragment(templateCanvas)
             "stars_v1" -> StarsV1ControllerFragment(templateCanvas)
             "desc_v1" -> DescV1ControllerFragment(templateCanvas)
             "separator_v1" -> SeparatorV1ControllerFragment(templateCanvas)

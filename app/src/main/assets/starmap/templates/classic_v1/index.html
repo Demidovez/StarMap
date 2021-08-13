@@ -106,6 +106,7 @@
         // Загружаем звезды
         d3.json(cnf.stars.dataPath, function (error, stars) {
           if (error) {
+            incrementNumberStep();
             console.log("22: " + error);
             return;
           }
@@ -130,28 +131,28 @@
 
           incrementNumberStep();
 
-          starNamesPromise.then(() => {
-            g.selectAll(".starNames")
-              .data(
-                stars.filter(
-                  (d) =>
-                    d.properties.mag <= cnf.stars.propernameLimit &&
-                    clip(coordinates, d) === 1
+          starNamesPromise
+            .then(() => {
+              g.selectAll(".starNames")
+                .data(
+                  stars.filter(
+                    (d) =>
+                      d.properties.mag <= cnf.stars.propernameLimit &&
+                      clip(coordinates, d) === 1
+                  )
                 )
-              )
-              .enter()
-              .append("text")
-              .attr("transform", function (d) {
-                return point(d.geometry.coordinates);
-              })
-              .text(function (d) {
-                return starPropername(cnf.stars.propernameLang, d.id);
-              })
-              .attr({ dy: "-.5em", dx: "-.35em", class: "starNames" })
-              .style(getProperNameStyle(cnf.stars.propernameStyle));
-
-            incrementNumberStep();
-          });
+                .enter()
+                .append("text")
+                .attr("transform", function (d) {
+                  return point(d.geometry.coordinates);
+                })
+                .text(function (d) {
+                  return starPropername(cnf.stars.propernameLang, d.id);
+                })
+                .attr({ dy: "-.5em", dx: "-.35em", class: "starNames" })
+                .style(getProperNameStyle(cnf.stars.propernameStyle));
+            })
+            .finally(() => incrementNumberStep());
         });
 
         // Загружаем названия глубокихи космических объектов
@@ -171,7 +172,10 @@
         // Загружаем глубокие космические объекты
         if (cnf.dsos.show) {
           d3.json(cnf.dsos.dataPath, function (error, dsos) {
-            if (error) return console.log("44: " + error);
+            if (error) {
+              incrementNumberStep();
+              return console.log("44: " + error);
+            }
 
             var dsos = getData(dsos, "ecliptic").features;
 
@@ -193,28 +197,28 @@
 
             incrementNumberStep();
 
-            dsoNamesPromise.then(() => {
-              g.selectAll(".dsoNames")
-                .data(
-                  dsos.filter(
-                    (d) =>
-                      d.properties.mag <= cnf.dsos.nameLimit &&
-                      clip(coordinates, d.geometry.coordinates) === 1
+            dsoNamesPromise
+              .then(() => {
+                g.selectAll(".dsoNames")
+                  .data(
+                    dsos.filter(
+                      (d) =>
+                        d.properties.mag <= cnf.dsos.nameLimit &&
+                        clip(coordinates, d.geometry.coordinates) === 1
+                    )
                   )
-                )
-                .enter()
-                .append("text")
-                .attr("transform", function (d) {
-                  return point(d.geometry.coordinates);
-                })
-                .text(function (d) {
-                  return starDsoname(cnf.dsos.nameLang, d.id);
-                })
-                .attr({ dy: "-.5em", dx: "-.35em", class: "dsoNames" })
-                .style(getProperNameStyle(cnf.dsos.nameStyle));
-
-              incrementNumberStep();
-            });
+                  .enter()
+                  .append("text")
+                  .attr("transform", function (d) {
+                    return point(d.geometry.coordinates);
+                  })
+                  .text(function (d) {
+                    return starDsoname(cnf.dsos.nameLang, d.id);
+                  })
+                  .attr({ dy: "-.5em", dx: "-.35em", class: "dsoNames" })
+                  .style(getProperNameStyle(cnf.dsos.nameStyle));
+              })
+              .finally(() => incrementNumberStep());
           });
         }
 
@@ -236,6 +240,7 @@
         if (cnf.constellations.show) {
           d3.json(cnf.constellations.dataPath, function (error, lines) {
             if (error) {
+              incrementNumberStep();
               console.log("66: " + error);
               return;
             }
@@ -254,34 +259,40 @@
 
             incrementNumberStep();
 
-            constellationNamesPromise.then(() => {
-              var constnames = getData(constellationnames, "ecliptic").features;
+            constellationNamesPromise
+              .then(() => {
+                var constnames = getData(
+                  constellationnames,
+                  "ecliptic"
+                ).features;
 
-              g.selectAll(".constellationnames")
-                .data(
-                  constnames.filter(
-                    (d) => clip(coordinates, d.geometry.coordinates) === 1
+                g.selectAll(".constellationnames")
+                  .data(
+                    constnames.filter(
+                      (d) => clip(coordinates, d.geometry.coordinates) === 1
+                    )
                   )
-                )
-                .enter()
-                .append("text")
-                .attr("class", "constellationnames")
-                .attr("transform", function (d) {
-                  return point(d.geometry.coordinates);
-                })
-                .text(function (d) {
-                  return d.properties[cnf.constellations.nameLang];
-                })
-                .style(getProperNameStyle(cnf.constellations.nameStyle));
-
-              incrementNumberStep();
-            });
+                  .enter()
+                  .append("text")
+                  .attr("class", "constellationnames")
+                  .attr("transform", function (d) {
+                    return point(d.geometry.coordinates);
+                  })
+                  .text(function (d) {
+                    return d.properties[cnf.constellations.nameLang];
+                  })
+                  .style(getProperNameStyle(cnf.constellations.nameStyle));
+              })
+              .finally(() => incrementNumberStep());
           });
+        } else {
+          incrementNumberStep();
         }
 
         // Загружаем млечный путь
         d3.json(cnf.mw.dataPath, function (error, mw) {
           if (error) {
+            incrementNumberStep();
             console.log("77: " + error);
             return;
           }
@@ -304,6 +315,8 @@
         if (cnf.planets.show) {
           d3.json(cnf.planets.dataPath, function (error, planets) {
             if (error) {
+              incrementNumberStep();
+              incrementNumberStep();
               console.log("88: " + error);
               return;
             }
@@ -422,6 +435,8 @@
 
             incrementNumberStep();
           });
+        } else {
+          incrementNumberStep();
         }
       };
     </script>

@@ -41,7 +41,7 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
 
         binding.shareBtn.setOnClickListener {
             val sharingFile = templateCanvas.convertToSharingFile(currentFormat.value!!)
-            val uriSharingFile = FileProvider.getUriForFile(requireContext(), "com.nikolaydemidovez.starmap.provider", sharingFile)
+            val uriSharingFile = FileProvider.getUriForFile(requireContext(), "com.kalambur.mappy_stars..provider", sharingFile)
 
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
@@ -181,7 +181,7 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
         }
 
         dialog.setOnShowListener {
-            imgClearText.visibility = if(editText.text.isNotEmpty()) View.VISIBLE else View.GONE
+            imgClearText.visibility = if(editText.text.isNotEmpty()) VISIBLE else GONE
             dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dark))

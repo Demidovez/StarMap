@@ -124,7 +124,7 @@
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
             android:textAlignment="center"
-            style="@style/unit_size_text_controller"
+            style="@style/text_controller"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/labelWidthBorder"
             />

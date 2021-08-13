@@ -47,7 +47,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:fontFamily="@font/nunito_regular"
+        android:fontFamily="@font/nunito"
         android:gravity="center"
         android:textColor="@color/dark"
         android:textSize="16sp"

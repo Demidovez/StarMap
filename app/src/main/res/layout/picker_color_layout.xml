@@ -59,7 +59,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            style="@style/unit_size_text_controller"
+            style="@style/text_controller"
             app:layout_constraintStart_toEndOf="@id/color_preview"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/color_preview"

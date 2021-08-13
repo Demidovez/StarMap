@@ -14,7 +14,6 @@
         android:id="@+id/font_family"
         android:textSize="20sp"
         android:textColor="@color/dark_shadow"
-        android:fontFamily="@font/nunito_semi_bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

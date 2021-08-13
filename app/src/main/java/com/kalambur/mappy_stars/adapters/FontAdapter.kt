@@ -16,10 +16,9 @@ class FontAdapter (
     private var applicationContext: Context?,
     private var templateCanvas: TemplateCanvas,
     private var dialog: Dialog,
-    dataList: ArrayList<FontText>,
     private var listener: (font: FontText) -> Unit
 ) : BaseAdapter() {
-    private var fontList: ArrayList<FontText> = dataList
+    private var fontList: ArrayList<FontText> = templateCanvas.fontList
 
     override fun getCount(): Int {
         return fontList.size

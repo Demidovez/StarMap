@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">StarMap</string>
+    <string name="app_name">Mappy Stars</string>
     <string name="api_key_places">AIzaSyCp9X6e2hQeTg6tIOEMdNmsLkGwF62vHBI</string>
     <string name="title_templates">Шаблоны</string>
     <string name="title_projects">Мои проекты</string>
@@ -34,6 +34,9 @@
     <string name="label_shape">Форма рамки</string>
     <string name="label_shape_separator">Форма разделителя</string>
     <string name="label_size_map">Размер карты</string>
+    <string name="label_position_map">Позиция карты</string>
+    <string name="label_height_map">Высота карты</string>
+    <string name="label_indent_map">Отступ карты</string>
     <string name="label_background_map">Цвет фона карты</string>
     <string name="label_enable_border_map">Добавить рамку</string>
     <string name="label_color_border_map">Цвет рамки</string>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/comfortaa</item>
+        <item>@font/days_one</item>
+        <item>@font/kelly_slab</item>
+        <item>@font/marck_script</item>
+        <item>@font/press_start_2p</item>
+        <item>@font/russo_one</item>
+        <item>@font/bad_script</item>
+        <item>@font/cormorant_infant</item>
+        <item>@font/seymour_one</item>
+        <item>@font/underdog</item>
+        <item>@font/poiret_one</item>
+        <item>@font/lobster</item>
+        <item>@font/press_start_2p</item>
+        <item>@font/marck_script</item>
+        <item>@font/days_one</item>
+        <item>@font/kelly_slab</item>
+        <item>@font/seymour_one</item>
+    </array>
+</resources>

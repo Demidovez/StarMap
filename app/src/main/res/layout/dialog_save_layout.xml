@@ -25,7 +25,7 @@
 
         <EditText
             android:id="@+id/editName"
-            style="@style/unit_size_text_controller"
+            style="@style/text_controller"
             android:textSize="18sp"
             android:paddingEnd="38dp"
             app:layout_constraintEnd_toEndOf="parent"

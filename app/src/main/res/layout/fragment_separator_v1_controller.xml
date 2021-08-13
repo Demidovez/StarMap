@@ -80,7 +80,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
                 android:textAlignment="center"
-                style="@style/unit_size_text_controller"
+                style="@style/text_controller"
                 android:inputType="none"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"

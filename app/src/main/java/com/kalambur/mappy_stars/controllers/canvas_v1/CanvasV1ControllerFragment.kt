@@ -62,6 +62,7 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
 
         recyclerBackgroundColorsInit()
 
+        binding.checkboxEnableBorder.isChecked = templateCanvas.hasBorderHolst.value!!
         binding.checkboxEnableBorder.setOnCheckedChangeListener { _, isChecked ->
             templateCanvas.hasBorderHolst.value = isChecked
         }

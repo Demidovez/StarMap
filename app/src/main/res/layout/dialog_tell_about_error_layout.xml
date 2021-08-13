@@ -64,7 +64,7 @@
 
         <EditText
             android:id="@+id/contact"
-            style="@style/unit_size_text_controller"
+            style="@style/text_controller"
             android:textSize="16sp"
             android:paddingEnd="35dp"
             app:layout_constraintEnd_toEndOf="parent"

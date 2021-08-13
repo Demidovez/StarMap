@@ -18,7 +18,6 @@ import com.kalambur.mappy_stars.adapters.FontAdapter
 import com.kalambur.mappy_stars.databinding.FragmentLocationV1ControllerBinding
 import com.kalambur.mappy_stars.pojo.FontText
 import com.kalambur.mappy_stars.templates.TemplateCanvas
-import com.kalambur.mappy_stars.utils.helpers.Helper.Companion.getAllFonts
 import java.util.*
 
 class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
@@ -175,9 +174,7 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
 
         val listView = layout.findViewById<ListView>(R.id.listView)
 
-        val allFonts: ArrayList<FontText> = getAllFonts(requireActivity())
-
-        val adapter = FontAdapter(activity, templateCanvas, dialog, allFonts) {
+        val adapter = FontAdapter(activity, templateCanvas, dialog) {
             val newFont = templateCanvas.locationFont.value
             newFont?.name = it.name
             newFont?.resId = it.resId

@@ -2,6 +2,7 @@ package com.kalambur.mappy_stars.pojo
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.text.FieldPosition
 
 @Entity
 data class Template(
@@ -21,6 +22,7 @@ data class Template(
     val borderHolstWidth: Float? = null,
     val borderHolstColor: String? = null,
     val starMapRadius: Float? = null,
+    val starMapPosition: Float? = null,
     val starMapColor: String? = null,
     val starMapBorderWidth: Float? = null,
     val starMapBorderType: Int? = null,

@@ -45,6 +45,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val borderHolst =                   MutableLiveData<HolstBorder>()          // Рамка холста
     val borderHolstColor =              MutableLiveData<String>()               // Цвет рамки холста
     val starMapRadius =                 MutableLiveData<Float>()                // Радиус звездной карта
+    val starMapPosition =               MutableLiveData<Float>()                // Позиция звездной карта
     val starMapColor =                  MutableLiveData<String>()               // Цвет фона звездной карта
     val starMapBorder =                 MutableLiveData<StarMapBorder>()        // Рамка звездной карты
     val starMapBorderColor =            MutableLiveData<String>()               // Цвет рамки звездной карты
@@ -132,6 +133,24 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         Lang("Persian", "fa"),
         Lang("Spanish", "es"),
         Lang("Turkish", "tr")
+    )
+    val fontList = arrayListOf(
+        FontText("Amatic SC", R.font.amaticsc_regular, null),
+        FontText("Bad Script Regular", R.font.bad_script, null),
+        FontText("Caveat", R.font.caveat, null),
+        FontText("Comfortaa Regular", R.font.comfortaa, null),
+        FontText("Cormorant Infant Regular", R.font.cormorant_infant, null),
+        FontText("Days One", R.font.days_one, null),
+        FontText("Marck Script", R.font.marck_script, null),
+        FontText("Nunito Regular", R.font.nunito, null),
+        FontText("Lobster Regular", R.font.lobster, null),
+        FontText("Kelly Slab", R.font.kelly_slab, null),
+        FontText("Pacifico", R.font.pacifico_regular, null),
+        FontText("Poiret One Regular", R.font.poiret_one, null),
+        FontText("Press Start 2P", R.font.press_start_2p, null),
+        FontText("Russo One Regular", R.font.russo_one, null),
+        FontText("Seymour One", R.font.seymour_one, null),
+        FontText("Under Dog Regular", R.font.underdog, null)
     )
 
     abstract fun drawCanvas()
@@ -247,9 +266,10 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             borderHolstWidth = borderHolst.value!!.width,
             borderHolstColor = borderHolstColor.value,
             starMapRadius = starMapRadius.value,
+            starMapPosition = starMapPosition.value,
             starMapColor = starMapColor.value,
-            starMapBorderWidth = starMapBorder.value!!.width,
-            starMapBorderType = starMapBorder.value!!.shapeType,
+            starMapBorderWidth = starMapBorder.value?.width,
+            starMapBorderType = starMapBorder.value?.shapeType,
             starMapBorderColor = starMapBorderColor.value,
             descFontName = descFont.value!!.name,
             descFontResId = descFont.value!!.resId,
@@ -336,7 +356,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         }
     }
 
-    protected fun drawCircleBorder(): Bitmap {
+    protected open fun drawCircleBorder(): Bitmap {
         val radiusMap = getRadiusMap()
         val borderWidth = (radiusMap / 4F) * starMapBorder.value!!.width / 100
 
@@ -357,7 +377,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
 
         return tempBitmap
     }
-    protected fun drawCompassBorder(): Bitmap {
+    protected open fun drawCompassBorder(): Bitmap {
         // Радиус карты
         val radiusMap = getRadiusMap()
 
@@ -367,7 +387,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         // Ширина компаса
         val compassWidth = borderWidth * 12F
 
-        // Длина (и высота) холста плд компас
+        // Длина (и высота) холста под компас
         val tempSize = (radiusMap + compassWidth) * 2F
 
         // Изображаение под компас
@@ -407,12 +427,12 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
             textAlign = Paint.Align.CENTER
             textSize = compassWidth * 0.4F
             color = Color.parseColor(starMapBorderColor.value)
-            typeface = ResourcesCompat.getFont(activity, R.font.cormorant_infant_regular)
+            typeface = ResourcesCompat.getFont(activity, R.font.cormorant_infant)
             isDither = true
             isAntiAlias = true
         }
 
-        // Определяем размеры букв для центровки по переметру компаса
+        // Определяем размеры букв для центровки по периметру компаса
         val boundsN = Rect()
         val boundsE = Rect()
         val boundsW = Rect()
@@ -520,7 +540,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         return tempBitmap
     }
 
-    protected fun getRadiusMap(): Float {
+    protected open fun getRadiusMap(): Float {
         return ((holst.value!!.width!! / 1.5F) * starMapRadius.value!! / 100).coerceAtLeast(1F)
     }
 

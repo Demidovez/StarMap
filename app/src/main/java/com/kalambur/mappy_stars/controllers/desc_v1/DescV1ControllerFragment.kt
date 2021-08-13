@@ -15,10 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kalambur.mappy_stars.R
 import com.kalambur.mappy_stars.adapters.FontAdapter
 import com.kalambur.mappy_stars.databinding.FragmentDescV1ControllerBinding
-import com.kalambur.mappy_stars.pojo.FontText
 import com.kalambur.mappy_stars.templates.TemplateCanvas
-import com.kalambur.mappy_stars.utils.helpers.Helper.Companion.getAllFonts
-import java.util.ArrayList
 
 class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
     private lateinit var binding: FragmentDescV1ControllerBinding
@@ -149,9 +146,7 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
 
         val listView = layout.findViewById<ListView>(R.id.listView)
 
-        val allFonts: ArrayList<FontText> = getAllFonts(requireActivity())
-
-        val adapter = FontAdapter(activity, templateCanvas, dialog, allFonts) {
+        val adapter = FontAdapter(activity, templateCanvas, dialog) {
             val newFont = templateCanvas.descFont.value
             newFont?.name = it.name
             newFont?.resId = it.resId
