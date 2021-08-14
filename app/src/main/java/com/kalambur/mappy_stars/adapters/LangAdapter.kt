@@ -1,5 +1,6 @@
 package com.kalambur.mappy_stars.adapters
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,9 +11,10 @@ import android.widget.TextView
 import com.kalambur.mappy_stars.R
 import com.kalambur.mappy_stars.pojo.Lang
 import com.kalambur.mappy_stars.templates.TemplateCanvas
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 
 class LangAdapter (
-    private var applicationContext: Context?,
+    private var activity: Activity?,
     private var templateCanvas: TemplateCanvas,
     private var dialog: Dialog,
     private var listener: (lang: Lang) -> Unit
@@ -32,7 +34,7 @@ class LangAdapter (
     }
 
     override fun getView(i: Int, convertView: View?, viewGroup: ViewGroup): View {
-        val view = LayoutInflater.from(applicationContext!!).inflate(R.layout.lang_item, null)
+        val view = LayoutInflater.from(activity!!).inflate(R.layout.lang_item, null)
         val lang = view.findViewById<TextView>(R.id.lang)
 
         lang.text = langList[i].label
@@ -40,7 +42,7 @@ class LangAdapter (
         view.setOnClickListener {
             listener(langList[i])
 
-            dialog.dismiss()
+            dialog.dismissWithAds(activity!!)
         }
 
         return view

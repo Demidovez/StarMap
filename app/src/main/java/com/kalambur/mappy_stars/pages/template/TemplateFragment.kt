@@ -3,6 +3,7 @@ package com.kalambur.mappy_stars.pages.template
 import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -25,11 +26,12 @@ import com.kalambur.mappy_stars.interfaces.IOnBackPressed
 import com.kalambur.mappy_stars.pojo.Template
 import com.kalambur.mappy_stars.templates.TemplateCanvas
 import com.kalambur.mappy_stars.templates.classic_v1.ClassicV1TemplateCanvas
-import java.util.*
 import androidx.navigation.fragment.findNavController
 import com.kalambur.mappy_stars.templates.full_v1.FullV1TemplateCanvas
 import com.kalambur.mappy_stars.templates.half_v1.HalfV1TemplateCanvas
 import com.kalambur.mappy_stars.templates.polaroid_v1.PolaroidV1TemplateCanvas
+import com.kalambur.mappy_stars.utils.admob.AdmobUtil
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 
 
 class TemplateFragment : Fragment(), IOnBackPressed {
@@ -47,7 +49,7 @@ class TemplateFragment : Fragment(), IOnBackPressed {
 
         val root: View = binding.root
 
-        templateViewModel.template.observe(viewLifecycleOwner, {
+        templateViewModel.template.observe(viewLifecycleOwner, { it ->
             templateCanvas = getTemplateCanvas(it)
 
             binding.canvasImage.setImageBitmap(templateCanvas.getShortBitmap())
@@ -100,7 +102,7 @@ class TemplateFragment : Fragment(), IOnBackPressed {
             okButton.setOnClickListener {
                findNavController().popBackStack()
 
-               dialog.dismiss()
+               dialog.dismissWithAds(requireActivity())
             }
         }
 

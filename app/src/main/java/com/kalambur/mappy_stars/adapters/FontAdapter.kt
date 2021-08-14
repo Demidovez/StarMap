@@ -1,5 +1,6 @@
 package com.kalambur.mappy_stars.adapters
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,9 +12,10 @@ import androidx.core.content.res.ResourcesCompat.getFont
 import com.kalambur.mappy_stars.R
 import com.kalambur.mappy_stars.pojo.FontText
 import com.kalambur.mappy_stars.templates.TemplateCanvas
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 
 class FontAdapter (
-    private var applicationContext: Context?,
+    private var activity: Activity?,
     private var templateCanvas: TemplateCanvas,
     private var dialog: Dialog,
     private var listener: (font: FontText) -> Unit
@@ -33,16 +35,16 @@ class FontAdapter (
     }
 
     override fun getView(i: Int, convertView: View?, viewGroup: ViewGroup): View {
-        val view = LayoutInflater.from(applicationContext!!).inflate(R.layout.font_item, null)
+        val view = LayoutInflater.from(activity!!).inflate(R.layout.font_item, null)
         val family = view.findViewById<TextView>(R.id.font_family)
 
         family.text = fontList[i].name
-        family.typeface = getFont(applicationContext!!, fontList[i].resId!!)
+        family.typeface = getFont(activity!!, fontList[i].resId!!)
 
         view.setOnClickListener {
             listener(fontList[i])
 
-            dialog.dismiss()
+            dialog.dismissWithAds(activity!!)
         }
 
         return view

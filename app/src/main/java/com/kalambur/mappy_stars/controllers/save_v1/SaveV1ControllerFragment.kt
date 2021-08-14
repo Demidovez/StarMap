@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kalambur.mappy_stars.R
 import com.kalambur.mappy_stars.templates.TemplateCanvas.Companion.DEFAULT
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 
 class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
     private lateinit var binding: FragmentSaveV1ControllerBinding
@@ -41,7 +42,7 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
 
         binding.shareBtn.setOnClickListener {
             val sharingFile = templateCanvas.convertToSharingFile(currentFormat.value!!)
-            val uriSharingFile = FileProvider.getUriForFile(requireContext(), "com.kalambur.mappy_stars..provider", sharingFile)
+            val uriSharingFile = FileProvider.getUriForFile(requireContext(), "com.kalambur.mappy_stars.provider", sharingFile)
 
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
@@ -194,7 +195,7 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
 
                     requireView().findNavController().navigate(R.id.action_templateFragment_to_navigation_projects)
 
-                    dialog.dismiss()
+                    dialog.dismissWithAds(requireActivity())
                 } else {
                     descText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_flat))
                     descText.text = resources.getString(R.string.error_empty)
@@ -232,7 +233,7 @@ class SaveV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
 
                 requireView().findNavController().navigate(R.id.action_templateFragment_to_navigation_projects)
 
-                dialog.dismiss()
+                dialog.dismissWithAds(requireActivity())
             }
         }
 

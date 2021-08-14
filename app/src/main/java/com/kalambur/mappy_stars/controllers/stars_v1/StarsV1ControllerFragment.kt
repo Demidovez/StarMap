@@ -229,7 +229,7 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     private fun recyclerColorGraticuleInit() {
-        val adapter = ColorAdapter(templateCanvas.graticuleColor) {
+        val adapter = ColorAdapter(requireActivity(), templateCanvas.graticuleColor) {
             templateCanvas.graticuleColor.value = it
         }
 
@@ -247,7 +247,7 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     private fun recyclerColorStarsInit() {
-        val adapter = ColorAdapter(templateCanvas.starsColor) {
+        val adapter = ColorAdapter(requireActivity(), templateCanvas.starsColor) {
             templateCanvas.starsColor.value = it
         }
 
@@ -265,7 +265,7 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     private fun recyclerColorConstellationsInit() {
-        val adapter = ColorAdapter(templateCanvas.constellationsColor) {
+        val adapter = ColorAdapter(requireActivity(), templateCanvas.constellationsColor) {
             templateCanvas.constellationsColor.value = it
         }
 
@@ -283,7 +283,7 @@ class StarsV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
     }
 
     private fun recyclerColorNamesInit() {
-        val adapter = ColorAdapter(templateCanvas.namesStarsColor) {
+        val adapter = ColorAdapter(requireActivity(), templateCanvas.namesStarsColor) {
             templateCanvas.namesStarsColor.value = it
         }
 

@@ -2,6 +2,7 @@ package com.kalambur.mappy_stars.pages.templates
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -12,6 +13,18 @@ import com.kalambur.mappy_stars.MainActivity
 import com.kalambur.mappy_stars.R
 import com.kalambur.mappy_stars.adapters.TemplateAdapter
 import com.kalambur.mappy_stars.databinding.FragmentTemplatesBinding
+import com.kalambur.mappy_stars.utils.admob.AdmobUtil
+import com.google.android.gms.ads.formats.UnifiedNativeAd
+
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.formats.UnifiedNativeAd.OnUnifiedNativeAdLoadedListener
+import com.google.android.gms.ads.nativead.NativeAdOptions
+import com.kalambur.mappy_stars.pojo.Template
+import java.util.ArrayList
+
 
 class TemplatesFragment : Fragment() {
     private lateinit var templatesViewModel: TemplatesViewModel
@@ -43,15 +56,18 @@ class TemplatesFragment : Fragment() {
     }
 
     private fun recyclerInit() {
-        val adapter = TemplateAdapter()
+
+        val adapter = TemplateAdapter(requireActivity())
 
         val recyclerTemplates: RecyclerView = binding.recyclerTemplates
 
-        recyclerTemplates.layoutManager = GridLayoutManager(this.context, 2)
+        recyclerTemplates.layoutManager = GridLayoutManager(this.context, 1)
         recyclerTemplates.adapter = adapter
 
         templatesViewModel.allTemplates.observe(viewLifecycleOwner, {
-            adapter.addAllTemplateList(it)
+            val arrayList = ArrayList<Any?>()
+            arrayList.addAll(it)
+            adapter.addAllTemplateList(arrayList)
         })
     }
 }

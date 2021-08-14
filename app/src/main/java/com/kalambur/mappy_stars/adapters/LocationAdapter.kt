@@ -1,5 +1,6 @@
 package com.kalambur.mappy_stars.adapters
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -14,9 +15,10 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.kalambur.mappy_stars.R
 import com.kalambur.mappy_stars.pojo.Location
 import com.kalambur.mappy_stars.templates.TemplateCanvas
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 
 class LocationAdapter (
-    private var applicationContext: Context?,
+    private var activity: Activity?,
     private var placesClient: PlacesClient,
     private var templateCanvas: TemplateCanvas,
     private var dialog: Dialog,
@@ -37,7 +39,7 @@ class LocationAdapter (
     }
 
     override fun getView(i: Int, convertView: View?, viewGroup: ViewGroup): View {
-        val view = LayoutInflater.from(applicationContext!!).inflate(R.layout.location_item, null)
+        val view = LayoutInflater.from(activity!!).inflate(R.layout.location_item, null)
         val location = view.findViewById<TextView>(R.id.location)
         val country  = view.findViewById<TextView>(R.id.country)
 
@@ -59,7 +61,7 @@ class LocationAdapter (
                     templateCanvas.eventCountry.value   = locationList[i].country
                     templateCanvas.coordinates.value  = arrayListOf(place.latLng!!.latitude.toFloat(), place.latLng!!.longitude.toFloat())
 
-                    dialog.dismiss()
+                    dialog.dismissWithAds(activity!!)
                 }
         }
 

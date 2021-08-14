@@ -35,11 +35,11 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
             templateCanvas.holst.value = newHolst
         }
 
-        backgroundColorAdapter = ColorAdapter(templateCanvas.holstColor) {
+        backgroundColorAdapter = ColorAdapter(requireActivity(), templateCanvas.holstColor) {
             templateCanvas.holstColor.value = it
         }
 
-        borderColorAdapter = ColorAdapter(templateCanvas.borderHolstColor) {
+        borderColorAdapter = ColorAdapter(requireActivity(), templateCanvas.borderHolstColor) {
             templateCanvas.borderHolstColor.value = it
         }
 

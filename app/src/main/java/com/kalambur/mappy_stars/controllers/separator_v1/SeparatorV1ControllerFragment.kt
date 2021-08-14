@@ -28,7 +28,7 @@ class SeparatorV1ControllerFragment(private val templateCanvas: TemplateCanvas) 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentSeparatorV1ControllerBinding.inflate(inflater, container, false)
 
-        colorAdapter = ColorAdapter(templateCanvas.separatorColor) {
+        colorAdapter = ColorAdapter(requireActivity(), templateCanvas.separatorColor) {
             templateCanvas.separatorColor.value = it
         }
 

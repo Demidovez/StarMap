@@ -1,5 +1,6 @@
 package com.kalambur.mappy_stars.adapters
 
+import android.app.Activity
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.view.updatePadding
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.MutableLiveData
 import com.kalambur.mappy_stars.databinding.ColorItemBinding
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 import com.kalambur.mappy_stars.utils.extensions.hideKeyboard
 import com.kalambur.mappy_stars.utils.helpers.Helper.Companion.dpToPx
 import com.kalambur.mappy_stars.utils.helpers.Helper.Companion.isValidColor
@@ -20,6 +22,7 @@ import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.sliders.BrightnessSlideBar
 
 class ColorAdapter(
+    private val activity: Activity,
     private val mutableColor: MutableLiveData<String>,
     private val listener: (color: String) -> Unit
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -56,7 +59,7 @@ class ColorAdapter(
         }
     }
 
-    class PickerHolder(item: View): RecyclerView.ViewHolder(item) {
+    class PickerHolder(item: View, private val activity: Activity): RecyclerView.ViewHolder(item) {
         private val binding = ColorItemBinding.bind(item)
 
         fun bind(colorList: ArrayList<String>, mutableColor: MutableLiveData<String>, listener: (color: String) -> Unit) = with(binding) {
@@ -162,7 +165,7 @@ class ColorAdapter(
                         if(isValidColor(color)) {
                             listener(color)
 
-                            dialog.dismiss()
+                            dialog.dismissWithAds(activity)
                         } else {
                             descText.text = itemView.context.getString(R.string.invalid_value)
                         }
@@ -187,7 +190,7 @@ class ColorAdapter(
             ColorHolder(view)
         } else {
             view = LayoutInflater.from(viewGroup.context).inflate(R.layout.color_item, viewGroup, false)
-            PickerHolder(view)
+            PickerHolder(view, activity)
         }
     }
 

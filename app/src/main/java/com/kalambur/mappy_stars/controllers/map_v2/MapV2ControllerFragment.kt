@@ -90,7 +90,7 @@ class MapV2ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
     }
 
     private fun recyclerBackgroundMapInit() {
-        backgroundColorMapAdapter = ColorAdapter(templateCanvas.starMapColor) {
+        backgroundColorMapAdapter = ColorAdapter(requireActivity(), templateCanvas.starMapColor) {
             templateCanvas.starMapColor.value = it
         }
 
@@ -107,7 +107,7 @@ class MapV2ControllerFragment(private val templateCanvas: TemplateCanvas) : Frag
     }
 
     private fun recyclerColorMapBorderInit() {
-        colorMapBorderAdapter = ColorAdapter(templateCanvas.starMapBorderColor) {
+        colorMapBorderAdapter = ColorAdapter(requireActivity(), templateCanvas.starMapBorderColor) {
             templateCanvas.starMapBorderColor.value = it
         }
 

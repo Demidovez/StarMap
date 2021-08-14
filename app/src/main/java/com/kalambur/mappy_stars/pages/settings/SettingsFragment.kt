@@ -20,6 +20,7 @@ import android.widget.Toast
 import com.kalambur.mappy_stars.MainActivity
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 import java.util.*
 
 class SettingsFragment : Fragment() {
@@ -136,7 +137,7 @@ class SettingsFragment : Fragment() {
                 if(editMessage.text.isNotEmpty()) {
                     sendProblemToFirebase(editMessage.text.toString(), editContact.text.toString())
 
-                    dialog.dismiss()
+                    dialog.dismissWithAds(requireActivity())
                 } else {
                     titleTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_flat))
                     titleTextView.text = "Пустое значение недопустимо!"

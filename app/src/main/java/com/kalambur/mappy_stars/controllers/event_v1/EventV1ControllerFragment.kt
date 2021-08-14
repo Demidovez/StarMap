@@ -22,6 +22,7 @@ import com.kalambur.mappy_stars.adapters.LocationAdapter
 import com.kalambur.mappy_stars.databinding.FragmentEventV1ControllerBinding
 import com.kalambur.mappy_stars.pojo.Location
 import com.kalambur.mappy_stars.templates.TemplateCanvas
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 import com.kalambur.mappy_stars.utils.helpers.Helper.Companion.isValidLat
 import com.kalambur.mappy_stars.utils.helpers.Helper.Companion.isValidLong
 import java.text.DateFormat.LONG
@@ -150,7 +151,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
                                 binding.editLocation.setText(resources.getString(R.string.other))
                             }
 
-                            dialog.dismiss()
+                            dialog.dismissWithAds(requireActivity())
                         } else {
                             descText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_flat))
                             descText.text = resources.getString(R.string.error_latitude)
@@ -167,7 +168,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
                                 binding.editLocation.setText(resources.getString(R.string.other))
                             }
 
-                            dialog.dismiss()
+                            dialog.dismissWithAds(requireActivity())
                         } else {
                             descText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_flat))
                             descText.text = resources.getString(R.string.error_longitude)
@@ -309,7 +310,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
                 binding.editDate.setText(format.format(c.time).toString())
 
-                dialog.dismiss()
+                dialog.dismissWithAds(requireActivity())
             }
         }
 
@@ -377,7 +378,7 @@ class EventV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fr
 
                 binding.editTime.setText(newTime)
 
-                dialog.dismiss()
+                dialog.dismissWithAds(requireActivity())
             }
         }
 

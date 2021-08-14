@@ -16,6 +16,7 @@ import com.kalambur.mappy_stars.R
 import com.kalambur.mappy_stars.adapters.FontAdapter
 import com.kalambur.mappy_stars.databinding.FragmentDescV1ControllerBinding
 import com.kalambur.mappy_stars.templates.TemplateCanvas
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 
 class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
     private lateinit var binding: FragmentDescV1ControllerBinding
@@ -24,7 +25,7 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentDescV1ControllerBinding.inflate(inflater, container, false)
 
-        colorAdapter = ColorAdapter(templateCanvas.descFontColor) {
+        colorAdapter = ColorAdapter(requireActivity(), templateCanvas.descFontColor) {
             templateCanvas.descFontColor.value = it
         }
 
@@ -125,7 +126,7 @@ class DescV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fra
             okButton.setOnClickListener {
                 templateCanvas.descText.value = editText.text.toString().trim()
 
-                dialog.dismiss()
+                dialog.dismissWithAds(requireActivity())
             }
         }
 

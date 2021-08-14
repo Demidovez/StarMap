@@ -28,6 +28,7 @@
         <activity
             android:name="com.kalambur.mappy_stars.MainActivity"
             android:exported="true"
+            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustPan"
             android:label="@string/app_name">
             <intent-filter>
@@ -39,6 +40,11 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+        <!-- MY AdMob app ID: ca-app-pub-4277307989752479~8338451294 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
     </application>
 
 </manifest>

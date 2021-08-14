@@ -1,6 +1,7 @@
 package com.kalambur.mappy_stars
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -10,10 +11,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.libraries.places.api.Places
 import com.kalambur.mappy_stars.databinding.ActivityMainBinding
 
 import com.kalambur.mappy_stars.interfaces.IOnBackPressed
+import com.kalambur.mappy_stars.utils.admob.AdmobUtil
 
 
 class MainActivity : AppCompatActivity() {
@@ -57,6 +62,9 @@ class MainActivity : AppCompatActivity() {
             Places.initialize(applicationContext, resources.getString(R.string.api_key_places))
         }
 
+        MobileAds.initialize(this) {}
+
+        AdmobUtil.loadAdmobInterstitialAd(this)
     }
 
     override fun onSupportNavigateUp(): Boolean {

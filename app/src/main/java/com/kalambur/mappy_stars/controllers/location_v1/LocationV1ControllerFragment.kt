@@ -18,6 +18,7 @@ import com.kalambur.mappy_stars.adapters.FontAdapter
 import com.kalambur.mappy_stars.databinding.FragmentLocationV1ControllerBinding
 import com.kalambur.mappy_stars.pojo.FontText
 import com.kalambur.mappy_stars.templates.TemplateCanvas
+import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 import java.util.*
 
 class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) : Fragment() {
@@ -28,7 +29,7 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentLocationV1ControllerBinding.inflate(inflater, container, false)
 
-        colorAdapter = ColorAdapter(templateCanvas.locationFontColor) {
+        colorAdapter = ColorAdapter(requireActivity(), templateCanvas.locationFontColor) {
             templateCanvas.locationFontColor.value = it
         }
 
@@ -153,7 +154,7 @@ class LocationV1ControllerFragment(private val templateCanvas: TemplateCanvas) :
             okButton.setOnClickListener {
                 templateCanvas.resultLocationText.value = editText.text.toString().trim()
 
-                dialog.dismiss()
+                dialog.dismissWithAds(requireActivity())
             }
         }
 
