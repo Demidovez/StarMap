@@ -895,16 +895,17 @@ class PolaroidV1TemplateCanvas(private val activity: MainActivity, private val p
         Log.d("MyLog", "Start drawSeparator")
 
         val shapeType = separator.value!!.shapeType
+        val width = holst.value!!.width!!
 
         bitmapSeparator = when (shapeType) {
-            ShapeSeparator.LINE -> drawLineSeparator()
-            ShapeSeparator.CURVED -> drawDrawableSizedSeparator(shapeType, 1280F, 112F, 1F)
-            ShapeSeparator.STARS -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.3F)
-            ShapeSeparator.HEARTS -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.3F)
-            ShapeSeparator.STAR -> drawDrawableSizedSeparator(shapeType, 1F, 1F, 0.1F)
-            ShapeSeparator.HEART -> drawDrawableSizedSeparator(shapeType, 1F, 1F,0.1F)
+            ShapeSeparator.LINE -> drawLineSeparator(width)
+            ShapeSeparator.CURVED -> drawDrawableSizedSeparator(shapeType, width, 1280F, 112F, 1F)
+            ShapeSeparator.STARS -> drawDrawableSizedSeparator(shapeType, width, 511.99142F, 165F, 0.3F)
+            ShapeSeparator.HEARTS -> drawDrawableSizedSeparator(shapeType, width,511.99142F, 165F, 0.3F)
+            ShapeSeparator.STAR -> drawDrawableSizedSeparator(shapeType, width, 1F, 1F, 0.1F)
+            ShapeSeparator.HEART -> drawDrawableSizedSeparator(shapeType, width,1F, 1F,0.1F)
 
-            else -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.1F)
+            else -> drawDrawableSizedSeparator(shapeType, width, 511.99142F, 165F, 0.1F)
         }
 
         Log.d("MyLog", "Done drawSeparator")

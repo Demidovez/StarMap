@@ -55,6 +55,10 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
             borderColorAdapter.notifyDataSetChanged()
         })
 
+        templateCanvas.borderHolstColor.observe(requireActivity(), {
+            borderColorAdapter.notifyDataSetChanged()
+        })
+
         val root: View = binding.root
 
 

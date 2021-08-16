@@ -19,6 +19,7 @@ import com.kalambur.mappy_stars.databinding.ActivityMainBinding
 
 import com.kalambur.mappy_stars.interfaces.IOnBackPressed
 import com.kalambur.mappy_stars.utils.admob.AdmobUtil
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -63,6 +64,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         MobileAds.initialize(this) {}
+
+//        val testDeviceIds = Arrays.asList("33BE2250B43518CCDA7DE426D04EE231")
+//        val configuration = RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+//        MobileAds.setRequestConfiguration(configuration)
 
         AdmobUtil.loadAdmobInterstitialAd(this)
     }

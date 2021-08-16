@@ -946,16 +946,17 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         Log.d("MyLog", "Start drawSeparator")
 
         val shapeType = separator.value!!.shapeType
+        val width = holst.value!!.width!!
 
         bitmapSeparator = when (shapeType) {
-            LINE -> drawLineSeparator()
-            CURVED -> drawDrawableSizedSeparator(shapeType, 1280F, 112F, 1F)
-            STARS -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.3F)
-            HEARTS -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.3F)
-            STAR -> drawDrawableSizedSeparator(shapeType, 1F, 1F, 0.1F)
-            HEART -> drawDrawableSizedSeparator(shapeType, 1F, 1F,0.1F)
+            LINE -> drawLineSeparator(width)
+            CURVED -> drawDrawableSizedSeparator(shapeType, width, 1280F, 112F, 1F)
+            STARS -> drawDrawableSizedSeparator(shapeType, width, 511.99142F, 165F, 0.3F)
+            HEARTS -> drawDrawableSizedSeparator(shapeType, width,511.99142F, 165F, 0.3F)
+            STAR -> drawDrawableSizedSeparator(shapeType, width, 1F, 1F, 0.1F)
+            HEART -> drawDrawableSizedSeparator(shapeType, width,1F, 1F,0.1F)
 
-            else -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.1F)
+            else -> drawDrawableSizedSeparator(shapeType, width, 511.99142F, 165F, 0.1F)
         }
 
         Log.d("MyLog", "Done drawSeparator")

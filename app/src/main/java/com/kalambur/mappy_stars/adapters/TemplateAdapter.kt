@@ -13,12 +13,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdOptions
+import com.google.android.gms.ads.nativead.NativeAdOptions.ADCHOICES_TOP_RIGHT
+import com.kalambur.mappy_stars.R
 import com.kalambur.mappy_stars.databinding.TemplateItemBinding
 import com.kalambur.mappy_stars.databinding.TemplateNativeAdItemBinding
 import com.kalambur.mappy_stars.pojo.Template
 import com.kalambur.mappy_stars.utils.extensions.resIdByName
 import com.kalambur.mappy_stars.utils.helpers.Helper
+import java.util.*
+import kotlin.collections.ArrayList
+import com.google.android.gms.ads.nativead.AdChoicesView
+
+
+
 
 
 class TemplateAdapter(private val activity: Activity): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -38,6 +48,8 @@ class TemplateAdapter(private val activity: Activity): RecyclerView.Adapter<Recy
             }
 
             labelTemplate.text = template!!.category
+            rating.rating = template.rating!!
+            description.text = template.desc
 
             cardView.setOnClickListener { view ->
                 val bundle = bundleOf(
@@ -58,42 +70,54 @@ class TemplateAdapter(private val activity: Activity): RecyclerView.Adapter<Recy
         private val binding = TemplateNativeAdItemBinding.bind(item)
 
         fun bind(nativeAd: NativeAd) = with(binding) {
-            // Some assets are guaranteed to be in every UnifiedNativeAd.
             adHeadline.text = nativeAd.headline
             adBody.text = nativeAd.body
-            adCallToAction.setText(nativeAd.callToAction)
+            adCallToAction.text = nativeAd.callToAction?.lowercase(Locale.getDefault()).toString().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
             val icon: NativeAd.Image? = nativeAd.icon
 
+            adView.callToActionView = adCallToAction
+            adView.headlineView = adHeadline
+            adView.mediaView = adMedia
+            adView.bodyView = adBody
+            adView.iconView = adIcon
+            adView.priceView = adPrice
+            adView.starRatingView = adStars
+            adView.storeView = adStore
+            adView.advertiserView = adAdvertiser
+
             if (icon == null) {
-                adIcon.visibility = View.INVISIBLE
+                adIcon.visibility = View.GONE
             } else {
                 adIcon.setImageDrawable(icon.drawable)
                 adIcon.visibility = View.VISIBLE
             }
             if (nativeAd.price == null) {
-                adPrice.visibility = View.INVISIBLE
+                adPrice.visibility = View.GONE
             } else {
-                adPrice.visibility = View.VISIBLE
                 adPrice.text = nativeAd.price
+                adPrice.visibility = View.VISIBLE
             }
             if (nativeAd.store == null) {
-                adStore.visibility = View.INVISIBLE
+                adStore.visibility = View.GONE
             } else {
                 adStore.visibility = View.VISIBLE
                 adStore.text = nativeAd.store
             }
             if (nativeAd.starRating == null) {
-                adStars.visibility = View.INVISIBLE
+                adStars.visibility = View.GONE
             } else {
-                adStars.rating = nativeAd.starRating.toFloat()
+                adStars.rating = nativeAd.starRating!!.toFloat()
                 adStars.visibility = View.VISIBLE
             }
             if (nativeAd.advertiser == null) {
-                adAdvertiser.visibility = View.INVISIBLE
+                adAdvertiser.visibility = View.GONE
             } else {
                 adAdvertiser.text = nativeAd.advertiser
                 adAdvertiser.visibility = View.VISIBLE
+            }
+            if (nativeAd.adChoicesInfo != null) {
+                adView.adChoicesView = AdChoicesView(adView.context)
             }
 
             // Assign native ad object to the native view.
@@ -128,6 +152,7 @@ class TemplateAdapter(private val activity: Activity): RecyclerView.Adapter<Recy
 
     fun addAllTemplateList(list: ArrayList<Any?>) {
         templateList = list
+        notifyDataSetChanged()
 
         loadNativeAds(templateList.size / offsetNativeAd + 1)
     }
@@ -147,9 +172,12 @@ class TemplateAdapter(private val activity: Activity): RecyclerView.Adapter<Recy
         }
 
         var index = -1
+        val fullSizeList = templateList.size + mNativeAds.size
 
         for (ad in mNativeAds) {
             index += offsetNativeAd
+
+            index = index.coerceAtMost(fullSizeList - 1)
 
             templateList.add(index, ad)
         }
@@ -158,7 +186,9 @@ class TemplateAdapter(private val activity: Activity): RecyclerView.Adapter<Recy
     }
 
     private fun loadNativeAds(countAds: Int) {
-        val builder = AdLoader.Builder(activity, "ca-app-pub-3940256099942544/2247696110")
+        // Test id: ca-app-pub-3940256099942544/2247696110
+        // My id:   ca-app-pub-4277307989752479/8387386901
+        val builder = AdLoader.Builder(activity, "ca-app-pub-4277307989752479/8387386901")
         adLoader =
             builder.forNativeAd { nativeAd ->
                 mNativeAds.add(nativeAd)
@@ -175,7 +205,9 @@ class TemplateAdapter(private val activity: Activity): RecyclerView.Adapter<Recy
                             insertAdsInMenuItems()
                         }
                     }
-                }).build()
+            })
+            .withNativeAdOptions(NativeAdOptions.Builder().build())
+            .build()
 
         // Load the Native Express ad.
         adLoader!!.loadAds(AdRequest.Builder().build(), countAds)

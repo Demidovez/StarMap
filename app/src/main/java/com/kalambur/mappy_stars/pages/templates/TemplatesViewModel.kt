@@ -1,6 +1,7 @@
 package com.kalambur.mappy_stars.pages.templates
 
 import android.content.Context
+import android.os.Parcelable
 import android.util.Log
 import androidx.lifecycle.*
 import com.google.android.gms.ads.AdListener
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class TemplatesViewModel(context: Context) : ViewModel() {
     private val repository: TemplateRepository
     val allTemplates: LiveData<List<Template>>
+    var recyclerState: Parcelable? = null
 
     init {
         val templateDao = AppDatabase.getDatabase(context, viewModelScope).templateDao()

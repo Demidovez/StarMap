@@ -46,6 +46,7 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
     private lateinit var bitmapHolst: Bitmap
     private lateinit var bitmapHolstBorder: Bitmap
     private lateinit var bitmapMap: Bitmap
+    private lateinit var bitmapTextBlock: Bitmap
     private lateinit var bitmapDesc: Bitmap
     private lateinit var bitmapSeparator: Bitmap
     private lateinit var bitmapLocationText: Bitmap
@@ -66,8 +67,6 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         hasBorderHolst.value =                  properties.hasBorderHolst
         borderHolst.value =                     HolstBorder(properties.borderHolstIndent, properties.borderHolstWidth)
         borderHolstColor.value =                properties.borderHolstColor
-        starMapRadius.value =                   properties.starMapRadius
-        starMapPosition.value =                 properties.starMapPosition
         starMapColor.value =                    properties.starMapColor
         descFont.value =                        FontText(properties.descFontName, properties.descFontResId, properties.descFontSize)
         descFontColor.value =                   properties.descFontColor
@@ -104,6 +103,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         starsSize.value =                       properties.starsSize
         starsColor.value =                      properties.starsColor
         starsOpacity.value =                    properties.starsOpacity
+        textBlock.value =                       TextBlock(properties.textBlockWidth, properties.textBlockHeight, properties.textBlockIndent)
+        textBlockColor.value =                  properties.textBlockColor
     }
 
     init {
@@ -117,9 +118,11 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
                 launch { drawDesc() }
                 launch { drawSeparator() }
                 launch { correctLocationText()  }
+
             }
 
             drawObjects.join()
+            drawTextBlock()
             drawCanvas()
 
             isDataInitialized = true
@@ -189,20 +192,6 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
 
                     drawObjects.join()
                     drawCanvas()
-                }
-            }
-        }
-        starMapRadius.observe(activity) {
-            if(isDataInitialized) {
-                CoroutineScope(Dispatchers.IO).launch  {
-                    initRequestStarMap()
-                }
-            }
-        }
-        starMapPosition.observe(activity) {
-            if(isDataInitialized) {
-                CoroutineScope(Dispatchers.IO).launch  {
-                    initRequestStarMap()
                 }
             }
         }
@@ -353,11 +342,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         descFont.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch {  drawDesc() }
-                    }
-
-                    drawObjects.join()
+                    drawDesc()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -365,11 +351,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         descFontColor.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch {  drawDesc() }
-                    }
-
-                    drawObjects.join()
+                    drawDesc()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -377,11 +360,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         descText.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { drawDesc() }
-                    }
-
-                    drawObjects.join()
+                    drawDesc()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -433,11 +413,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         locationFont.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch {  drawLocationText() }
-                    }
-
-                    drawObjects.join()
+                    drawLocationText()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -445,11 +422,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         locationFontColor.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch {  drawLocationText() }
-                    }
-
-                    drawObjects.join()
+                    drawLocationText()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -484,11 +458,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         resultLocationText.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { drawLocationText() }
-                    }
-
-                    drawObjects.join()
+                    drawLocationText()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -496,11 +467,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         separator.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { drawSeparator() }
-                    }
-
-                    drawObjects.join()
+                    drawSeparator()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -508,8 +476,29 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         separatorColor.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
+                    drawSeparator()
+                    drawTextBlock()
+                    drawCanvas()
+                }
+            }
+        }
+        textBlock.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
-                        launch { drawSeparator() }
+                        launch { drawTextBlock() }
+                    }
+
+                    drawObjects.join()
+                    drawCanvas()
+                }
+            }
+        }
+        textBlockColor.observe(activity) {
+            if(isDataInitialized) {
+                CoroutineScope(Dispatchers.IO).launch  {
+                    val drawObjects = launch {
+                        launch { drawTextBlock() }
                     }
 
                     drawObjects.join()
@@ -825,30 +814,24 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
     private fun drawMap() {
         Log.d("MyLog", "Start drawMap")
 
-        var tempBitmap: Bitmap
+        val tempBitmap: Bitmap
 
-        val indent = getIndent()
-        val widthMap = Math.max(holst.value!!.width!! - indent, 1F)
-        val heightMap = Math.max(holst.value!!.height!! - indent - holst.value!!.height!! * (100F - starMapPosition.value!!) / 100F, 1F)
+        val widthMap = holst.value!!.width!!
+        val heightMap = holst.value!!.height!!
 
-        val radius = getRadiusMap()
+        tempBitmap = if(isLoadedStarMap.value!!) {
+            val x = (bitmapStarMap.width / 2) - widthMap / 2
+            val y = (bitmapStarMap.height / 2) - heightMap / 2
 
-        if(isLoadedStarMap.value!!) {
-            tempBitmap = Bitmap.createScaledBitmap(bitmapStarMap, (radius * 2).toInt(), (radius * 2).toInt(), true)
-            tempBitmap = Helper.getBitmapClippedCircle(tempBitmap)!!
-
-            val x = (tempBitmap.width / 2) - widthMap / 2
-            val y = (tempBitmap.height / 2) - heightMap / 2
-
-            tempBitmap = Bitmap.createBitmap(
-                tempBitmap,
+            Bitmap.createBitmap(
+                bitmapStarMap,
                 x.toInt(),
                 y.toInt(),
                 widthMap.toInt(),
                 heightMap.toInt()
             )
         } else {
-            tempBitmap = getLoadingBitmap()
+            getLoadingBitmap()
         }
 
         val newBitmap = Bitmap.createBitmap(tempBitmap.width, tempBitmap.height, tempBitmap.config)
@@ -860,6 +843,40 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         bitmapMap = newBitmap
 
         Log.d("MyLog", "Done drawMap")
+    }
+    private fun drawTextBlock() {
+        Log.d("MyLog", "Start drawTextBlock")
+
+        val width =  holst.value!!.width!! * textBlock.value!!.width!! / 100
+        val height = holst.value!!.height!! * textBlock.value!!.height!! / 100
+
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+            color = Color.parseColor(textBlockColor.value!!)
+            isDither = true
+            isAntiAlias = true
+        }
+
+        bitmapTextBlock = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(bitmapTextBlock)
+
+        // Рисуем
+        canvas.drawRect(0F, 0F, width, height, paint)
+
+        // Рисуем текст описание
+        canvas.drawBitmap(bitmapDesc, width / 2 - bitmapDesc.width / 2, 0F, null)
+
+        // Рисуем разделитель
+        if(separator.value!!.shapeType != ShapeSeparator.NONE) {
+            canvas.drawBitmap(bitmapSeparator, width / 2 - bitmapSeparator.width / 2, height / 2, null)
+        }
+
+        // Рисуем текст локации
+        canvas.drawBitmap(bitmapLocationText, width / 2 - bitmapLocationText.width / 2, height - bitmapLocationText.height, null)
+
+
+        Log.d("MyLog", "Done drawTextBlock")
     }
     private fun drawDesc() {
         Log.d("MyLog", "Start drawDesc")
@@ -895,16 +912,17 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         Log.d("MyLog", "Start drawSeparator")
 
         val shapeType = separator.value!!.shapeType
+        val width = holst.value!!.width!! * textBlock.value!!.width!! / 100
 
         bitmapSeparator = when (shapeType) {
-            ShapeSeparator.LINE -> drawLineSeparator()
-            ShapeSeparator.CURVED -> drawDrawableSizedSeparator(shapeType, 1280F, 112F, 1F)
-            ShapeSeparator.STARS -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.3F)
-            ShapeSeparator.HEARTS -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.3F)
-            ShapeSeparator.STAR -> drawDrawableSizedSeparator(shapeType, 1F, 1F, 0.1F)
-            ShapeSeparator.HEART -> drawDrawableSizedSeparator(shapeType, 1F, 1F,0.1F)
+            ShapeSeparator.LINE -> drawLineSeparator(width)
+            ShapeSeparator.CURVED -> drawDrawableSizedSeparator(shapeType, width,1280F, 112F, 1F)
+            ShapeSeparator.STARS -> drawDrawableSizedSeparator(shapeType, width, 511.99142F, 165F, 0.3F)
+            ShapeSeparator.HEARTS -> drawDrawableSizedSeparator(shapeType, width, 511.99142F, 165F, 0.3F)
+            ShapeSeparator.STAR -> drawDrawableSizedSeparator(shapeType, width,1F, 1F, 0.1F)
+            ShapeSeparator.HEART -> drawDrawableSizedSeparator(shapeType, width, 1F, 1F,0.1F)
 
-            else -> drawDrawableSizedSeparator(shapeType, 511.99142F, 165F, 0.1F)
+            else -> drawDrawableSizedSeparator(shapeType, width,511.99142F, 165F, 0.1F)
         }
 
         Log.d("MyLog", "Done drawSeparator")
@@ -938,8 +956,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
 
         Log.d("MyLog", "Done drawLocationText")
     }
-    private fun getBottomMarginLocationText(): Int {
-        Log.d("MyLog", "Start getBottomMarginLocationText")
+    private fun getBottomMarginTextBlock(): Int {
+        Log.d("MyLog", "Start getBottomMarginTextBlock")
 
         var margin = 0F
 
@@ -954,43 +972,14 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
             }
         )
 
-        Log.d("MyLog", "Done getBottomMarginLocationText")
+        Log.d("MyLog", "Done getBottomMarginTextBlock")
         return margin.toInt()
-    }
-    private fun getAbsoluteHeightMap(top: Float): Float {
-        Log.d("MyLog", "Start getAbsoluteHeightMap")
-
-        // Определяем высоту карты с ее верхним отступом от края холста
-        val margin = 0 + top + bitmapMap.height
-
-        Log.d("MyLog", "Done getAbsoluteHeightMap")
-        return margin
-    }
-    private fun getAutoAlignMargin(heightMap: Float): Float {
-        Log.d("MyLog", "Start getAutoAlignMargin")
-
-        // Определяем какой отступ нужен для текста, разделителя и текста локации, чтобы они ровно расположились
-        var heightAllObjects = heightMap
-
-        heightAllObjects += bitmapDesc.height
-
-        if(separator.value!!.shapeType != ShapeSeparator.NONE) {
-            heightAllObjects += bitmapSeparator.height
-        }
-
-        heightAllObjects += bitmapLocationText.height + getBottomMarginLocationText()
-
-        val countObjectsForSetMargin = if(separator.value!!.shapeType != ShapeSeparator.NONE) 3  else 2
-
-        Log.d("MyLog", "Done getAutoAlignMargin")
-        return (holst.value!!.height!! - heightAllObjects) / countObjectsForSetMargin
     }
     private fun getLoadingBitmap(): Bitmap {
         Log.d("MyLog", "Start getLoadingBitmap")
 
-        val indent = getIndent()
-        val widthMap = holst.value!!.width!! - indent
-        val heightMap = holst.value!!.height!! - indent - holst.value!!.height!! * (100F - starMapPosition.value!!) / 100F
+        val widthMap = holst.value!!.width!!
+        val heightMap = holst.value!!.height!!
 
         val tempBitmap = Bitmap.createBitmap(widthMap.toInt(), heightMap.toInt(), Bitmap.Config.ARGB_8888)
 
@@ -1024,28 +1013,16 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         // Рисуем холст
         canvas.drawBitmap(bitmapHolst, 0F, 0F, null)
 
+        // Рисуем карту
+        canvas.drawBitmap(bitmapMap, 0F, 0F, null)
+
         // Рисуем рамку холста
         if(hasBorderHolst.value!!) {
             canvas.drawBitmap(bitmapHolstBorder, 0F, 0F, null)
         }
 
-        // Рисуем карту
-        val indent = getIndent()
-        canvas.drawBitmap(bitmapMap, holst.value!!.width!!/2 - bitmapMap.width / 2, indent / 2, null)
-
-        val absoluteHeightMap = getAbsoluteHeightMap(indent / 2)
-        val autoMargin = getAutoAlignMargin(absoluteHeightMap)
-
-        // Рисуем текст описание
-        canvas.drawBitmap(bitmapDesc, 0F, absoluteHeightMap + autoMargin, null)
-
-        // Рисуем разделитель
-        if(separator.value!!.shapeType != ShapeSeparator.NONE) {
-            canvas.drawBitmap(bitmapSeparator, (holst.value!!.width!!) / 2 - bitmapSeparator.width / 2, absoluteHeightMap + autoMargin + bitmapDesc.height + autoMargin, null)
-        }
-
-        // Рисуем текст локации
-        canvas.drawBitmap(bitmapLocationText, 0F, holst.value!!.height!! - bitmapLocationText.height - getBottomMarginLocationText(), null)
+        // Рисуем блок с текстом
+        canvas.drawBitmap(bitmapTextBlock, holst.value!!.width!! / 2 - bitmapTextBlock.width / 2, 0F, null)
 
         doneRedraw.postValue(true)
 
@@ -1057,19 +1034,9 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
     }
 
     override fun getRadiusMap(): Float {
-        val indent = getIndent()
-
-        val widthMap = holst.value!!.width!! - indent
-        val heightMap =
-            holst.value!!.height!! - indent -  holst.value!!.height!! * (100F - starMapPosition.value!!) / 100F
+        val widthMap = holst.value!!.width!!
+        val heightMap = holst.value!!.height!!
 
         return sqrt(widthMap * widthMap + heightMap * heightMap) / 2
-    }
-
-    private fun getIndent(): Float {
-        val min = 0F
-        val max = holst.value!!.width!! * 0.5F
-
-        return (max - min) * starMapRadius.value!! / 100F
     }
 }

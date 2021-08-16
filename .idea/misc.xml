@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.1" />
+        <entry key="../../Library/Android/sdk/platforms/android-30/data/res/drawable/ratingbar_small_material.xml" value="0.23981481481481481" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.17447916666666666" />
         <entry key="app/src/main/res/drawable/background_picker_date_time.xml" value="0.309375" />
         <entry key="app/src/main/res/drawable/background_tab.xml" value="0.2984375" />
@@ -12,6 +13,7 @@
         <entry key="app/src/main/res/drawable/border_rect_recycler_item.xml" value="0.3921875" />
         <entry key="app/src/main/res/drawable/border_rect_recycler_item_selected.xml" value="0.3921875" />
         <entry key="app/src/main/res/drawable/button_background.xml" value="0.3921875" />
+        <entry key="app/src/main/res/drawable/button_background_create.xml" value="0.23981481481481481" />
         <entry key="app/src/main/res/drawable/button_background_delete.xml" value="0.2537037037037037" />
         <entry key="app/src/main/res/drawable/button_background_download.xml" value="0.3921875" />
         <entry key="app/src/main/res/drawable/default_template_image.xml" value="0.1375" />
@@ -107,8 +109,8 @@
         <entry key="app/src/main/res/layout/shape_item.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/shape_map_border_item.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/simple_picker_layout.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/template_item.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/template_native_ad_item.xml" value="0.14791666666666667" />
+        <entry key="app/src/main/res/layout/template_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/template_native_ad_item.xml" value="0.375" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.21927083333333333" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1375" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1375" />

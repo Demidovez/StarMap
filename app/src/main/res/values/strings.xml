@@ -90,5 +90,12 @@
     <string name="hint_contact">Ваш контакт (любой)</string>
     <string name="hint_problem">Описание проблемы</string>
     <string name="label_text_desc">Текст события</string>
+    <string name="btn_create_template">Создать</string>
+    <string name="ad">Ad</string>
+    <string name="headline">Headline</string>
+    <string name="advertiser">Advertiser</string>
+    <string name="price">Price</string>
+    <string name="body">Body</string>
+    <string name="store">Store</string>
 
 </resources>

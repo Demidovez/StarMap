@@ -29,6 +29,7 @@ import java.util.ArrayList
 class TemplatesFragment : Fragment() {
     private lateinit var templatesViewModel: TemplatesViewModel
     private lateinit var binding: FragmentTemplatesBinding
+    private lateinit var recyclerTemplates: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         editActionAndStatusBar()
@@ -59,9 +60,10 @@ class TemplatesFragment : Fragment() {
 
         val adapter = TemplateAdapter(requireActivity())
 
-        val recyclerTemplates: RecyclerView = binding.recyclerTemplates
+        recyclerTemplates = binding.recyclerTemplates
 
         recyclerTemplates.layoutManager = GridLayoutManager(this.context, 1)
+        recyclerTemplates.layoutManager?.onRestoreInstanceState(templatesViewModel.recyclerState)
         recyclerTemplates.adapter = adapter
 
         templatesViewModel.allTemplates.observe(viewLifecycleOwner, {
@@ -69,5 +71,12 @@ class TemplatesFragment : Fragment() {
             arrayList.addAll(it)
             adapter.addAllTemplateList(arrayList)
         })
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("MyLog", "onStop")
+        templatesViewModel.recyclerState = recyclerTemplates.layoutManager?.onSaveInstanceState()
+        Log.d("MyLog", templatesViewModel.recyclerState.toString())
     }
 }

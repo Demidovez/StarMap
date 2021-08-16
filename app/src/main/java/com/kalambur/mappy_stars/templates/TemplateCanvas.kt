@@ -84,6 +84,8 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     val namesStarsSize =                MutableLiveData<Int>()                  // Размер текста названий звезд и созвездий
     val namesStarsColor =               MutableLiveData<String>()               // Цвет текста названий звезд и созвездий
     val namesStarsLang =                MutableLiveData<Lang>()                 // Язык текста названий звезд и созвездий
+    val textBlock =                     MutableLiveData<TextBlock>()            // Блок с текстом (для шаблона Полная)
+    val textBlockColor =                MutableLiveData<String>()               // Цвет фона блока с текстом
     // Конец списка свойств
 
     val doneRedraw = MutableLiveData<Boolean>(false)
@@ -491,8 +493,8 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
         return tempBitmap
     }
 
-    protected fun drawLineSeparator(): Bitmap {
-        val separatorWidth = holst.value!!.width!! * separator.value!!.width / 100
+    protected fun drawLineSeparator(width: Float): Bitmap {
+        val separatorWidth = width * separator.value!!.width / 100
         val separatorHeight = (separatorWidth * 0.01F).coerceAtLeast(1F)
 
         val separatorLine = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -508,8 +510,8 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
 
         return tempBitmap
     }
-    protected fun drawDrawableSizedSeparator(shapeType: Int, viewportWidth: Float, viewportHeight: Float, scale: Float): Bitmap {
-        val separatorWidth = holst.value!!.width!! * separator.value!!.width / 100 * scale
+    protected fun drawDrawableSizedSeparator(shapeType: Int, width: Float, viewportWidth: Float, viewportHeight: Float, scale: Float): Bitmap {
+        val separatorWidth = width * separator.value!!.width / 100 * scale
         val separatorHeight = separatorWidth * (viewportHeight/viewportWidth)
 
         val tempBitmap = Bitmap.createBitmap(separatorWidth.toInt(), separatorHeight.toInt(), Bitmap.Config.ARGB_8888)

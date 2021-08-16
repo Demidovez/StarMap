@@ -20,6 +20,7 @@ object AdmobUtil {
     private var timeLastShowInterstitialAd = Calendar.getInstance().time.time
 
     fun loadAdmobInterstitialAd(context: Context) {
+        return // TODO: Delete
         val adRequest = AdRequest.Builder().build()
 
         // Test id: ca-app-pub-3940256099942544/1033173712
