@@ -33,7 +33,7 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
     private val controllerList = arrayListOf(
         Controller("event_v1","Событие", ContextCompat.getDrawable(activity, R.drawable.ic_event_v1)),
         Controller("canvas_v1", "Холст", ContextCompat.getDrawable(activity, R.drawable.ic_canvas_v1)),
-        Controller("map_v3", "Карта", ContextCompat.getDrawable(activity, R.drawable.ic_map_v1)),
+        Controller("map_v4", "Карта", ContextCompat.getDrawable(activity, R.drawable.ic_map_v1)),
         Controller("stars_v1", "Звезды", ContextCompat.getDrawable(activity, R.drawable.ic_stars_v1)),
         Controller("desc_v1", "Текст", ContextCompat.getDrawable(activity, R.drawable.ic_desc_v1)),
         Controller("separator_v1", "Разделитель", ContextCompat.getDrawable(activity, R.drawable.ic_separator_v1)),
@@ -143,6 +143,7 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
                     }
 
                     drawObjects.join()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -187,7 +188,7 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
                     val drawObjects = launch {
-                        launch { drawHolstBorder() }
+                        launch { drawHolstBorder() } // TODO: Зачем ждать один метод?
                     }
 
                     drawObjects.join()
@@ -485,11 +486,7 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         textBlock.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { drawTextBlock() }
-                    }
-
-                    drawObjects.join()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -497,11 +494,7 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         textBlockColor.observe(activity) {
             if(isDataInitialized) {
                 CoroutineScope(Dispatchers.IO).launch  {
-                    val drawObjects = launch {
-                        launch { drawTextBlock() }
-                    }
-
-                    drawObjects.join()
+                    drawTextBlock()
                     drawCanvas()
                 }
             }
@@ -585,7 +578,6 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
                 """
             )
         })
-
 
         Log.d("MyLog", "Done initRequestStarMap")
     }
@@ -778,7 +770,6 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
 
         val holstPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.FILL
-            color = Color.parseColor(holstColor.value!!)
             isDither = true
             isAntiAlias = true
         }
@@ -819,9 +810,10 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         val widthMap = holst.value!!.width!!
         val heightMap = holst.value!!.height!!
 
+        // TODO: При изменении размера холста, приложение падает
         tempBitmap = if(isLoadedStarMap.value!!) {
-            val x = (bitmapStarMap.width / 2) - widthMap / 2
-            val y = (bitmapStarMap.height / 2) - heightMap / 2
+            val x = (bitmapStarMap.width / 2F) - widthMap / 2F
+            val y = (bitmapStarMap.height / 2F) - heightMap / 2F
 
             Bitmap.createBitmap(
                 bitmapStarMap,
@@ -857,23 +849,33 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
             isAntiAlias = true
         }
 
-        bitmapTextBlock = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
+        bitmapTextBlock = Bitmap.createBitmap(width.coerceAtLeast(1F).toInt(), height.coerceAtLeast(1F).toInt(), Bitmap.Config.ARGB_8888)
 
         val canvas = Canvas(bitmapTextBlock)
 
-        // Рисуем
+        // Рисуем блок
         canvas.drawRect(0F, 0F, width, height, paint)
 
+        var separatorHeight = 0F
+        var countElements = 2
+
+        if(separator.value!!.shapeType != ShapeSeparator.NONE) {
+            separatorHeight = bitmapSeparator.height.toFloat()
+            countElements++
+        }
+
+        val margin = (height - bitmapDesc.height.toFloat() - separatorHeight - bitmapLocationText.height.toFloat()) / (countElements + 1)
+
         // Рисуем текст описание
-        canvas.drawBitmap(bitmapDesc, width / 2 - bitmapDesc.width / 2, 0F, null)
+        canvas.drawBitmap(bitmapDesc, width / 2 - bitmapDesc.width / 2, margin, null)
 
         // Рисуем разделитель
         if(separator.value!!.shapeType != ShapeSeparator.NONE) {
-            canvas.drawBitmap(bitmapSeparator, width / 2 - bitmapSeparator.width / 2, height / 2, null)
+            canvas.drawBitmap(bitmapSeparator, width / 2 - bitmapSeparator.width / 2, margin + bitmapDesc.height + margin, null)
         }
 
         // Рисуем текст локации
-        canvas.drawBitmap(bitmapLocationText, width / 2 - bitmapLocationText.width / 2, height - bitmapLocationText.height, null)
+        canvas.drawBitmap(bitmapLocationText, width / 2 - bitmapLocationText.width / 2, height - margin - bitmapLocationText.height.toFloat(), null)
 
 
         Log.d("MyLog", "Done drawTextBlock")
@@ -956,25 +958,6 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
 
         Log.d("MyLog", "Done drawLocationText")
     }
-    private fun getBottomMarginTextBlock(): Int {
-        Log.d("MyLog", "Start getBottomMarginTextBlock")
-
-        var margin = 0F
-
-        val indentHolstBorder = (holst.value!!.width!! / 5F) * borderHolst.value!!.indent!! / 100
-        val widthHolstBorder = (holst.value!!.width!! / 15F) * borderHolst.value!!.width!! / 100
-
-        margin = margin.plus(
-            if(hasBorderHolst.value!!) {
-                indentHolstBorder + widthHolstBorder + (indentHolstBorder * 0.5).toFloat()
-            } else {
-                (bitmapLocationText.height * 0.5).toFloat()
-            }
-        )
-
-        Log.d("MyLog", "Done getBottomMarginTextBlock")
-        return margin.toInt()
-    }
     private fun getLoadingBitmap(): Bitmap {
         Log.d("MyLog", "Start getLoadingBitmap")
 
@@ -1022,7 +1005,8 @@ class FullV1TemplateCanvas(private val activity: MainActivity, private val prope
         }
 
         // Рисуем блок с текстом
-        canvas.drawBitmap(bitmapTextBlock, holst.value!!.width!! / 2 - bitmapTextBlock.width / 2, 0F, null)
+        val indent = holst.value!!.height!! * textBlock.value!!.indent!! / 100F
+        canvas.drawBitmap(bitmapTextBlock, holst.value!!.width!! / 2 - bitmapTextBlock.width / 2, holst.value!!.height!! - indent - bitmapTextBlock.height, null)
 
         doneRedraw.postValue(true)
 

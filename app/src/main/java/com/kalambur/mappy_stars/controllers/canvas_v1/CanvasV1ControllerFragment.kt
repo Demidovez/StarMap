@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import com.kalambur.mappy_stars.databinding.FragmentCanvasV1ControllerBinding
 import com.kalambur.mappy_stars.templates.TemplateCanvas
@@ -50,6 +51,11 @@ class CanvasV1ControllerFragment(private val templateCanvas: TemplateCanvas) : F
         templateCanvas.holstColor.observe(requireActivity(), {
             backgroundColorAdapter.notifyDataSetChanged()
         })
+
+        if(templateCanvas.holstColor.value == null) {
+            binding.labelBackground.visibility = GONE
+            binding.colorBackgroundRecycler.visibility = GONE
+        }
 
         templateCanvas.borderHolst.observe(requireActivity(), {
             borderColorAdapter.notifyDataSetChanged()

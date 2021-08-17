@@ -1,4 +1,4 @@
-package com.kalambur.mappy_stars.controllers.map_v2
+package com.kalambur.mappy_stars.controllers.map_v3
 
 import com.kalambur.mappy_stars.adapters.ColorAdapter
 import adapters.ShapeAdapter

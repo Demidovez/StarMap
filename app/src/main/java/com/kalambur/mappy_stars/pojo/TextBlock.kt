@@ -1,3 +1,3 @@
 package com.kalambur.mappy_stars.pojo
 
-class TextBlock (val width: Float?, val height: Float?, val indent: Float?)
+class TextBlock (var width: Float?, var height: Float?, var indent: Float?)

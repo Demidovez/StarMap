@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".controllers.map_v1.MapV1ControllerFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frameLayout"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/labelBackground"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/label_controller"
+            android:text="Цвет фона карты"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/colorBackgroundRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/labelBackground"/>
+
+
+        <TextView
+            android:id="@+id/labelHeightBlock"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Высота блока"
+            android:textAppearance="@style/label_controller"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/colorBackgroundRecycler" />
+
+        <TextView
+            android:id="@+id/heightBlock"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:textAlignment="center"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            style="@style/view_text_controller"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelHeightBlock"
+            />
+
+        <SeekBar
+            android:id="@+id/sliderHeightBlock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:progress="20"
+            android:max="100"
+            app:layout_constraintTop_toTopOf="@+id/heightBlock"
+            app:layout_constraintBottom_toBottomOf="@+id/heightBlock"
+            app:layout_constraintStart_toEndOf="@+id/heightBlock"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/labelWidthBlock"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Ширина блока"
+            android:textAppearance="@style/label_controller"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/heightBlock" />
+
+        <TextView
+            android:id="@+id/widthBlock"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:textAlignment="center"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            style="@style/view_text_controller"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelWidthBlock"
+            />
+
+        <SeekBar
+            android:id="@+id/sliderWidthBlock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:progress="20"
+            android:max="100"
+            app:layout_constraintTop_toTopOf="@+id/widthBlock"
+            app:layout_constraintBottom_toBottomOf="@+id/widthBlock"
+            app:layout_constraintStart_toEndOf="@+id/widthBlock"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/labelIndentBlock"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Отступ блока"
+            android:textAppearance="@style/label_controller"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/widthBlock" />
+
+        <TextView
+            android:id="@+id/indentBlock"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:textAlignment="center"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            style="@style/view_text_controller"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelIndentBlock"
+            />
+
+        <SeekBar
+            android:id="@+id/sliderIndentBlock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:progress="20"
+            android:max="100"
+            app:layout_constraintTop_toTopOf="@+id/indentBlock"
+            app:layout_constraintBottom_toBottomOf="@+id/indentBlock"
+            app:layout_constraintStart_toEndOf="@+id/indentBlock"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/labelBackgroundBlock"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/label_controller"
+            android:text="Цвет фона блока"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/indentBlock" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/colorBackgroundBlockRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/labelBackgroundBlock"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
