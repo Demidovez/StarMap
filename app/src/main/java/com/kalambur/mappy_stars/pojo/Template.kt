@@ -19,6 +19,7 @@ data class Template(
     val holstWidth: Float? = null,
     val holstHeight: Float? = null,
     val holstColor: String? = null,
+    val holstImage: Int? = null,
     val hasBorderHolst: Boolean? = null,
     val borderHolstIndent: Float? = null,
     val borderHolstWidth: Float? = null,

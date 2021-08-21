@@ -20,12 +20,12 @@ object AdmobUtil {
     private var timeLastShowInterstitialAd = Calendar.getInstance().time.time
 
     fun loadAdmobInterstitialAd(context: Context) {
-        return // TODO: Delete
+//        return // TODO: Delete
         val adRequest = AdRequest.Builder().build()
 
         // Test id: ca-app-pub-3940256099942544/1033173712
-        // My id:   ca-app-pub-4277307989752479/4869979576
-        InterstitialAd.load(context,"ca-app-pub-3940256099942544/1033173712", adRequest, object : InterstitialAdLoadCallback() {
+        // My id:   ca-app-pub-2452666921240977/4972925502
+        InterstitialAd.load(context,"ca-app-pub-2452666921240977/4972925502", adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 Log.d(TAG, adError.message)
                 mInterstitialAd = null

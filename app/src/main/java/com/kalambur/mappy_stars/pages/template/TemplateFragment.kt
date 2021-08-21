@@ -30,6 +30,7 @@ import androidx.navigation.fragment.findNavController
 import com.kalambur.mappy_stars.templates.full_v1.FullV1TemplateCanvas
 import com.kalambur.mappy_stars.templates.half_v1.HalfV1TemplateCanvas
 import com.kalambur.mappy_stars.templates.polaroid_v1.PolaroidV1TemplateCanvas
+import com.kalambur.mappy_stars.templates.understars_v1.UnderStarsV1TemplateCanvas
 import com.kalambur.mappy_stars.utils.admob.AdmobUtil
 import com.kalambur.mappy_stars.utils.extensions.dismissWithAds
 
@@ -166,6 +167,7 @@ class TemplateFragment : Fragment(), IOnBackPressed {
         "half_v1" -> HalfV1TemplateCanvas(activity as MainActivity, template)
         "polaroid_v1" -> PolaroidV1TemplateCanvas(activity as MainActivity, template)
         "full_v1" -> FullV1TemplateCanvas(activity as MainActivity, template)
+        "understars_v1" -> UnderStarsV1TemplateCanvas(activity as MainActivity, template)
 
         else -> ClassicV1TemplateCanvas(activity as MainActivity, template)
     }

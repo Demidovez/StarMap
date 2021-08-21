@@ -41,6 +41,7 @@ abstract class TemplateCanvas(private val activity: MainActivity) {
     // Начало списка основных свойства холста
     val holst =                         MutableLiveData<Holst>()                // Холст
     val holstColor =                    MutableLiveData<String>()               // Цвет холста
+    val holstImage =                    MutableLiveData<Int>()                  // Изображение фона холста
     val hasBorderHolst =                MutableLiveData<Boolean>()              // Добавлена ли рамка холста
     val borderHolst =                   MutableLiveData<HolstBorder>()          // Рамка холста
     val borderHolstColor =              MutableLiveData<String>()               // Цвет рамки холста

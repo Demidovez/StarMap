@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "724000716108",
-    "firebase_url": "https://mappy-stars-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "mappy-stars",
-    "storage_bucket": "mappy-stars.appspot.com"
+    "project_number": "899609196371",
+    "project_id": "mappy-stars-5525",
+    "storage_bucket": "mappy-stars-5525.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:724000716108:android:5958a337403b1396f78be9",
+        "mobilesdk_app_id": "1:899609196371:android:da6c525edc39c8be3e93a6",
         "android_client_info": {
           "package_name": "com.kalambur.mappy_stars"
         }
       },
       "oauth_client": [
         {
-          "client_id": "724000716108-91cp35mqnlafau0gb061u6pku51jgb8b.apps.googleusercontent.com",
+          "client_id": "899609196371-rt4gmmiguqna83ts3c1mb4omjm8r6psf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBN7e6zMJJOK7ZuxYvWyvk0_CXKnex0z84"
+          "current_key": "AIzaSyCydcbMxWyXGeRerjz3_WKMDv7GMpvlD1g"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "724000716108-91cp35mqnlafau0gb061u6pku51jgb8b.apps.googleusercontent.com",
+              "client_id": "899609196371-rt4gmmiguqna83ts3c1mb4omjm8r6psf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

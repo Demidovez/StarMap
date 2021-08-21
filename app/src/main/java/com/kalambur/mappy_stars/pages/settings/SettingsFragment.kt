@@ -152,7 +152,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun sendProblemToFirebase(message: String, contact: String) {
-        val database = Firebase.database("https://mappy-stars-default-rtdb.europe-west1.firebasedatabase.app")
+        val database = Firebase.database("https://mappy-stars-5525-default-rtdb.firebaseio.com")
         val myRef = database.getReference("problems")
 
         myRef.child(Calendar.getInstance().time.time.toString()).setValue("$message::$contact")

@@ -27,10 +27,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 import com.google.android.gms.ads.nativead.AdChoicesView
 
-
-
-
-
 class TemplateAdapter(private val activity: Activity): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var templateList = ArrayList<Any?>()
     private var adLoader: AdLoader? = null
@@ -187,8 +183,8 @@ class TemplateAdapter(private val activity: Activity): RecyclerView.Adapter<Recy
 
     private fun loadNativeAds(countAds: Int) {
         // Test id: ca-app-pub-3940256099942544/2247696110
-        // My id:   ca-app-pub-4277307989752479/8387386901
-        val builder = AdLoader.Builder(activity, "ca-app-pub-4277307989752479/8387386901")
+        // My id:   ca-app-pub-2452666921240977/6202246695
+        val builder = AdLoader.Builder(activity, "ca-app-pub-2452666921240977/6202246695")
         adLoader =
             builder.forNativeAd { nativeAd ->
                 mNativeAds.add(nativeAd)
