@@ -921,7 +921,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
         val descTextPaint = TextPaint(ANTI_ALIAS_FLAG).apply {
             textAlign = Align.CENTER
             textSize = textSizeDesc
-            typeface = ResourcesCompat.getFont(activity.applicationContext, descFont.value!!.resId!!)
+//            typeface = ResourcesCompat.getFont(activity.applicationContext, descFont.value!!.resId!!)  // TODO: For debug
             color = Color.parseColor(descFontColor.value!!)
             isDither = true
             isAntiAlias = true
@@ -970,7 +970,7 @@ class ClassicV1TemplateCanvas(private val activity: MainActivity, private val pr
             textAlign = Align.CENTER
             textSize = textSizeLocation
             color = Color.parseColor(locationFontColor.value!!)
-            typeface = ResourcesCompat.getFont(activity, locationFont.value!!.resId!!)
+//            typeface = ResourcesCompat.getFont(activity, locationFont.value!!.resId!!) // TODO: For debug
             isDither = true
             isAntiAlias = true
         }

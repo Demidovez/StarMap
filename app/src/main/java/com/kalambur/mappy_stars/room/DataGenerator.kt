@@ -285,7 +285,7 @@ class DataGenerator {
                     holstWidth = 2480F,
                     holstHeight = 3508F,
                     holstColor = "#FFFFFF",
-                    holstImage = R.raw.svg ,
+//                    holstImage = R.raw.svg , // TODO: For debug
                     hasBorderHolst = false,
                     borderHolstIndent = 20F,
                     borderHolstWidth = 5F,
